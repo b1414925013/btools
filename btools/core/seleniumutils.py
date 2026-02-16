@@ -10,6 +10,16 @@ import time
 import os
 from datetime import datetime
 
+# 导入webdriver-manager
+try:
+    from webdriver_manager.chrome import ChromeDriverManager
+    from webdriver_manager.firefox import GeckoDriverManager
+    from webdriver_manager.microsoft import EdgeChromiumDriverManager
+    from webdriver_manager.core.driver_cache import DriverCacheManager
+    WEBDRIVER_MANAGER_AVAILABLE = True
+except ImportError:
+    WEBDRIVER_MANAGER_AVAILABLE = False
+
 class SeleniumUtils:
     """
     Selenium工具类，提供常用的Web自动化测试操作
@@ -38,7 +48,17 @@ class SeleniumUtils:
             if options:
                 for opt in options:
                     chrome_options.add_argument(opt)
-            driver = webdriver.Chrome(options=chrome_options)
+            
+            if WEBDRIVER_MANAGER_AVAILABLE:
+                # 使用webdriver-manager自动管理驱动
+                driver = webdriver.Chrome(
+                    service=webdriver.chrome.service.Service(ChromeDriverManager().install()),
+                    options=chrome_options
+                )
+            else:
+                # 传统方式
+                driver = webdriver.Chrome(options=chrome_options)
+                
         elif browser.lower() == "firefox":
             from selenium.webdriver.firefox.options import Options as FirefoxOptions
             firefox_options = FirefoxOptions()
@@ -47,7 +67,17 @@ class SeleniumUtils:
             if options:
                 for opt in options:
                     firefox_options.add_argument(opt)
-            driver = webdriver.Firefox(options=firefox_options)
+            
+            if WEBDRIVER_MANAGER_AVAILABLE:
+                # 使用webdriver-manager自动管理驱动
+                driver = webdriver.Firefox(
+                    service=webdriver.firefox.service.Service(GeckoDriverManager().install()),
+                    options=firefox_options
+                )
+            else:
+                # 传统方式
+                driver = webdriver.Firefox(options=firefox_options)
+                
         elif browser.lower() == "edge":
             from selenium.webdriver.edge.options import Options as EdgeOptions
             edge_options = EdgeOptions()
@@ -56,8 +86,19 @@ class SeleniumUtils:
             if options:
                 for opt in options:
                     edge_options.add_argument(opt)
-            driver = webdriver.Edge(options=edge_options)
+            
+            if WEBDRIVER_MANAGER_AVAILABLE:
+                # 使用webdriver-manager自动管理驱动
+                driver = webdriver.Edge(
+                    service=webdriver.edge.service.Service(EdgeChromiumDriverManager().install()),
+                    options=edge_options
+                )
+            else:
+                # 传统方式
+                driver = webdriver.Edge(options=edge_options)
+                
         elif browser.lower() == "safari":
+            # Safari驱动由系统管理
             driver = webdriver.Safari()
         else:
             raise ValueError(f"不支持的浏览器类型: {browser}")

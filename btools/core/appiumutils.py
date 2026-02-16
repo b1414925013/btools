@@ -1,8 +1,6 @@
 from appium import webdriver
 from appium.webdriver.common.appiumby import AppiumBy
-from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.extensions.android.gsm import GsmCallActions
-from appium.webdriver.extensions.android.network import Network
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webelement import WebElement
@@ -474,6 +472,7 @@ class AppiumUtils:
             y (int): Y坐标
             count (int): 点击次数
         """
+        from appium.webdriver.common.touch_action import TouchAction
         action = TouchAction(driver)
         action.tap(x=x, y=y, count=count).perform()
     
@@ -491,6 +490,7 @@ class AppiumUtils:
             timeout (int): 超时时间（秒）
             poll_frequency (float): 轮询频率（秒）
         """
+        from appium.webdriver.common.touch_action import TouchAction
         element = AppiumUtils.wait_for_element_visible(driver, by, value, timeout, poll_frequency)
         action = TouchAction(driver)
         action.long_press(element, duration=duration).perform()

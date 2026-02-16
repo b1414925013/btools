@@ -15,6 +15,7 @@ openpyxl~=3.1.2
 # Web自动化测试
 selenium~=4.20.0
 playwright~=1.44.0
+webdriver-manager~=4.0.0
 
 # 移动应用自动化测试
 Appium-Python-Client~=2.12.1

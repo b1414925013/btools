@@ -111,8 +111,8 @@ class TestUtils:
                     return TestUtils.generate_random_phone()
                 elif value == "${random_date}":
                     return TestUtils.generate_random_date()
-                elif value.startswith("${random_string:") and value.endswith(")}":
-                    length = int(value.split(":")[1].rstrip(")}"))
+                elif value.startswith("${random_string:") and value.endswith("}"):
+                    length = int(value.split(":")[1].rstrip("}"))
                     return TestUtils.generate_random_string(length)
             return value
         
@@ -184,6 +184,33 @@ class TestUtils:
         passed = sum(1 for case in test_cases if case.get("status") == "PASS")
         failed = sum(1 for case in test_cases if case.get("status") == "FAIL")
         skipped = sum(1 for case in test_cases if case.get("status") == "SKIP")
+        
+        # 生成测试用例HTML
+        test_cases_html = ""
+        for case in test_cases:
+            status = case.get("status", "UNKNOWN")
+            error = case.get("error", "")
+            
+            case_html = f"""
+            <div class="test-case {status}">
+                <h3>{case.get('name', 'Unnamed Test')}</h3>
+                <div class="meta">
+                    <strong>状态:</strong> {status} | 
+                    <strong>开始时间:</strong> {case.get('start_time', '-')} | 
+                    <strong>结束时间:</strong> {case.get('end_time', '-')} | 
+                    <strong>耗时:</strong> {case.get('duration', '-')}s
+                </div>
+                <p><strong>描述:</strong> {case.get('description', '-')}</p>
+                {f'<div class="error"><strong>错误信息:</strong><br>{error}</div>' if error else ''}
+            </div>
+            """
+            test_cases_html += case_html
+        
+        # 计算通过率
+        pass_rate = (passed / total * 100) if total > 0 else 0
+        
+        # 生成时间
+        generate_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
         # 生成HTML报告
         html_template = f"""
@@ -288,32 +315,7 @@ class TestUtils:
 </html>
         """
         
-        # 生成测试用例HTML
-        test_cases_html = ""
-        for case in test_cases:
-            status = case.get("status", "UNKNOWN")
-            error = case.get("error", "")
-            
-            case_html = f"""
-            <div class="test-case {status}">
-                <h3>{case.get('name', 'Unnamed Test')}</h3>
-                <div class="meta">
-                    <strong>状态:</strong> {status} | 
-                    <strong>开始时间:</strong> {case.get('start_time', '-')} | 
-                    <strong>结束时间:</strong> {case.get('end_time', '-')} | 
-                    <strong>耗时:</strong> {case.get('duration', '-')}s
-                </div>
-                <p><strong>描述:</strong> {case.get('description', '-')}</p>
-                {f'<div class="error"><strong>错误信息:</strong><br>{error}</div>' if error else ''}
-            </div>
-            """
-            test_cases_html += case_html
-        
-        # 计算通过率
-        pass_rate = (passed / total * 100) if total > 0 else 0
-        
         # 填充模板
-        generate_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         html_content = html_template.format(
             generate_time=generate_time,
             total=total,

@@ -28,5 +28,9 @@ setup(
         'PySocks',
         'httplib2',
         'openpyxl',
+        'selenium',
+        'playwright',
+        'Appium-Python-Client',
+        'webdriver-manager',
     ],
 )
