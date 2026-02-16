@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name="btools",
     version="1.0.0",
-    author="Your Name",
+    author="Blake Bian",
     author_email="your.email@example.com",
     description="一个实用的工具类和函数集合",
     long_description="一个用于Python项目的实用工具类和函数集合，包括日志记录、配置管理、数据验证和类型转换功能。",
