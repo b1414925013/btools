@@ -18,37 +18,37 @@ playwright~=1.44.0
 webdriver-manager~=4.0.0
 
 # 移动应用自动化测试
-Appium-Python-Client~=5.1.3
+Appium-Python-Client~=2.11.1
 
 # SSH客户端
-paramiko~=3.5.0
+paramiko~=3.4.0
 PySocks~=1.7.1
 
 # HTTP代理支持
 httplib2~=0.22.0
 
 # 打包工具
-setuptools~=75.3.4
-wheel~=0.44.0
+setuptools~=65.5.0
+wheel~=0.38.4
 
 # 加密解密
-cryptography~=42.0.5
+cryptography~=39.0.0
 
 # 缓存
-redis~=5.0.1
+redis~=4.5.0
 
 # 数据库
 pymysql~=1.1.0
 psycopg2-binary~=2.9.6
 
 # 系统信息
-psutil~=6.0.0
+psutil~=5.9.0
 
 # 图片处理
-Pillow~=10.0.0
+Pillow~=9.5.0
 
 # 数组处理
-numpy~=1.26.0
+numpy~=1.24.0
 
 # 二维码处理
 qrcode[pil]~=7.4.2
@@ -58,4 +58,4 @@ pyzbar~=0.1.9
 Jinja2~=3.1.0
 
 # AI功能
-tiktoken~=0.5.0
+tiktoken~=0.3.3
