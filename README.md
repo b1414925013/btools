@@ -13,6 +13,8 @@
   - [SSHClient](#sshclient)
   - [CSVHandler](#csvhandler)
   - [ExcelHandler](#excelhandler)
+  - [TestUtils](#testutils)
+  - [AssertEnhancer](#assertenhancer)
   - [Validator](#validator)
   - [Converter](#converter)
 - [如何打包](#如何打包)
@@ -30,6 +32,8 @@
 - **SSHClient**: SSH客户端，支持直接连接和通过跳板机连接
 - **CSVHandler**: CSV文件处理，支持CSV文件的读写
 - **ExcelHandler**: Excel文件处理，支持Excel文件的读写和单元格更新
+- **TestUtils**: 自动化测试工具，提供测试数据生成、测试报告生成等功能
+- **AssertEnhancer**: 断言增强工具，提供更强大的断言方法
 - **Validator**: 常见类型和格式的数据验证工具
 - **Converter**: 各种数据类型的转换工具
 
@@ -554,6 +558,147 @@ print(Converter.datetime_to_str(now, "%Y-%m-%d"))  # "2023-12-25"
 print(Converter.camel_to_snake("camelCase"))  # "camel_case"
 print(Converter.snake_to_camel("snake_case"))  # "snakeCase"
 print(Converter.snake_to_camel("snake_case", capitalize_first=True))  # "SnakeCase"
+```
+
+### TestUtils
+
+`TestUtils` 类提供了自动化测试中常用的工具方法，包括测试数据生成、测试报告生成等功能。
+
+```python
+from btools import TestUtils
+
+# ==================== 生成测试数据 ====================
+# 生成随机字符串
+random_str = TestUtils.generate_random_string()
+print(f"随机字符串: {random_str}")
+
+# 生成随机邮箱
+random_email = TestUtils.generate_random_email()
+print(f"随机邮箱: {random_email}")
+
+# 生成随机手机号
+random_phone = TestUtils.generate_random_phone()
+print(f"随机手机号: {random_phone}")
+
+# 生成随机日期
+random_date = TestUtils.generate_random_date()
+print(f"随机日期: {random_date}")
+
+# 根据模板生成测试数据
+test_data_template = {
+    "username": "${random_string}",
+    "email": "${random_email}",
+    "phone": "${random_phone}",
+    "register_date": "${random_date}",
+    "profile": {
+        "first_name": "${random_string:5}",
+        "last_name": "${random_string:5}"
+    }
+}
+
+generated_data = TestUtils.generate_test_data(test_data_template)
+print(f"生成的测试数据: {generated_data}")
+
+# ==================== 配置文件操作 ====================
+# 加载测试配置
+config = TestUtils.load_test_config("test_config.yaml")
+print(f"加载的配置: {config}")
+
+# ==================== 测试结果操作 ====================
+# 保存测试结果
+test_results = {
+    "test_name": "登录测试",
+    "status": "PASS",
+    "duration": 2.5,
+    "timestamp": "2023-12-25 10:00:00"
+}
+
+# 保存为JSON
+TestUtils.save_test_results(test_results, "test_results.json")
+print("测试结果已保存为JSON")
+
+# 保存为YAML
+TestUtils.save_test_results(test_results, "test_results.yaml", format="yaml")
+print("测试结果已保存为YAML")
+
+# ==================== 生成测试报告 ====================
+# 准备测试用例数据
+test_cases = [
+    {
+        "name": "登录成功测试",
+        "description": "测试正常登录流程",
+        "status": "PASS",
+        "start_time": "2023-12-25 10:00:00",
+        "end_time": "2023-12-25 10:00:02",
+        "duration": 2.1
+    },
+    {
+        "name": "登录失败测试",
+        "description": "测试密码错误时的登录失败场景",
+        "status": "PASS",
+        "start_time": "2023-12-25 10:00:03",
+        "end_time": "2023-12-25 10:00:05",
+        "duration": 1.8
+    },
+    {
+        "name": "注册测试",
+        "description": "测试用户注册功能",
+        "status": "FAIL",
+        "start_time": "2023-12-25 10:00:06",
+        "end_time": "2023-12-25 10:00:09",
+        "duration": 3.2,
+        "error": "邮箱格式不正确"
+    }
+]
+
+# 生成HTML测试报告
+report_path = TestUtils.generate_test_report(test_cases, "test_report.html")
+print(f"测试报告已生成: {report_path}")
+
+# ==================== 等待元素装饰器 ====================
+# 使用等待元素装饰器
+@TestUtils.wait_for_element(timeout=10)
+def find_element_by_id(driver, element_id):
+    return driver.find_element("id", element_id)
+
+# 调用带等待的函数
+try:
+    element = find_element_by_id(driver, "login-button")
+    print("找到登录按钮")
+except TimeoutError as e:
+    print(f"找不到元素: {e}")
+```
+
+### AssertEnhancer
+
+`AssertEnhancer` 类提供了增强的断言方法，适用于API测试和UI测试中的各种断言场景。
+
+```python
+from btools import AssertEnhancer
+
+# ==================== 字符串断言 ====================
+# 断言字符串包含
+AssertEnhancer.assert_contains("Hello World", "World")
+print("字符串包含断言通过")
+
+# ==================== JSON断言 ====================
+# 断言JSON相等
+expected_json = {"name": "John", "age": 30}
+actual_json = {"name": "John", "age": 30}
+AssertEnhancer.assert_json_equals(actual_json, expected_json)
+print("JSON相等断言通过")
+
+# ==================== HTTP响应断言 ====================
+# 断言响应状态码
+import requests
+response = requests.get("https://api.example.com/users")
+AssertEnhancer.assert_response_status(response, 200)
+print("响应状态码断言通过")
+
+# 断言响应JSON
+expected_response_json = {"status": "success", "data": []}
+AssertEnhancer.assert_response_json(response, expected_response_json)
+print("响应JSON断言通过")
 ```
 
 ### CSVHandler
