@@ -36,23 +36,23 @@ class TestCompressUtils(unittest.TestCase):
         # 检查压缩文件是否创建
         self.assertTrue(os.path.exists(output_file))
 
-    def test_compress_files(self):
+    def test_zip_files(self):
         """测试压缩多个文件"""
         # 压缩多个文件
         output_file = os.path.join(self.temp_dir, "compressed_files.zip")
-        CompressUtils.compress_files(self.test_files, output_file)
+        CompressUtils.zip_files(self.test_files, output_file)
         # 检查压缩文件是否创建
         self.assertTrue(os.path.exists(output_file))
 
-    def test_compress_directory(self):
+    def test_zip_directory(self):
         """测试压缩目录"""
         # 压缩目录
         output_file = os.path.join(self.temp_dir, "compressed_dir.zip")
-        CompressUtils.compress_directory(self.temp_dir, output_file)
+        CompressUtils.zip_directory(self.temp_dir, output_file)
         # 检查压缩文件是否创建
         self.assertTrue(os.path.exists(output_file))
 
-    def test_extract_file(self):
+    def test_decompress_file(self):
         """测试解压文件"""
         # 先创建压缩文件
         input_file = self.test_files[0]
@@ -62,7 +62,7 @@ class TestCompressUtils(unittest.TestCase):
         extract_dir = os.path.join(self.temp_dir, "extract")
         os.makedirs(extract_dir, exist_ok=True)
         # 解压文件
-        CompressUtils.extract_file(zip_file, extract_dir)
+        CompressUtils.decompress_file(zip_file, extract_dir)
         # 检查文件是否解压
         extracted_file = os.path.join(extract_dir, os.path.basename(input_file))
         self.assertTrue(os.path.exists(extracted_file))

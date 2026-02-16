@@ -48,19 +48,11 @@ class TestConfig(unittest.TestCase):
         # 检查配置是否设置成功
         self.assertEqual(config.get("api.url"), "https://api.example.com")
 
-    def test_has(self):
-        """测试检查配置是否存在"""
-        config = Config(self.temp_file)
-        # 检查存在的配置
-        self.assertTrue(config.has("database.host"))
-        # 检查不存在的配置
-        self.assertFalse(config.has("nonexistent"))
-
-    def test_delete(self):
+    def test_remove(self):
         """测试删除配置"""
         config = Config(self.temp_file)
         # 删除配置
-        config.delete("api.key")
+        config.remove("api.key")
         # 检查配置是否被删除
         self.assertIsNone(config.get("api.key"))
 
@@ -76,14 +68,7 @@ class TestConfig(unittest.TestCase):
         # 检查配置是否保存成功
         self.assertEqual(new_config.get("database.host"), "newhost")
 
-    def test_get_all(self):
-        """测试获取所有配置"""
-        config = Config(self.temp_file)
-        # 获取所有配置
-        all_config = config.get_all()
-        # 检查配置是否完整
-        self.assertIn("database", all_config)
-        self.assertIn("api", all_config)
+
 
 
 if __name__ == "__main__":

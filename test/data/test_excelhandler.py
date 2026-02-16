@@ -12,7 +12,6 @@ class TestExcelHandler(unittest.TestCase):
         """设置测试环境"""
         self.temp_dir = tempfile.mkdtemp()
         self.test_file = os.path.join(self.temp_dir, "test.xlsx")
-        self.excel_handler = ExcelHandler()
 
     def tearDown(self):
         """清理测试环境"""
@@ -21,26 +20,26 @@ class TestExcelHandler(unittest.TestCase):
         if os.path.exists(self.temp_dir):
             os.rmdir(self.temp_dir)
 
-    def test_write(self):
+    def test_write_excel(self):
         """测试写入Excel文件"""
         data = [
-            ["Name", "Age", "City"],
             ["John", "30", "New York"],
             ["Alice", "25", "London"]
         ]
-        self.excel_handler.write(self.test_file, {"Sheet1": data})
+        header = ["Name", "Age", "City"]
+        ExcelHandler.write_excel(self.test_file, data, sheet_name="Sheet1", header=header)
         self.assertTrue(os.path.exists(self.test_file))
 
-    def test_read(self):
+    def test_read_excel(self):
         """测试读取Excel文件"""
         data = [
-            ["Name", "Age", "City"],
             ["John", "30", "New York"],
             ["Alice", "25", "London"]
         ]
-        self.excel_handler.write(self.test_file, {"Sheet1": data})
-        read_data = self.excel_handler.read(self.test_file, "Sheet1")
-        self.assertEqual(len(read_data), 3)
+        header = ["Name", "Age", "City"]
+        ExcelHandler.write_excel(self.test_file, data, sheet_name="Sheet1", header=header)
+        read_data = ExcelHandler.read_excel(self.test_file, sheet_name="Sheet1", skip_header=True)
+        self.assertEqual(len(read_data), 2)
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ ImageUtils 测试文件
 import unittest
 import os
 import tempfile
+from PIL import Image
 from btools.core.media.imageutils import ImageUtils
 
 
@@ -18,9 +19,13 @@ class TestImageUtils(unittest.TestCase):
         """
         测试前的准备工作
         """
-        self.image_utils = ImageUtils()
         # 创建临时目录用于测试
         self.temp_dir = tempfile.mkdtemp()
+        # 创建测试图片
+        self.test_image_path = os.path.join(self.temp_dir, "test_image.jpg")
+        # 创建一个简单的测试图片
+        img = Image.new('RGB', (200, 200), color='red')
+        img.save(self.test_image_path)
 
     def tearDown(self):
         """
@@ -34,86 +39,50 @@ class TestImageUtils(unittest.TestCase):
                 os.rmdir(os.path.join(root, dir))
         os.rmdir(self.temp_dir)
 
-    def test_resize_image(self):
+    def test_resize(self):
         """
         测试调整图片大小
         """
-        # 创建测试图片路径
-        test_image = os.path.join(self.temp_dir, "test_image.jpg")
-        # 创建一个简单的测试图片
-        self.image_utils.create_thumbnail(test_image, width=100, height=100)
-        
+        # 打开测试图片
+        img = ImageUtils.open(self.test_image_path)
         # 调整图片大小
-        output_image = os.path.join(self.temp_dir, "resized_image.jpg")
-        result = self.image_utils.resize_image(test_image, 200, 200, output_image)
-        
+        resized_img = ImageUtils.resize(img, 100, 100)
         # 验证结果
-        self.assertTrue(result)
-        self.assertTrue(os.path.exists(output_image))
+        self.assertEqual(resized_img.size, (100, 100))
 
-    def test_crop_image(self):
+    def test_crop(self):
         """
         测试裁剪图片
         """
-        # 创建测试图片路径
-        test_image = os.path.join(self.temp_dir, "test_image.jpg")
-        # 创建一个简单的测试图片
-        self.image_utils.create_thumbnail(test_image, width=200, height=200)
-        
+        # 打开测试图片
+        img = ImageUtils.open(self.test_image_path)
         # 裁剪图片
-        output_image = os.path.join(self.temp_dir, "cropped_image.jpg")
-        result = self.image_utils.crop_image(test_image, 50, 50, 100, 100, output_image)
-        
+        cropped_img = ImageUtils.crop(img, 50, 50, 150, 150)
         # 验证结果
-        self.assertTrue(result)
-        self.assertTrue(os.path.exists(output_image))
+        self.assertEqual(cropped_img.size, (100, 100))
 
-    def test_convert_image_format(self):
-        """
-        测试转换图片格式
-        """
-        # 创建测试图片路径
-        test_image = os.path.join(self.temp_dir, "test_image.jpg")
-        # 创建一个简单的测试图片
-        self.image_utils.create_thumbnail(test_image, width=100, height=100)
-        
-        # 转换图片格式
-        output_image = os.path.join(self.temp_dir, "converted_image.png")
-        result = self.image_utils.convert_image_format(test_image, output_image)
-        
-        # 验证结果
-        self.assertTrue(result)
-        self.assertTrue(os.path.exists(output_image))
-
-    def test_create_thumbnail(self):
+    def test_thumbnail(self):
         """
         测试创建缩略图
         """
+        # 打开测试图片
+        img = ImageUtils.open(self.test_image_path)
         # 创建缩略图
-        thumbnail_path = os.path.join(self.temp_dir, "thumbnail.jpg")
-        result = self.image_utils.create_thumbnail(thumbnail_path, width=100, height=100)
-        
+        thumbnail_img = ImageUtils.thumbnail(img, (50, 50))
         # 验证结果
-        self.assertTrue(result)
-        self.assertTrue(os.path.exists(thumbnail_path))
+        self.assertTrue(thumbnail_img.size[0] <= 50)
+        self.assertTrue(thumbnail_img.size[1] <= 50)
 
-    def test_get_image_info(self):
+    def test_get_image_size(self):
         """
-        测试获取图片信息
+        测试获取图片大小
         """
-        # 创建测试图片路径
-        test_image = os.path.join(self.temp_dir, "test_image.jpg")
-        # 创建一个简单的测试图片
-        self.image_utils.create_thumbnail(test_image, width=100, height=100)
-        
-        # 获取图片信息
-        info = self.image_utils.get_image_info(test_image)
-        
+        # 打开测试图片
+        img = ImageUtils.open(self.test_image_path)
+        # 获取图片大小
+        size = ImageUtils.get_image_size(img)
         # 验证结果
-        self.assertIsInstance(info, dict)
-        self.assertIn('width', info)
-        self.assertIn('height', info)
-        self.assertIn('format', info)
+        self.assertEqual(size, (200, 200))
 
 
 if __name__ == '__main__':

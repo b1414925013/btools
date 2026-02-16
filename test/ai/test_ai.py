@@ -6,41 +6,30 @@ from btools.core.ai.ai import AIUtils
 class TestAIUtils(unittest.TestCase):
     """测试AIUtils类"""
 
-    def test_call_model(self):
-        """测试调用AI模型"""
-        # 这里只是测试方法是否存在，实际调用需要API密钥
-        # 可以根据实际情况添加mock测试
-        self.assertTrue(hasattr(AIUtils, 'call_model'))
-
-    def test_summarize_text(self):
-        """测试文本摘要"""
-        # 这里只是测试方法是否存在，实际调用需要API密钥
-        # 可以根据实际情况添加mock测试
-        self.assertTrue(hasattr(AIUtils, 'summarize_text'))
-
-    def test_classify_text(self):
-        """测试文本分类"""
-        # 这里只是测试方法是否存在，实际调用需要API密钥
-        # 可以根据实际情况添加mock测试
-        self.assertTrue(hasattr(AIUtils, 'classify_text'))
-
-    def test_analyze_sentiment(self):
-        """测试情感分析"""
-        # 这里只是测试方法是否存在，实际调用需要API密钥
-        # 可以根据实际情况添加mock测试
-        self.assertTrue(hasattr(AIUtils, 'analyze_sentiment'))
-
     def test_chat(self):
         """测试多轮对话"""
         # 这里只是测试方法是否存在，实际调用需要API密钥
-        # 可以根据实际情况添加mock测试
         self.assertTrue(hasattr(AIUtils, 'chat'))
 
-    def test_translate_text(self):
-        """测试文本翻译"""
+    def test_generate(self):
+        """测试文本生成"""
         # 这里只是测试方法是否存在，实际调用需要API密钥
-        # 可以根据实际情况添加mock测试
-        self.assertTrue(hasattr(AIUtils, 'translate_text'))
+        self.assertTrue(hasattr(AIUtils, 'generate'))
+
+    def test_create_openai_client(self):
+        """测试创建OpenAI客户端"""
+        # 这里只是测试方法是否存在
+        self.assertTrue(hasattr(AIUtils, 'create_openai_client'))
+
+    def test_create_deepseek_client(self):
+        """测试创建DeepSeek客户端"""
+        # 这里只是测试方法是否存在
+        self.assertTrue(hasattr(AIUtils, 'create_deepseek_client'))
+
+    def test_create_doubao_client(self):
+        """测试创建豆包客户端"""
+        # 这里只是测试方法是否存在
+        self.assertTrue(hasattr(AIUtils, 'create_doubao_client'))
 
 
 if __name__ == "__main__":

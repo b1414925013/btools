@@ -18,6 +18,12 @@ class TestFileUtils(unittest.TestCase):
         if os.path.exists(self.test_file):
             os.remove(self.test_file)
         if os.path.exists(self.temp_dir):
+            # 递归删除所有子目录和文件
+            for root, dirs, files in os.walk(self.temp_dir, topdown=False):
+                for file in files:
+                    os.remove(os.path.join(root, file))
+                for dir in dirs:
+                    os.rmdir(os.path.join(root, dir))
             os.rmdir(self.temp_dir)
 
     def test_write_file(self):
@@ -42,19 +48,19 @@ class TestFileUtils(unittest.TestCase):
             f.write("test")
         self.assertTrue(FileUtils.exists(self.test_file))
 
-    def test_mkdir(self):
+    def test_create_dir(self):
         """测试创建目录"""
         new_dir = os.path.join(self.temp_dir, "new_dir")
         self.assertFalse(os.path.exists(new_dir))
-        FileUtils.mkdir(new_dir)
+        FileUtils.create_dir(new_dir)
         self.assertTrue(os.path.exists(new_dir))
 
-    def test_delete(self):
+    def test_delete_file(self):
         """测试删除文件"""
         with open(self.test_file, 'w', encoding='utf-8') as f:
             f.write("test")
         self.assertTrue(os.path.exists(self.test_file))
-        FileUtils.delete(self.test_file)
+        FileUtils.delete_file(self.test_file)
         self.assertFalse(os.path.exists(self.test_file))
 
 

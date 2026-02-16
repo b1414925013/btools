@@ -310,7 +310,7 @@ class MailUtils:
         Returns:
             bool: 如果邮箱格式正确则返回True，否则返回False
         """
-        from btools.core.regexutils import RegexUtils
+        from btools.core.data.regexutils import RegexUtils
         return RegexUtils.validate_email(email)
 
     @staticmethod

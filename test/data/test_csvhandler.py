@@ -12,7 +12,6 @@ class TestCSVHandler(unittest.TestCase):
         """设置测试环境"""
         self.temp_dir = tempfile.mkdtemp()
         self.test_file = os.path.join(self.temp_dir, "test.csv")
-        self.csv_handler = CSVHandler()
 
     def tearDown(self):
         """清理测试环境"""
@@ -21,25 +20,25 @@ class TestCSVHandler(unittest.TestCase):
         if os.path.exists(self.temp_dir):
             os.rmdir(self.temp_dir)
 
-    def test_write(self):
+    def test_write_csv(self):
         """测试写入CSV文件"""
         data = [
             ["Name", "Age", "City"],
             ["John", "30", "New York"],
             ["Alice", "25", "London"]
         ]
-        self.csv_handler.write(self.test_file, data)
+        CSVHandler.write_csv(self.test_file, data)
         self.assertTrue(os.path.exists(self.test_file))
 
-    def test_read(self):
+    def test_read_csv(self):
         """测试读取CSV文件"""
         data = [
             ["Name", "Age", "City"],
             ["John", "30", "New York"],
             ["Alice", "25", "London"]
         ]
-        self.csv_handler.write(self.test_file, data)
-        read_data = self.csv_handler.read(self.test_file)
+        CSVHandler.write_csv(self.test_file, data)
+        read_data = CSVHandler.read_csv(self.test_file)
         self.assertEqual(len(read_data), 3)
         self.assertEqual(read_data[0], ["Name", "Age", "City"])
 

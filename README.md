@@ -66,6 +66,8 @@ btools/
 │   │   └── appiumutils.py      # Appium自动化
 │   └── ai/           # AI工具类
 │       └── ai.py               # AI工具
+│   └── api/          # API工具类
+│       └── fastapiutils.py     # FastAPI工具
 └── __init__.py       # 包初始化文件
 ```
 
@@ -127,6 +129,9 @@ btools/
 
 #### AI工具类 (ai/)
 - **AIUtils**: AI工具，提供AI模型调用、文本处理等功能
+
+#### API工具类 (api/)
+- **FastAPIUtils**: FastAPI工具，提供应用创建、路由器管理、CORS配置、异常处理、响应格式化等功能
 
 ## 安装
 
@@ -320,6 +325,9 @@ driver.quit()
 
 #### AI工具类
 - [AIUtils使用指南](docs/usage/ai/ai.md)
+
+#### API工具类
+- [FastAPIUtils使用指南](docs/usage/api/fastapiutils.md)
 
 ### 开发指南
 - [如何打包](docs/guides/how-to-package.md)

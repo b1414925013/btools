@@ -25,11 +25,11 @@ class TestConverter(unittest.TestCase):
         self.assertFalse(Converter.to_bool("False"))
         self.assertFalse(Converter.to_bool(0))
 
-    def test_to_string(self):
+    def test_to_str(self):
         """测试转换为字符串"""
-        self.assertEqual(Converter.to_string(123), "123")
-        self.assertEqual(Converter.to_string(123.45), "123.45")
-        self.assertEqual(Converter.to_string(None), "")
+        self.assertEqual(Converter.to_str(123), "123")
+        self.assertEqual(Converter.to_str(123.45), "123.45")
+        self.assertEqual(Converter.to_str(None), "")
 
 
 if __name__ == "__main__":

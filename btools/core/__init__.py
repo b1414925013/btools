@@ -55,6 +55,9 @@ from .automation.appiumutils import AppiumUtils
 # AI工具类
 from .ai.ai import AIUtils
 
+# API工具类
+from .api.fastapiutils import FastAPIUtils, APIResponse, APIErrorResponse
+
 __all__ = [
     # 基础工具类
     'StringUtils',
@@ -110,5 +113,10 @@ __all__ = [
     'AppiumUtils',
     
     # AI工具类
-    'AIUtils'
+    'AIUtils',
+    
+    # API工具类
+    'FastAPIUtils',
+    'APIResponse',
+    'APIErrorResponse'
 ]

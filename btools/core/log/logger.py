@@ -108,3 +108,11 @@ class Logger:
     def critical(self, message):
         """记录严重错误级别日志"""
         self.logger.critical(message, stacklevel=2)
+    
+    def close(self):
+        """
+        关闭所有日志处理器
+        """
+        for handler in self.logger.handlers:
+            handler.close()
+        self.logger.handlers.clear()

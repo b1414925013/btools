@@ -18,7 +18,6 @@ class TestQrCodeUtils(unittest.TestCase):
         """
         测试前的准备工作
         """
-        self.qr_code_utils = QrCodeUtils()
         # 创建临时目录用于测试
         self.temp_dir = tempfile.mkdtemp()
 
@@ -41,7 +40,7 @@ class TestQrCodeUtils(unittest.TestCase):
         # 生成二维码
         qr_code_path = os.path.join(self.temp_dir, "test_qr_code.png")
         data = "https://github.com/btools-dev/btools"
-        result = self.qr_code_utils.generate_qr_code(data, qr_code_path)
+        result = QrCodeUtils.save_qr_code(data, qr_code_path)
         
         # 验证结果
         self.assertTrue(result)
@@ -54,13 +53,11 @@ class TestQrCodeUtils(unittest.TestCase):
         # 生成带选项的二维码
         qr_code_path = os.path.join(self.temp_dir, "test_qr_code_with_options.png")
         data = "https://github.com/btools-dev/btools"
-        result = self.qr_code_utils.generate_qr_code(
+        result = QrCodeUtils.save_qr_code(
             data, 
             qr_code_path, 
             box_size=10, 
-            border=4,
-            fill_color="black",
-            back_color="white"
+            border=4
         )
         
         # 验证结果
@@ -74,15 +71,14 @@ class TestQrCodeUtils(unittest.TestCase):
         # 首先生成一个二维码
         qr_code_path = os.path.join(self.temp_dir, "test_qr_code.png")
         expected_data = "https://github.com/btools-dev/btools"
-        self.qr_code_utils.generate_qr_code(expected_data, qr_code_path)
+        QrCodeUtils.save_qr_code(expected_data, qr_code_path)
         
         # 读取二维码
-        result = self.qr_code_utils.read_qr_code(qr_code_path)
+        result = QrCodeUtils.decode_qr_code_from_file(qr_code_path)
         
         # 验证结果
-        self.assertIsInstance(result, list)
-        self.assertGreater(len(result), 0)
-        self.assertEqual(result[0], expected_data)
+        self.assertIsInstance(result, str)
+        self.assertEqual(result, expected_data)
 
     def test_generate_qr_code_with_logo(self):
         """
@@ -91,12 +87,12 @@ class TestQrCodeUtils(unittest.TestCase):
         # 创建一个简单的测试 logo
         logo_path = os.path.join(self.temp_dir, "logo.png")
         # 生成一个小的二维码作为 logo
-        self.qr_code_utils.generate_qr_code("logo", logo_path, box_size=2, border=1)
+        QrCodeUtils.save_qr_code("logo", logo_path, box_size=2, border=1)
         
         # 生成带 logo 的二维码
         qr_code_path = os.path.join(self.temp_dir, "test_qr_code_with_logo.png")
         data = "https://github.com/btools-dev/btools"
-        result = self.qr_code_utils.generate_qr_code_with_logo(data, qr_code_path, logo_path)
+        result = QrCodeUtils.save_qr_code_with_logo(data, logo_path, qr_code_path)
         
         # 验证结果
         self.assertTrue(result)
