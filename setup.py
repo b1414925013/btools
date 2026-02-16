@@ -1,0 +1,32 @@
+from setuptools import setup, find_packages
+
+setup(
+    name="btools",
+    version="1.0.0",
+    author="Your Name",
+    author_email="your.email@example.com",
+    description="一个实用的工具类和函数集合",
+    long_description="一个用于Python项目的实用工具类和函数集合，包括日志记录、配置管理、数据验证和类型转换功能。",
+    long_description_content_type="text/markdown",
+    url="https://example.com",
+    packages=find_packages(),
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Intended Audience :: Developers",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+    ],
+    python_requires='>=3.8',
+    install_requires=[
+        'pyyaml',
+        'requests',
+        'requests-toolbelt',
+        'requests-cache',
+        'urllib3',
+        'paramiko',
+        'PySocks',
+        'httplib2',
+        'openpyxl',
+    ],
+)

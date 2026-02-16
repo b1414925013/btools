@@ -1,0 +1,26 @@
+# btools 项目依赖库
+
+# 配置文件读写
+pyyaml~=6.0.3
+
+# HTTP客户端
+requests~=2.32.4
+requests-toolbelt~=1.0.0
+requests-cache~=1.4.0
+urllib3~=2.2.0
+
+# Excel文件处理
+openpyxl~=3.1.2
+
+# SSH客户端
+paramiko~=3.5.0
+
+# SOCKS代理支持
+PySocks~=1.7.1
+
+# HTTP代理支持
+httplib2~=0.22.0
+
+# 打包工具
+setuptools~=75.3.4
+wheel~=0.44.0
