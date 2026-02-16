@@ -39,7 +39,7 @@ redis~=4.5.0
 
 # 数据库
 pymysql~=1.1.0
-psycopg2-binary~=2.9.3
+# psycopg2-binary~=2.9.3  # 注释掉，需要 PostgreSQL 开发环境
 
 # 系统信息
 psutil~=5.9.0
