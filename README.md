@@ -15,6 +15,9 @@
   - [ExcelHandler](#excelhandler)
   - [TestUtils](#testutils)
   - [AssertEnhancer](#assertenhancer)
+  - [SeleniumUtils](#seleniumutils)
+  - [PlaywrightUtils](#playwrightutils)
+  - [AppiumUtils](#appiumutils)
   - [Validator](#validator)
   - [Converter](#converter)
 - [如何打包](#如何打包)
@@ -34,6 +37,9 @@
 - **ExcelHandler**: Excel文件处理，支持Excel文件的读写和单元格更新
 - **TestUtils**: 自动化测试工具，提供测试数据生成、测试报告生成等功能
 - **AssertEnhancer**: 断言增强工具，提供更强大的断言方法
+- **SeleniumUtils**: 基于Selenium的Web自动化测试工具
+- **PlaywrightUtils**: 基于Playwright的Web自动化测试工具
+- **AppiumUtils**: 基于Appium的移动应用自动化测试工具
 - **Validator**: 常见类型和格式的数据验证工具
 - **Converter**: 各种数据类型的转换工具
 
@@ -699,6 +705,358 @@ print("响应状态码断言通过")
 expected_response_json = {"status": "success", "data": []}
 AssertEnhancer.assert_response_json(response, expected_response_json)
 print("响应JSON断言通过")
+```
+
+### SeleniumUtils
+
+`SeleniumUtils` 类提供了基于Selenium的Web自动化测试操作，支持各种浏览器和常用的Web元素操作。
+
+```python
+from btools import SeleniumUtils
+
+# ==================== 初始化浏览器 ====================
+# 获取Chrome浏览器实例
+driver = SeleniumUtils.get_driver(
+    browser="chrome",
+    headless=False,
+    implicit_wait=10
+)
+
+# 打开网页
+driver.get("https://www.example.com")
+
+# ==================== 元素操作 ====================
+# 查找元素
+username_input = SeleniumUtils.find_element(driver, "id", "username")
+
+# 点击元素
+SeleniumUtils.click_element(driver, "id", "login-button")
+
+# 输入文本
+SeleniumUtils.send_keys(driver, "id", "username", "testuser")
+SeleniumUtils.send_keys(driver, "id", "password", "password123")
+
+# 获取元素文本
+title = SeleniumUtils.get_element_text(driver, "css_selector", "h1")
+print(f"页面标题: {title}")
+
+# 获取元素属性
+value = SeleniumUtils.get_element_attribute(driver, "id", "username", "value")
+print(f"输入框值: {value}")
+
+# ==================== 元素检查 ====================
+# 检查元素是否存在
+if SeleniumUtils.is_element_present(driver, "id", "submit-button"):
+    print("提交按钮存在")
+
+# 检查元素是否可见
+if SeleniumUtils.is_element_visible(driver, "id", "success-message"):
+    print("成功消息可见")
+
+# ==================== 滚动操作 ====================
+# 滚动到元素位置
+SeleniumUtils.scroll_to_element(driver, "id", "footer")
+
+# 滚动到页面顶部
+SeleniumUtils.scroll_to_top(driver)
+
+# 滚动到页面底部
+SeleniumUtils.scroll_to_bottom(driver)
+
+# ==================== 窗口操作 ====================
+# 切换到新窗口
+SeleniumUtils.switch_to_window(driver, 1)
+
+# 关闭其他窗口
+SeleniumUtils.close_other_windows(driver)
+
+# ==================== iframe操作 ====================
+# 切换到iframe
+SeleniumUtils.switch_to_frame(driver, "id", "content-frame")
+
+# 切换回默认内容
+SeleniumUtils.switch_to_default_content(driver)
+
+# ==================== 截图 ====================
+# 截取屏幕
+ screenshot_path = SeleniumUtils.take_screenshot(driver, filename="test_screenshot.png")
+print(f"截图保存到: {screenshot_path}")
+
+# ==================== 其他操作 ====================
+# 等待页面加载完成
+SeleniumUtils.wait_for_page_load(driver)
+
+# 执行JavaScript
+result = SeleniumUtils.execute_javascript(driver, "return document.title;")
+print(f"页面标题: {result}")
+
+# 刷新页面
+SeleniumUtils.refresh_page(driver)
+
+# 浏览器后退
+SeleniumUtils.navigate_back(driver)
+
+# 浏览器前进
+SeleniumUtils.navigate_forward(driver)
+
+# ==================== 关闭浏览器 ====================
+SeleniumUtils.close_driver(driver)
+
+# ==================== 使用SeleniumElement ====================
+from btools import SeleniumElement
+
+# 创建元素实例
+login_button = SeleniumElement(driver, "id", "login-button")
+
+# 点击元素
+login_button.click()
+
+# 检查元素是否可见
+if login_button.is_visible():
+    print("登录按钮可见")
+```
+
+### PlaywrightUtils
+
+`PlaywrightUtils` 类提供了基于Playwright的Web自动化测试操作，支持现代浏览器和更高级的自动化功能。
+
+```python
+from btools import PlaywrightUtils
+
+# ==================== 初始化浏览器 ====================
+# 获取浏览器实例
+playwright, browser, context, page = PlaywrightUtils.get_browser(
+    browser="chromium",
+    headless=False,
+    slow_mo=100
+)
+
+# 打开网页
+page.goto("https://www.example.com")
+
+# ==================== 元素操作 ====================
+# 点击元素
+PlaywrightUtils.click_element(page, "#login-button")
+
+# 输入文本
+PlaywrightUtils.send_keys(page, "#username", "testuser")
+PlaywrightUtils.send_keys(page, "#password", "password123")
+
+# 获取元素文本
+title = PlaywrightUtils.get_element_text(page, "h1")
+print(f"页面标题: {title}")
+
+# 获取元素属性
+value = PlaywrightUtils.get_element_attribute(page, "#username", "value")
+print(f"输入框值: {value}")
+
+# ==================== 元素检查 ====================
+# 检查元素是否可见
+if PlaywrightUtils.is_element_visible(page, ".success-message"):
+    print("成功消息可见")
+
+# 检查元素是否隐藏
+if PlaywrightUtils.is_element_hidden(page, ".loading-spinner"):
+    print("加载 spinner 已隐藏")
+
+# ==================== 滚动操作 ====================
+# 滚动到元素位置
+PlaywrightUtils.scroll_to_element(page, "#footer")
+
+# 滚动到页面顶部
+PlaywrightUtils.scroll_to_top(page)
+
+# 滚动到页面底部
+PlaywrightUtils.scroll_to_bottom(page)
+
+# ==================== 窗口操作 ====================
+# 切换到新窗口
+new_page = PlaywrightUtils.switch_to_window(page, 1)
+
+# 关闭其他窗口
+PlaywrightUtils.close_other_windows(page)
+
+# ==================== iframe操作 ====================
+# 切换到iframe
+frame = PlaywrightUtils.switch_to_frame(page, "#content-frame")
+
+# ==================== 截图 ====================
+# 截取屏幕
+ screenshot_path = PlaywrightUtils.take_screenshot(page, filename="test_screenshot.png", full_page=True)
+print(f"截图保存到: {screenshot_path}")
+
+# ==================== 其他操作 ====================
+# 等待页面加载状态
+PlaywrightUtils.wait_for_load_state(page, state="networkidle")
+
+# 执行JavaScript
+result = PlaywrightUtils.execute_javascript(page, "return document.title;")
+print(f"页面标题: {result}")
+
+# 刷新页面
+PlaywrightUtils.refresh_page(page)
+
+# 浏览器后退
+PlaywrightUtils.navigate_back(page)
+
+# 浏览器前进
+PlaywrightUtils.navigate_forward(page)
+
+# 填充表单
+ form_data = {
+    "#name": "John Doe",
+    "#email": "john@example.com",
+    "#message": "Hello, World!"
+}
+PlaywrightUtils.fill_form(page, form_data)
+
+# ==================== 关闭浏览器 ====================
+PlaywrightUtils.close_browser(playwright, browser, context)
+
+# ==================== 使用PlaywrightElement ====================
+from btools import PlaywrightElement
+
+# 创建元素实例
+login_button = PlaywrightElement(page, "#login-button")
+
+# 点击元素
+login_button.click()
+
+# 检查元素是否可见
+if login_button.is_visible():
+    print("登录按钮可见")
+```
+
+### AppiumUtils
+
+`AppiumUtils` 类提供了基于Appium的移动应用自动化测试操作，支持Android和iOS平台。
+
+```python
+from btools import AppiumUtils
+
+# ==================== 初始化driver ====================
+# 获取Android driver实例
+driver = AppiumUtils.get_driver(
+    platform_name="Android",
+    platform_version="13",
+    device_name="Android Emulator",
+    app_package="com.example.app",
+    app_activity=".MainActivity",
+    automation_name="UiAutomator2",
+    no_reset=True
+)
+
+# ==================== 元素操作 ====================
+# 点击元素
+AppiumUtils.click_element(driver, "id", "com.example.app:id/login_button")
+
+# 输入文本
+AppiumUtils.send_keys(driver, "id", "com.example.app:id/username_input", "testuser")
+AppiumUtils.send_keys(driver, "id", "com.example.app:id/password_input", "password123")
+
+# 获取元素文本
+title = AppiumUtils.get_element_text(driver, "id", "com.example.app:id/title_text")
+print(f"标题: {title}")
+
+# 获取元素属性
+value = AppiumUtils.get_element_attribute(driver, "id", "com.example.app:id/username_input", "text")
+print(f"输入框值: {value}")
+
+# ==================== 元素检查 ====================
+# 检查元素是否存在
+if AppiumUtils.is_element_present(driver, "id", "com.example.app:id/submit_button"):
+    print("提交按钮存在")
+
+# 检查元素是否可见
+if AppiumUtils.is_element_visible(driver, "id", "com.example.app:id/success_message"):
+    print("成功消息可见")
+
+# ==================== 滚动操作 ====================
+# 滚动到元素位置
+AppiumUtils.scroll_to_element(driver, "id", "com.example.app:id/footer")
+
+# 向上滑动
+AppiumUtils.swipe_up(driver, duration=1000)
+
+# 向下滑动
+AppiumUtils.swipe_down(driver, duration=1000)
+
+# 向左滑动
+AppiumUtils.swipe_left(driver, duration=1000)
+
+# 向右滑动
+AppiumUtils.swipe_right(driver, duration=1000)
+
+# ==================== 触摸操作 ====================
+# 点击指定坐标
+AppiumUtils.tap(driver, 500, 1000)
+
+# 长按元素
+AppiumUtils.long_press(driver, "id", "com.example.app:id/item")
+
+# ==================== 应用操作 ====================
+# 获取设备尺寸
+size = AppiumUtils.get_device_size(driver)
+print(f"设备尺寸: {size}")
+
+# 获取当前Activity（Android）
+activity = AppiumUtils.get_current_activity(driver)
+print(f"当前Activity: {activity}")
+
+# 获取当前包名（Android）
+package = AppiumUtils.get_current_package(driver)
+print(f"当前包名: {package}")
+
+# 启动应用
+AppiumUtils.launch_app(driver)
+
+# 关闭应用
+AppiumUtils.close_app(driver)
+
+# 重置应用
+AppiumUtils.reset_app(driver)
+
+# 将应用切换到后台
+AppiumUtils.background_app(driver, seconds=5)
+
+# ==================== 网络操作 ====================
+# 设置网络连接（仅WiFi）
+AppiumUtils.set_network_connection(driver, 2)
+
+# 获取网络连接状态
+network_status = AppiumUtils.get_network_connection(driver)
+print(f"网络状态: {network_status}")
+
+# ==================== GSM操作（Android） ====================
+# 模拟电话呼叫
+AppiumUtils.make_gsm_call(driver, "10086", "call")
+
+# 设置GSM信号强度
+AppiumUtils.set_gsm_signal(driver, "good")
+
+# 设置GSM语音状态
+AppiumUtils.set_gsm_voice(driver, "home")
+
+# ==================== 截图 ====================
+# 截取屏幕
+ screenshot_path = AppiumUtils.take_screenshot(driver, filename="app_screenshot.png")
+print(f"截图保存到: {screenshot_path}")
+
+# ==================== 关闭driver ====================
+AppiumUtils.close_driver(driver)
+
+# ==================== 使用AppiumElement ====================
+from btools import AppiumElement
+
+# 创建元素实例
+login_button = AppiumElement(driver, "id", "com.example.app:id/login_button")
+
+# 点击元素
+login_button.click()
+
+# 检查元素是否可见
+if login_button.is_visible():
+    print("登录按钮可见")
 ```
 
 ### CSVHandler

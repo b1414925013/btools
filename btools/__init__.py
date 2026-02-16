@@ -8,6 +8,9 @@ from .core.ssh import SSHClient
 from .core.csvhandler import CSVHandler
 from .core.excelhandler import ExcelHandler
 from .core.testutils import TestUtils, AssertEnhancer
+from .core.seleniumutils import SeleniumUtils, SeleniumElement
+from .core.playwrightutils import PlaywrightUtils, PlaywrightElement
+from .core.appiumutils import AppiumUtils, AppiumElement
 # 导出工具模块
 from .utils.validator import Validator
 from .utils.converter import Converter
@@ -20,6 +23,12 @@ __all__ = [
     "ExcelHandler",
     "TestUtils",
     "AssertEnhancer",
+    "SeleniumUtils",
+    "SeleniumElement",
+    "PlaywrightUtils",
+    "PlaywrightElement",
+    "AppiumUtils",
+    "AppiumElement",
     "Validator",
     "Converter"
 ]
