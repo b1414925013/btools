@@ -29,9 +29,13 @@ btools/
 │   │   ├── reflectutils.py     # 反射工具
 │   │   ├── exceptionutils.py   # 异常工具
 │   │   ├── convertutils.py     # 数据转换工具
-│   │   └── validatorutils.py   # 数据验证工具
+│   │   ├── validatorutils.py   # 数据验证工具
+│   │   └── beanutils.py        # Bean工具
 │   ├── system/       # 系统工具类
-│   │   └── systemutils.py      # 系统工具
+│   │   ├── systemutils.py      # 系统工具
+│   │   └── threadutils.py      # 线程工具
+│   ├── scheduler/     # 定时任务工具类
+│   │   └── scheduleutils.py    # 定时任务工具
 │   ├── network/      # 网络工具类
 │   │   ├── http.py             # HTTP客户端
 │   │   ├── ssh.py              # SSH客户端
@@ -45,11 +49,15 @@ btools/
 │   │   ├── csvhandler.py       # CSV文件处理
 │   │   ├── excelhandler.py     # Excel文件处理
 │   │   ├── encodeutils.py      # 编码工具
-│   │   └── regexutils.py       # 正则表达式工具
+│   │   ├── regexutils.py       # 正则表达式工具
+│   │   ├── jsonutils.py        # JSON工具
+│   │   └── jsonpathutils.py    # JSONPath工具
 │   ├── media/        # 媒体工具类
 │   │   ├── imageutils.py       # 图像处理
 │   │   ├── qrcodeutils.py      # 二维码工具
-│   │   └── compressutils.py    # 压缩工具
+│   │   ├── compressutils.py    # 压缩工具
+│   │   ├── captchautils.py     # 验证码工具
+│   │   └── wordutils.py        # Word文档工具
 │   ├── template/     # 模板和国际化
 │   │   ├── templateutils.py    # 模板工具
 │   │   └── i18nutils.py        # 国际化工具
@@ -82,9 +90,14 @@ btools/
 - **ExceptionUtils**: 异常工具，提供异常处理、转换等功能
 - **Converter**: 数据转换工具，提供各种数据类型的转换功能
 - **Validator**: 数据验证工具，提供常见类型和格式的数据验证功能
+- **BeanUtils**: Bean工具，提供对象属性复制、深拷贝、浅拷贝、对象转字典等功能
 
 #### 系统工具类 (system/)
 - **SystemUtils**: 系统工具，提供系统信息获取、进程管理等功能
+- **ThreadUtils**: 线程工具，提供线程创建、线程池、超时执行、线程本地存储等功能
+
+#### 定时任务工具类 (scheduler/)
+- **ScheduleUtils**: 定时任务工具，提供定时任务创建、管理、取消等功能
 
 #### 网络工具类 (network/)
 - **HTTPClient**: HTTP客户端，基于requests库实现，支持GET、POST等请求
@@ -101,11 +114,15 @@ btools/
 - **ExcelHandler**: Excel文件处理，支持Excel文件的读写和单元格更新
 - **EncodeUtils**: 编码工具，提供编码转换、Base64等功能
 - **RegexUtils**: 正则表达式工具，提供正则匹配、替换等功能
+- **JSONUtils**: JSON工具，提供增强的JSON处理、序列化、反序列化、路径操作等功能
+- **JSONPathUtils**: JSONPath工具，提供JSONPath解析、查询、更新、删除等功能
 
 #### 媒体工具类 (media/)
 - **ImageUtils**: 图像处理工具，提供图像处理、转换等功能
 - **QrCodeUtils**: 二维码工具，提供二维码生成、解析等功能
 - **CompressUtils**: 压缩工具，提供文件压缩、解压等功能
+- **CaptchaUtils**: 验证码工具，提供验证码生成、验证等功能
+- **WordUtils**: Word文档工具，提供Word文档创建、编辑、格式化等功能
 
 #### 模板和国际化 (template/)
 - **TemplateUtils**: 模板工具，提供模板渲染、替换等功能
@@ -278,9 +295,14 @@ driver.quit()
 - [ExceptionUtils使用指南](docs/usage/basic/exceptionutils.md)
 - [Converter使用指南](docs/usage/basic/converter.md)
 - [Validator使用指南](docs/usage/basic/validator.md)
+- [BeanUtils使用指南](docs/usage/basic/beanutils.md)
 
 #### 系统工具类
 - [SystemUtils使用指南](docs/usage/system/systemutils.md)
+- [ThreadUtils使用指南](docs/usage/system/threadutils.md)
+
+#### 定时任务工具类
+- [ScheduleUtils使用指南](docs/usage/scheduler/scheduleutils.md)
 
 #### 网络工具类
 - [HTTPClient使用指南](docs/usage/network/httpclient.md)
@@ -297,11 +319,15 @@ driver.quit()
 - [ExcelHandler使用指南](docs/usage/data/excelhandler.md)
 - [EncodeUtils使用指南](docs/usage/data/encodeutils.md)
 - [RegexUtils使用指南](docs/usage/data/regexutils.md)
+- [JSONUtils使用指南](docs/usage/data/jsonutils.md)
+- [JSONPathUtils使用指南](docs/usage/data/jsonpathutils.md)
 
 #### 媒体工具类
 - [ImageUtils使用指南](docs/usage/media/imageutils.md)
 - [QrCodeUtils使用指南](docs/usage/media/qrcodeutils.md)
 - [CompressUtils使用指南](docs/usage/media/compressutils.md)
+- [CaptchaUtils使用指南](docs/usage/media/captchautils.md)
+- [WordUtils使用指南](docs/usage/media/wordutils.md)
 
 #### 模板和国际化
 - [TemplateUtils使用指南](docs/usage/template/templateutils.md)
