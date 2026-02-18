@@ -30,7 +30,17 @@ btools/
 │   │   ├── exceptionutils.py   # 异常工具
 │   │   ├── convertutils.py     # 数据转换工具
 │   │   ├── validatorutils.py   # 数据验证工具
-│   │   └── beanutils.py        # Bean工具
+│   │   ├── beanutils.py        # Bean工具
+│   │   ├── resourceutils.py    # 资源工具
+│   │   ├── typeutils.py        # 泛型类型工具
+│   │   ├── clipboardutils.py   # 剪贴板工具
+│   │   ├── classutils.py       # 类工具
+│   │   ├── enumutils.py        # 枚举工具
+│   │   ├── runtimeutils.py     # 命令行工具
+│   │   ├── randomutils.py      # 随机工具
+│   │   ├── annotationutils.py  # 注解工具
+│   │   ├── htmlutils.py        # HTML工具
+│   │   └── proxyutils.py       # 切面代理工具
 │   ├── system/       # 系统工具类
 │   │   ├── systemutils.py      # 系统工具
 │   │   └── threadutils.py      # 线程工具
@@ -51,7 +61,8 @@ btools/
 │   │   ├── encodeutils.py      # 编码工具
 │   │   ├── regexutils.py       # 正则表达式工具
 │   │   ├── jsonutils.py        # JSON工具
-│   │   └── jsonpathutils.py    # JSONPath工具
+│   │   ├── jsonpathutils.py    # JSONPath工具
+│   │   └── xmlutils.py         # XML工具
 │   ├── media/        # 媒体工具类
 │   │   ├── imageutils.py       # 图像处理
 │   │   ├── qrcodeutils.py      # 二维码工具
@@ -92,6 +103,16 @@ btools/
 - **Converter**: 数据转换工具，提供各种数据类型的转换功能
 - **Validator**: 数据验证工具，提供常见类型和格式的数据验证功能
 - **BeanUtils**: Bean工具，提供对象属性复制、深拷贝、浅拷贝、对象转字典等功能
+- **ResourceUtils**: 资源工具，提供资源加载、读取等功能
+- **TypeUtils**: 泛型类型工具，提供类型相关操作功能
+- **ClipboardUtils**: 剪贴板工具，提供剪贴板操作功能
+- **ClassUtils**: 类工具，提供类相关操作功能
+- **EnumUtils**: 枚举工具，提供枚举相关操作功能
+- **RuntimeUtils**: 命令行工具，提供命令行执行功能
+- **RandomUtils**: 随机工具，提供随机数生成功能
+- **AnnotationUtils**: 注解工具，提供注解相关操作功能
+- **HtmlUtils**: HTML工具，提供HTML处理功能
+- **ProxyUtil**: 切面代理工具，提供代理相关功能
 
 #### 系统工具类 (system/)
 - **SystemUtils**: 系统工具，提供系统信息获取、进程管理等功能
@@ -117,6 +138,8 @@ btools/
 - **RegexUtils**: 正则表达式工具，提供正则匹配、替换等功能
 - **JSONUtils**: JSON工具，提供增强的JSON处理、序列化、反序列化、路径操作等功能
 - **JSONPathUtils**: JSONPath工具，提供JSONPath解析、查询、更新、删除等功能
+- **XmlUtils**: XML工具，提供XML解析、生成、转换、验证等功能，支持XML与字典/JSON的相互转换
+- **IOUtils**: IO工具，提供IO流的读写、复制、转换等功能，支持字节流和文本流操作
 
 #### 媒体工具类 (media/)
 - **ImageUtils**: 图像处理工具，提供图像处理、转换等功能
@@ -353,6 +376,16 @@ driver.quit()
 - [Converter使用指南](docs/usage/basic/converter.md)
 - [Validator使用指南](docs/usage/basic/validator.md)
 - [BeanUtils使用指南](docs/usage/basic/beanutils.md)
+- [ResourceUtils使用指南](docs/usage/basic/resourceutils.md)
+- [TypeUtils使用指南](docs/usage/basic/typeutils.md)
+- [ClipboardUtils使用指南](docs/usage/basic/clipboardutils.md)
+- [ClassUtils使用指南](docs/usage/basic/classutils.md)
+- [EnumUtils使用指南](docs/usage/basic/enumutils.md)
+- [RuntimeUtils使用指南](docs/usage/basic/runtimeutils.md)
+- [RandomUtils使用指南](docs/usage/basic/randomutils.md)
+- [AnnotationUtils使用指南](docs/usage/basic/annotationutils.md)
+- [HtmlUtils使用指南](docs/usage/basic/htmlutils.md)
+- [ProxyUtil使用指南](docs/usage/basic/proxyutils.md)
 
 #### 系统工具类
 - [SystemUtils使用指南](docs/usage/system/systemutils.md)
@@ -378,6 +411,7 @@ driver.quit()
 - [RegexUtils使用指南](docs/usage/data/regexutils.md)
 - [JSONUtils使用指南](docs/usage/data/jsonutils.md)
 - [JSONPathUtils使用指南](docs/usage/data/jsonpathutils.md)
+- [XmlUtils使用指南](docs/usage/data/xmlutils.md)
 
 #### 媒体工具类
 - [ImageUtils使用指南](docs/usage/media/imageutils.md)

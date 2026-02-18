@@ -7,6 +7,10 @@ from .csvhandler import CSVHandler
 from .excelhandler import ExcelHandler
 from .encodeutils import EncodeUtils
 from .regexutils import RegexUtils
+from .jsonutils import JSONUtils
+from .jsonpathutils import JSONPathUtils
+from .xmlutils import XmlUtils
+from .ioutils import IOUtils
 
 __all__ = [
     'FileUtils',
@@ -16,5 +20,9 @@ __all__ = [
     'CSVHandler',
     'ExcelHandler',
     'EncodeUtils',
-    'RegexUtils'
+    'RegexUtils',
+    'JSONUtils',
+    'JSONPathUtils',
+    'XmlUtils',
+    'IOUtils'
 ]

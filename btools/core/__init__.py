@@ -8,9 +8,12 @@ from .basic.reflectutils import ReflectUtils
 from .basic.exceptionutils import ExceptionUtils
 from .basic.convertutils import Converter
 from .basic.validatorutils import Validator
+from .basic.beanutils import BeanUtils
 
 # 系统工具类
 from .system.systemutils import SystemUtils
+from .system.threadutils import ThreadUtils
+from .scheduler.scheduleutils import ScheduleUtils
 
 # 网络工具类
 from .network.http import HTTPClient
@@ -27,11 +30,22 @@ from .data.csvhandler import CSVHandler
 from .data.excelhandler import ExcelHandler
 from .data.encodeutils import EncodeUtils
 from .data.regexutils import RegexUtils
+from .data.xmlutils import XmlUtils
+from .data.jsonutils import JSONUtils
+from .data.jsonpathutils import JSONPathUtils
+from .data.ioutils import IOUtils
 
 # 媒体工具类
 from .media.imageutils import ImageUtils
 from .media.qrcodeutils import QrCodeUtils
 from .media.compressutils import CompressUtils
+from .media.captchautils import CaptchaUtils
+# 可选导入WordUtils，因为它依赖python-docx
+WordUtils = None
+try:
+    from .media.wordutils import WordUtils
+except ImportError:
+    pass
 
 # 模板和国际化
 from .template.templateutils import TemplateUtils
@@ -69,9 +83,12 @@ __all__ = [
     'ExceptionUtils',
     'Converter',
     'Validator',
+    'BeanUtils',
     
     # 系统工具类
     'SystemUtils',
+    'ThreadUtils',
+    'ScheduleUtils',
     
     # 网络工具类
     'HTTPClient',
@@ -88,11 +105,16 @@ __all__ = [
     'ExcelHandler',
     'EncodeUtils',
     'RegexUtils',
+    'XmlUtils',
+    'JSONUtils',
+    'JSONPathUtils',
+    'IOUtils',
     
     # 媒体工具类
     'ImageUtils',
     'QrCodeUtils',
     'CompressUtils',
+    'CaptchaUtils',
     
     # 模板和国际化
     'TemplateUtils',
