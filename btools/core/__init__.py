@@ -51,6 +51,7 @@ from .automation.testutils import TestUtils
 from .automation.seleniumutils import SeleniumUtils
 from .automation.playwrightutils import PlaywrightUtils
 from .automation.appiumutils import AppiumUtils
+from .automation.fakerutils import FakerUtils
 
 # AI工具类
 from .ai.ai import AIUtils
@@ -111,6 +112,7 @@ __all__ = [
     'SeleniumUtils',
     'PlaywrightUtils',
     'AppiumUtils',
+    'FakerUtils',
     
     # AI工具类
     'AIUtils',

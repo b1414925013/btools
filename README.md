@@ -71,7 +71,8 @@ btools/
 │   │   ├── testutils.py        # 测试工具
 │   │   ├── seleniumutils.py    # Selenium自动化
 │   │   ├── playwrightutils.py  # Playwright自动化
-│   │   └── appiumutils.py      # Appium自动化
+│   │   ├── appiumutils.py      # Appium自动化
+│   │   └── fakerutils.py       # 测试数据生成工具
 │   └── ai/           # AI工具类
 │       └── ai.py               # AI工具
 │   └── api/          # API工具类
@@ -143,6 +144,7 @@ btools/
 - **SeleniumUtils**: 基于Selenium的Web自动化测试工具
 - **PlaywrightUtils**: 基于Playwright的Web自动化测试工具
 - **AppiumUtils**: 基于Appium的移动应用自动化测试工具
+- **FakerUtils**: 测试数据生成工具，提供类似Faker的测试数据生成功能，支持生成姓名、邮箱、手机号、地址、身份证号、银行卡号、IP地址、URL、User-Agent、用户信息、产品信息、订单信息等
 
 #### AI工具类 (ai/)
 - **AIUtils**: AI工具，提供AI模型调用、文本处理等功能
@@ -237,6 +239,61 @@ print(f"Random number: {random_num}")
 ```
 
 ### 高级用法示例
+
+#### 测试数据生成
+```python
+from btools import (
+    random_name, random_email, random_phone, random_address,
+    random_company, random_id_card, random_bank_card,
+    random_ip, random_url, random_user, random_product,
+    random_order, generate_test_data
+)
+
+# 生成随机姓名
+name = random_name()
+print(f"姓名: {name}")
+
+# 生成随机邮箱
+email = random_email()
+print(f"邮箱: {email}")
+
+# 生成随机手机号
+phone = random_phone()
+print(f"手机号: {phone}")
+
+# 生成随机地址
+address = random_address()
+print(f"地址: {address}")
+
+# 生成随机身份证号
+id_card = random_id_card()
+print(f"身份证号: {id_card}")
+
+# 生成随机用户信息
+user = random_user()
+print(f"用户信息: {user}")
+
+# 生成随机产品信息
+product = random_product()
+print(f"产品信息: {product}")
+
+# 生成随机订单信息
+order = random_order()
+print(f"订单信息: {order}")
+
+# 根据模板生成测试数据
+template = {
+    "name": "name",
+    "email": "email",
+    "phone": "phone",
+    "age": "integer",
+    "salary": "float",
+    "address": "address",
+    "company": "company"
+}
+data = generate_test_data(template)
+print(f"模板生成数据: {data}")
+```
 
 #### 文件处理
 ```python
@@ -348,6 +405,7 @@ driver.quit()
 - [SeleniumUtils使用指南](docs/usage/automation/seleniumutils.md)
 - [PlaywrightUtils使用指南](docs/usage/automation/playwrightutils.md)
 - [AppiumUtils使用指南](docs/usage/automation/appiumutils.md)
+- [FakerUtils使用指南](docs/usage/automation/fakerutils.md)
 
 #### AI工具类
 - [AIUtils使用指南](docs/usage/ai/ai.md)

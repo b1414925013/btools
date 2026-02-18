@@ -20,6 +20,7 @@ from .core import (
     AIUtils,
     Validator,
     Converter,
+    FakerUtils,
     FastAPIUtils,
     APIResponse,
     APIErrorResponse
@@ -43,6 +44,7 @@ __all__ = [
     "AIUtils",
     "Validator",
     "Converter",
+    "FakerUtils",
     "FastAPIUtils",
     "APIResponse",
     "APIErrorResponse"
