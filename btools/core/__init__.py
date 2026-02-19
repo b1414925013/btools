@@ -9,6 +9,7 @@ from .basic.exceptionutils import ExceptionUtils
 from .basic.convertutils import Converter
 from .basic.validatorutils import Validator
 from .basic.beanutils import BeanUtils
+from .basic.assertutils import AssertUtil
 
 # 系统工具类
 from .system.systemutils import SystemUtils
@@ -61,7 +62,6 @@ from .config.configutils import Config
 from .log.logutils import Logger
 
 # 自动化测试工具类
-from .automation.testutils import TestUtils
 from .automation.seleniumutils import SeleniumUtils
 from .automation.playwrightutils import PlaywrightUtils
 from .automation.appiumutils import AppiumUtils
@@ -84,6 +84,7 @@ __all__ = [
     'Converter',
     'Validator',
     'BeanUtils',
+    'AssertUtil',
     
     # 系统工具类
     'SystemUtils',
@@ -130,7 +131,6 @@ __all__ = [
     'Logger',
     
     # 自动化测试工具类
-    'TestUtils',
     'SeleniumUtils',
     'PlaywrightUtils',
     'AppiumUtils',

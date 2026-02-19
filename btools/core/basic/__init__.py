@@ -18,6 +18,7 @@ from .annotationutils import AnnotationUtil
 from .htmlutils import HtmlUtil
 from .decoratorutils import DecoratorUtil
 from .dictutils import DictUtil
+from .assertutils import AssertUtil
 
 __all__ = [
     'StringUtils',
@@ -38,5 +39,6 @@ __all__ = [
     'AnnotationUtil',
     'HtmlUtil',
     'DecoratorUtil',
-    'DictUtil'
+    'DictUtil',
+    'AssertUtil'
 ]

@@ -42,7 +42,8 @@ btools/
 │   │   ├── htmlutils.py        # HTML工具
 │   │   ├── proxyutils.py       # 切面代理工具
 │   │   ├── decoratorutils.py   # 装饰器工具
-│   │   └── dictutils.py        # 字典工具
+│   │   ├── dictutils.py        # 字典工具
+│   │   └── assertutils.py      # 断言工具
 │   ├── system/       # 系统工具类
 │   │   ├── systemutils.py      # 系统工具
 │   │   └── threadutils.py      # 线程工具
@@ -117,6 +118,7 @@ btools/
 - **ProxyUtil**: 切面代理工具，提供代理相关功能
 - **DecoratorUtil**: 装饰器工具，提供装饰器创建和管理功能
 - **DictUtil**: 字典工具，提供字典相关的便捷操作，类似Hutool的MapUtil
+- **AssertUtil**: 断言工具，提供丰富的断言方法，包括字符串、JSON、HTTP响应等断言功能
 
 #### 系统工具类 (system/)
 - **SystemUtils**: 系统工具，提供系统信息获取、进程管理等功能
@@ -166,8 +168,6 @@ btools/
 - **Logger**: 日志记录工具，提供多级别日志、文件输出等功能
 
 #### 自动化测试工具类 (automation/)
-- **TestUtils**: 自动化测试工具，提供测试数据生成、测试报告生成等功能
-- **AssertEnhancer**: 断言增强工具，提供更强大的断言方法
 - **SeleniumUtils**: 基于Selenium的Web自动化测试工具
 - **PlaywrightUtils**: 基于Playwright的Web自动化测试工具
 - **AppiumUtils**: 基于Appium的移动应用自动化测试工具
@@ -350,10 +350,10 @@ print(excel_data)
 
 #### 自动化测试
 ```python
-from btools import TestUtils, SeleniumUtils
+from btools import SeleniumUtils, FakerUtils
 
-# 使用TestUtils - 测试数据生成
-test_data = TestUtils.generate_random_string(10)
+# 使用FakerUtils - 测试数据生成
+test_data = FakerUtils.random_string(10)
 print(f"Generated test data: {test_data}")
 
 # 使用SeleniumUtils - Web自动化测试
@@ -392,6 +392,7 @@ driver.quit()
 - [ProxyUtil使用指南](docs/usage/basic/proxyutils.md)
 - [DecoratorUtil使用指南](docs/usage/basic/decoratorutils.md)
 - [DictUtil使用指南](docs/usage/basic/dictutils.md)
+- [AssertUtil使用指南](docs/usage/basic/assertutils.md)
 
 #### 系统工具类
 - [SystemUtils使用指南](docs/usage/system/systemutils.md)
@@ -440,8 +441,7 @@ driver.quit()
 - [Logger使用指南](docs/usage/log/logutils.md)
 
 #### 自动化测试工具类
-- [TestUtils使用指南](docs/usage/automation/testutils.md)
-- [AssertEnhancer使用指南](docs/usage/automation/assertenhancer.md)
+
 - [SeleniumUtils使用指南](docs/usage/automation/seleniumutils.md)
 - [PlaywrightUtils使用指南](docs/usage/automation/playwrightutils.md)
 - [AppiumUtils使用指南](docs/usage/automation/appiumutils.md)
