@@ -17,6 +17,7 @@ from .randomutils import RandomUtil
 from .annotationutils import AnnotationUtil
 from .htmlutils import HtmlUtil
 from .decoratorutils import DecoratorUtil
+from .dictutils import DictUtil
 
 __all__ = [
     'StringUtils',
@@ -36,5 +37,6 @@ __all__ = [
     'RandomUtil',
     'AnnotationUtil',
     'HtmlUtil',
-    'DecoratorUtil'
+    'DecoratorUtil',
+    'DictUtil'
 ]
