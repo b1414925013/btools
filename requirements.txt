@@ -48,7 +48,7 @@ psutil~=5.9.0
 Pillow~=9.5.0
 
 # 数组处理
-numpy~=1.24.0
+numpy~=1.24.4
 
 # 二维码处理
 qrcode[pil]~=7.4.2
