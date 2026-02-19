@@ -40,7 +40,8 @@ btools/
 │   │   ├── randomutils.py      # 随机工具
 │   │   ├── annotationutils.py  # 注解工具
 │   │   ├── htmlutils.py        # HTML工具
-│   │   └── proxyutils.py       # 切面代理工具
+│   │   ├── proxyutils.py       # 切面代理工具
+│   │   └── decoratorutils.py   # 装饰器工具
 │   ├── system/       # 系统工具类
 │   │   ├── systemutils.py      # 系统工具
 │   │   └── threadutils.py      # 线程工具
@@ -113,6 +114,7 @@ btools/
 - **AnnotationUtils**: 注解工具，提供注解相关操作功能
 - **HtmlUtils**: HTML工具，提供HTML处理功能
 - **ProxyUtil**: 切面代理工具，提供代理相关功能
+- **DecoratorUtil**: 装饰器工具，提供装饰器创建和管理功能
 
 #### 系统工具类 (system/)
 - **SystemUtils**: 系统工具，提供系统信息获取、进程管理等功能
@@ -386,6 +388,7 @@ driver.quit()
 - [AnnotationUtils使用指南](docs/usage/basic/annotationutils.md)
 - [HtmlUtils使用指南](docs/usage/basic/htmlutils.md)
 - [ProxyUtil使用指南](docs/usage/basic/proxyutils.md)
+- [DecoratorUtil使用指南](docs/usage/basic/decoratorutils.md)
 
 #### 系统工具类
 - [SystemUtils使用指南](docs/usage/system/systemutils.md)

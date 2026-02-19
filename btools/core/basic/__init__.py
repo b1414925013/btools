@@ -16,6 +16,7 @@ from .runtimeutils import RuntimeUtil
 from .randomutils import RandomUtil
 from .annotationutils import AnnotationUtil
 from .htmlutils import HtmlUtil
+from .decoratorutils import DecoratorUtil
 
 __all__ = [
     'StringUtils',
@@ -34,5 +35,6 @@ __all__ = [
     'RuntimeUtil',
     'RandomUtil',
     'AnnotationUtil',
-    'HtmlUtil'
+    'HtmlUtil',
+    'DecoratorUtil'
 ]
