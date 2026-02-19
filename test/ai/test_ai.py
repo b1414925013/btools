@@ -1,6 +1,6 @@
 """测试AIUtils类"""
 import unittest
-from btools.core.ai.ai import AIUtils
+from btools.core.ai.aiutils import AIUtils
 
 
 class TestAIUtils(unittest.TestCase):

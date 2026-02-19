@@ -1,5 +1,5 @@
 # Config utilities
-from .config import Config
+from .configutils import Config
 
 __all__ = [
     'Config'

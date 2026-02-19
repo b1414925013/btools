@@ -49,17 +49,17 @@ btools/
 │   ├── scheduler/     # 定时任务工具类
 │   │   └── scheduleutils.py    # 定时任务工具
 │   ├── network/      # 网络工具类
-│   │   ├── http.py             # HTTP客户端
-│   │   ├── ssh.py              # SSH客户端
+│   │   ├── httputils.py         # HTTP客户端
+│   │   ├── sshutils.py          # SSH客户端
 │   │   ├── netutils.py         # 网络工具
 │   │   └── mailutils.py        # 邮件工具
 │   ├── data/         # 数据处理工具类
 │   │   ├── fileutils.py        # 文件工具
 │   │   ├── datetimeutils.py    # 日期时间工具
-│   │   ├── crypto.py           # 加密工具
-│   │   ├── database.py         # 数据库工具
-│   │   ├── csvhandler.py       # CSV文件处理
-│   │   ├── excelhandler.py     # Excel文件处理
+│   │   ├── cryptoutils.py      # 加密工具
+│   │   ├── databaseutils.py    # 数据库工具
+│   │   ├── csvhandlerutils.py  # CSV文件处理
+│   │   ├── excelhandlerutils.py # Excel文件处理
 │   │   ├── encodeutils.py      # 编码工具
 │   │   ├── regexutils.py       # 正则表达式工具
 │   │   ├── jsonutils.py        # JSON工具
@@ -75,11 +75,11 @@ btools/
 │   │   ├── templateutils.py    # 模板工具
 │   │   └── i18nutils.py        # 国际化工具
 │   ├── cache/        # 缓存工具类
-│   │   └── cache.py            # 缓存工具
+│   │   └── cacheutils.py       # 缓存工具
 │   ├── config/       # 配置工具类
-│   │   └── config.py           # 配置管理
+│   │   └── configutils.py      # 配置管理
 │   ├── log/          # 日志工具类
-│   │   └── logger.py           # 日志记录
+│   │   └── loggerutils.py      # 日志记录
 │   ├── automation/   # 自动化测试工具类
 │   │   ├── testutils.py        # 测试工具
 │   │   ├── seleniumutils.py    # Selenium自动化
@@ -87,7 +87,7 @@ btools/
 │   │   ├── appiumutils.py      # Appium自动化
 │   │   └── fakerutils.py       # 测试数据生成工具
 │   └── ai/           # AI工具类
-│       └── ai.py               # AI工具
+│       └── aiutils.py          # AI工具
 │   └── api/          # API工具类
 │       └── fastapiutils.py     # FastAPI工具
 └── __init__.py       # 包初始化文件
@@ -401,18 +401,18 @@ driver.quit()
 - [ScheduleUtils使用指南](docs/usage/scheduler/scheduleutils.md)
 
 #### 网络工具类
-- [HTTPClient使用指南](docs/usage/network/httpclient.md)
-- [SSHClient使用指南](docs/usage/network/sshclient.md)
+- [HTTPClient使用指南](docs/usage/network/httpclientutils.md)
+- [SSHClient使用指南](docs/usage/network/sshclientutils.md)
 - [NetUtils使用指南](docs/usage/network/netutils.md)
 - [MailUtils使用指南](docs/usage/network/mailutils.md)
 
 #### 数据处理工具类
 - [FileUtils使用指南](docs/usage/data/fileutils.md)
 - [DateTimeUtils使用指南](docs/usage/data/datetimeutils.md)
-- [CryptoUtils使用指南](docs/usage/data/crypto.md)
-- [DatabaseUtils使用指南](docs/usage/data/database.md)
-- [CSVHandler使用指南](docs/usage/data/csvhandler.md)
-- [ExcelHandler使用指南](docs/usage/data/excelhandler.md)
+- [CryptoUtils使用指南](docs/usage/data/cryptoutils.md)
+- [DatabaseUtils使用指南](docs/usage/data/databaseutils.md)
+- [CSVHandler使用指南](docs/usage/data/csvhandlerutils.md)
+- [ExcelHandler使用指南](docs/usage/data/excelhandlerutils.md)
 - [EncodeUtils使用指南](docs/usage/data/encodeutils.md)
 - [RegexUtils使用指南](docs/usage/data/regexutils.md)
 - [JSONUtils使用指南](docs/usage/data/jsonutils.md)
@@ -431,13 +431,13 @@ driver.quit()
 - [I18nUtils使用指南](docs/usage/template/i18nutils.md)
 
 #### 缓存工具类
-- [CacheUtils使用指南](docs/usage/cache/cache.md)
+- [CacheUtils使用指南](docs/usage/cache/cacheutils.md)
 
 #### 配置工具类
-- [Config使用指南](docs/usage/config/config.md)
+- [Config使用指南](docs/usage/config/configutils.md)
 
 #### 日志工具类
-- [Logger使用指南](docs/usage/log/logger.md)
+- [Logger使用指南](docs/usage/log/loggerutils.md)
 
 #### 自动化测试工具类
 - [TestUtils使用指南](docs/usage/automation/testutils.md)
@@ -448,7 +448,7 @@ driver.quit()
 - [FakerUtils使用指南](docs/usage/automation/fakerutils.md)
 
 #### AI工具类
-- [AIUtils使用指南](docs/usage/ai/ai.md)
+- [AIUtils使用指南](docs/usage/ai/aiutils.md)
 
 #### API工具类
 - [FastAPIUtils使用指南](docs/usage/api/fastapiutils.md)

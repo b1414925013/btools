@@ -1,5 +1,5 @@
 # Log utilities
-from .logger import Logger
+from .loggerutils import Logger
 
 __all__ = [
     'Logger'

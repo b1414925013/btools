@@ -5,7 +5,7 @@
 import unittest
 import tempfile
 import os
-from btools.core.data.crypto import (
+from btools.core.data.cryptoutils import (
     CryptoUtils, md5, sha1, sha256, sha512, hmac_md5, hmac_sha256,
     base64_encode, base64_decode, generate_rsa_keys, rsa_encrypt, rsa_decrypt,
     generate_aes_key, aes_encrypt, aes_decrypt, password_hash, verify_password,

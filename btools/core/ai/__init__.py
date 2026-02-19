@@ -1,5 +1,5 @@
 # AI工具类
-from .ai import AIUtils
+from .aiutils import AIUtils
 
 __all__ = [
     'AIUtils'

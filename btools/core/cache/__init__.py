@@ -1,5 +1,5 @@
 # Cache utilities
-from .cache import CacheUtils
+from .cacheutils import CacheUtils
 
 __all__ = [
     'CacheUtils'

@@ -1,6 +1,6 @@
 # Network utilities
-from .http import HTTPClient
-from .ssh import SSHClient
+from .httputils import HTTPClient
+from .sshutils import SSHClient
 from .netutils import NetUtils
 from .mailutils import MailUtils
 

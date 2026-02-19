@@ -2,7 +2,7 @@
 import unittest
 import os
 import tempfile
-from btools.core.data.csvhandler import CSVHandler
+from btools.core.data.csvhandlerutils import CSVHandler
 
 
 class TestCSVHandler(unittest.TestCase):

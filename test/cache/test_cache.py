@@ -2,7 +2,7 @@
 import unittest
 import os
 import tempfile
-from btools.core.cache.cache import CacheUtils
+from btools.core.cache.cacheutils import CacheUtils
 
 
 class TestCacheUtils(unittest.TestCase):

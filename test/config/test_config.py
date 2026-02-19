@@ -2,7 +2,7 @@
 import unittest
 import os
 import tempfile
-from btools.core.config.config import Config
+from btools.core.config.configutils import Config
 
 
 class TestConfig(unittest.TestCase):
