@@ -2,7 +2,7 @@
 import unittest
 import os
 import tempfile
-from btools.core.data.excelhandlerutils import ExcelHandler
+from btools.core.data.excelutils import ExcelHandler
 
 
 class TestExcelHandler(unittest.TestCase):

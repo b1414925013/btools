@@ -2,7 +2,7 @@
 import unittest
 import os
 import tempfile
-from btools.core.log.loggerutils import Logger
+from btools.core.log.logutils import Logger
 
 
 class TestLogger(unittest.TestCase):
