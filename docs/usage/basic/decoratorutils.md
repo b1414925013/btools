@@ -13,6 +13,53 @@
 
 ## 基本用法
 
+### 基础装饰器创建
+
+`createDecorator` 方法用于创建一个简单的基础装饰器，它会保留原始函数的元数据并直接调用原始函数，不添加任何额外功能。
+
+```python
+from btools.core.basic.decoratorutils import DecoratorUtil
+
+# 定义一个普通函数
+def greet(name):
+    """问候函数"""
+    return f"Hello, {name}!"
+
+# 使用 createDecorator 创建装饰器
+greet_decorator = DecoratorUtil.createDecorator(greet)
+
+# 使用装饰器
+result = greet_decorator("World")
+print(result)  # 输出: Hello, World!
+print(f"装饰器名称: {greet_decorator.__name__}")  # 输出: greet
+print(f"装饰器文档: {greet_decorator.__doc__}")  # 输出: 问候函数
+```
+
+### 作为装饰器工厂使用
+
+```python
+from btools.core.basic.decoratorutils import DecoratorUtil
+
+# 定义一个装饰器函数
+def make_bold(func):
+    """将文本变为粗体的装饰器"""
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+        return f"<b>{result}</b>"
+    return wrapper
+
+# 使用 createDecorator 创建装饰器
+bold_decorator = DecoratorUtil.createDecorator(make_bold)
+
+# 使用装饰器
+@bold_decorator
+def get_greeting(name):
+    return f"Hello, {name}!"
+
+result = get_greeting("Alice")
+print(result)  # 输出: <b>Hello, Alice!</b>
+```
+
 ### 计时装饰器
 
 ```python
