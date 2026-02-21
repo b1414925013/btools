@@ -78,19 +78,41 @@ btools/
 │   ├── cache/        # 缓存工具类
 │   │   └── cacheutils.py       # 缓存工具
 │   ├── config/       # 配置工具类
-│   │   └── configutils.py      # 配置管理
+│   │   ├── configutils.py      # 配置管理
+│   │   ├── environmentutils.py # 环境变量管理
+│   │   └── secretsutils.py     # 密钥管理
 │   ├── log/          # 日志工具类
 │   │   └── logutils.py          # 日志记录
 │   ├── automation/   # 自动化测试工具类
-│   │   ├── testutils.py        # 测试工具
 │   │   ├── seleniumutils.py    # Selenium自动化
 │   │   ├── playwrightutils.py  # Playwright自动化
 │   │   ├── appiumutils.py      # Appium自动化
 │   │   └── fakerutils.py       # 测试数据生成工具
-│   └── ai/           # AI工具类
-│       └── aiutils.py          # AI工具
-│   └── api/          # API工具类
-│       └── fastapiutils.py     # FastAPI工具
+│   ├── ai/           # AI工具类
+│   │   └── aiutils.py          # AI工具
+│   ├── api/          # API工具类
+│   │   └── fastapiutils.py     # FastAPI工具
+│   ├── project/      # 项目管理工具类
+│   │   ├── projectutils.py     # 项目结构管理、依赖分析
+│   │   └── gitutils.py         # Git操作封装
+│   ├── container/    # 容器化支持工具类
+│   │   ├── dockerutils.py      # Docker操作封装
+│   │   └── kubernetesutils.py  # Kubernetes资源管理
+│   ├── release/      # 打包与发布工具类
+│   │   ├── packagingutils.py   # 打包工具
+│   │   ├── releaseutils.py     # 发布工具
+│   │   └── distributionutils.py # 分发工具
+│   ├── test/         # 高级测试工具类
+│   │   ├── performancetestutils.py # 性能测试工具
+│   │   ├── loadtestutils.py    # 负载测试工具
+│   │   ├── mockutils.py        # 高级模拟工具
+│   │   └── contracttestutils.py # 契约测试工具
+│   └── system/       # 系统工具类
+│       ├── systemutils.py      # 系统工具
+│       ├── threadutils.py      # 线程工具
+│       ├── pathutils.py        # 跨平台路径处理
+│       ├── platformutils.py    # 跨平台兼容工具
+│       └── processutils.py     # 跨平台进程管理
 └── __init__.py       # 包初始化文件
 ```
 
@@ -163,6 +185,8 @@ btools/
 
 #### 配置工具类 (config/)
 - **Config**: 配置管理，支持JSON和YAML文件，提供配置读写、监听等功能
+- **EnvironmentUtils**: 环境变量管理，提供环境变量读取、设置、不同环境配置切换等功能
+- **SecretsUtils**: 密钥管理，提供安全存储和访问敏感信息的功能
 
 #### 日志工具类 (log/)
 - **Logger**: 日志记录工具，提供多级别日志、文件输出等功能
@@ -178,6 +202,32 @@ btools/
 
 #### API工具类 (api/)
 - **FastAPIUtils**: FastAPI工具，提供应用创建、路由器管理、CORS配置、异常处理、响应格式化等功能
+
+#### 项目管理工具类 (project/)
+- **ProjectUtils**: 项目结构管理、依赖分析、版本管理
+- **GitUtils**: Git操作封装，提供分支管理、提交规范检查等功能
+
+#### 容器化支持工具类 (container/)
+- **DockerUtils**: Docker操作封装，提供镜像构建、容器管理等功能
+- **KubernetesUtils**: Kubernetes资源管理，提供部署、扩缩容操作等功能
+
+#### 打包与发布工具类 (release/)
+- **PackagingUtils**: 打包工具，支持wheel、egg、sdist等格式
+- **ReleaseUtils**: 发布工具，提供自动化版本号管理、CHANGELOG生成等功能
+- **DistributionUtils**: 分发工具，支持上传到PyPI、私有仓库等
+
+#### 高级测试工具类 (test/)
+- **PerformanceTestUtils**: 性能测试工具，测量执行时间、内存使用等
+- **LoadTestUtils**: 负载测试工具，模拟并发请求
+- **MockUtils**: 高级模拟工具，支持复杂对象和行为模拟
+- **ContractTestUtils**: 契约测试工具，确保服务间接口一致性
+
+#### 系统工具类 (system/)
+- **SystemUtils**: 系统工具，提供系统信息获取、进程管理等功能
+- **ThreadUtils**: 线程工具，提供线程创建、线程池、超时执行、线程本地存储等功能
+- **PathUtils**: 跨平台路径处理，统一路径格式
+- **PlatformUtils**: 跨平台兼容工具，处理不同OS的差异
+- **ProcessUtils**: 跨平台进程管理，提供启动、监控、终止进程等功能
 
 ## 安装
 
@@ -436,6 +486,8 @@ driver.quit()
 
 #### 配置工具类
 - [Config使用指南](docs/usage/config/configutils.md)
+- [EnvironmentUtils使用指南](docs/usage/config/environmentutils.md)
+- [SecretsUtils使用指南](docs/usage/config/secretsutils.md)
 
 #### 日志工具类
 - [Logger使用指南](docs/usage/log/logutils.md)
@@ -452,6 +504,32 @@ driver.quit()
 
 #### API工具类
 - [FastAPIUtils使用指南](docs/usage/api/fastapiutils.md)
+
+#### 项目管理工具类
+- [ProjectUtils使用指南](docs/usage/project/projectutils.md)
+- [GitUtils使用指南](docs/usage/project/gitutils.md)
+
+#### 容器化支持工具类
+- [DockerUtils使用指南](docs/usage/container/dockerutils.md)
+- [KubernetesUtils使用指南](docs/usage/container/kubernetesutils.md)
+
+#### 打包与发布工具类
+- [PackagingUtils使用指南](docs/usage/release/packagingutils.md)
+- [ReleaseUtils使用指南](docs/usage/release/releaseutils.md)
+- [DistributionUtils使用指南](docs/usage/release/distributionutils.md)
+
+#### 高级测试工具类
+- [PerformanceTestUtils使用指南](docs/usage/test/performancetestutils.md)
+- [LoadTestUtils使用指南](docs/usage/test/loadtestutils.md)
+- [MockUtils使用指南](docs/usage/test/mockutils.md)
+- [ContractTestUtils使用指南](docs/usage/test/contracttestutils.md)
+
+#### 系统工具类
+- [SystemUtils使用指南](docs/usage/system/systemutils.md)
+- [ThreadUtils使用指南](docs/usage/system/threadutils.md)
+- [PathUtils使用指南](docs/usage/system/pathutils.md)
+- [PlatformUtils使用指南](docs/usage/system/platformutils.md)
+- [ProcessUtils使用指南](docs/usage/system/processutils.md)
 
 ### 开发指南
 - [如何打包](docs/guides/how-to-package.md)
