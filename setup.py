@@ -20,6 +20,7 @@ setup(
     python_requires='>=3.8',
     install_requires=[
         'pyyaml~=6.0.3',
+        'python-dotenv~=1.0.0',
         'requests~=2.32.4',
         'requests-toolbelt~=1.0.0',
         'requests-cache~=1.3.0',
