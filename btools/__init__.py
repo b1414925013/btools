@@ -46,7 +46,19 @@ from .core import (
     SystemUtils,
     TemplateUtils,
     I18nUtils,
-    IOUtils
+    IOUtils,
+    ResourceUtils,
+    TypeUtils,
+    ClipboardUtils,
+    ClassUtils,
+    EnumUtil,
+    RuntimeUtil,
+    RandomUtil,
+    AnnotationUtil,
+    HtmlUtil,
+    DecoratorUtil,
+    DictUtil,
+    AssertUtil
 )
 __all__ = [
     "Logger",
@@ -93,5 +105,17 @@ __all__ = [
     "SystemUtils",
     "TemplateUtils",
     "I18nUtils",
-    "IOUtils"
+    "IOUtils",
+    "ResourceUtils",
+    "TypeUtils",
+    "ClipboardUtils",
+    "ClassUtils",
+    "EnumUtil",
+    "RuntimeUtil",
+    "RandomUtil",
+    "AnnotationUtil",
+    "HtmlUtil",
+    "DecoratorUtil",
+    "DictUtil",
+    "AssertUtil"
 ]

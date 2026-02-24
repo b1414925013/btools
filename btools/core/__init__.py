@@ -10,6 +10,17 @@ from .basic.convertutils import Converter
 from .basic.validatorutils import Validator
 from .basic.beanutils import BeanUtils
 from .basic.assertutils import AssertUtil
+from .basic.resourceutils import ResourceUtils
+from .basic.typeutils import TypeUtils
+from .basic.clipboardutils import ClipboardUtils
+from .basic.classutils import ClassUtils
+from .basic.enumutils import EnumUtil
+from .basic.runtimeutils import RuntimeUtil
+from .basic.randomutils import RandomUtil
+from .basic.annotationutils import AnnotationUtil
+from .basic.htmlutils import HtmlUtil
+from .basic.decoratorutils import DecoratorUtil
+from .basic.dictutils import DictUtil
 
 # 系统工具类
 from .system.systemutils import SystemUtils
@@ -85,6 +96,17 @@ __all__ = [
     'Validator',
     'BeanUtils',
     'AssertUtil',
+    'ResourceUtils',
+    'TypeUtils',
+    'ClipboardUtils',
+    'ClassUtils',
+    'EnumUtil',
+    'RuntimeUtil',
+    'RandomUtil',
+    'AnnotationUtil',
+    'HtmlUtil',
+    'DecoratorUtil',
+    'DictUtil',
     
     # 系统工具类
     'SystemUtils',
