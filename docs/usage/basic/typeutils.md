@@ -19,10 +19,6 @@
 
 ```python
 from btools import TypeUtils
-# 或
-from btools.core import TypeUtils
-# 或
-from btools.core.basic import TypeUtils
 ```
 
 ### 示例

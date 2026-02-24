@@ -20,10 +20,6 @@
 
 ```python
 from btools import ClassUtils
-# 或
-from btools.core import ClassUtils
-# 或
-from btools.core.basic import ClassUtils
 ```
 
 ### 示例

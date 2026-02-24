@@ -7,7 +7,7 @@
 """
 import subprocess
 import os
-from typing import Optional, Dict, Tuple
+from typing import Optional, Dict, Tuple, List
 
 
 class DistributionUtils:
@@ -16,7 +16,7 @@ class DistributionUtils:
     """
 
     @staticmethod
-    def run_python_command(cmd: list) -> tuple[int, str, str]:
+    def run_python_command(cmd: List) -> Tuple[int, str, str]:
         """
         运行 Python 命令
 

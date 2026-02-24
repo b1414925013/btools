@@ -17,10 +17,6 @@
 
 ```python
 from btools import ClipboardUtils
-# 或
-from btools.core import ClipboardUtils
-# 或
-from btools.core.basic import ClipboardUtils
 ```
 
 ### 示例

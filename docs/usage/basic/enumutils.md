@@ -18,7 +18,7 @@
 ### 导入模块
 
 ```python
-from btools.core.basic import EnumUtil
+from btools import EnumUtil
 import enum
 ```
 

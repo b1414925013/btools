@@ -6,8 +6,6 @@
 
 ```python
 from btools import CollectionUtils
-# 或
-from btools.core import CollectionUtils
 ```
 
 ## 核心功能

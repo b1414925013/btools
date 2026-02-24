@@ -6,8 +6,6 @@
 
 ```python
 from btools import StringUtils
-# 或
-from btools.core import StringUtils
 ```
 
 ## 核心功能

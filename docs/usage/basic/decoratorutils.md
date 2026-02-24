@@ -18,7 +18,7 @@
 `createDecorator` 方法用于创建一个简单的基础装饰器，它会保留原始函数的元数据并直接调用原始函数，不添加任何额外功能。
 
 ```python
-from btools.core.basic.decoratorutils import DecoratorUtil
+from btools import DecoratorUtil
 
 # 定义一个普通函数
 def greet(name):
@@ -38,7 +38,7 @@ print(f"装饰器文档: {greet_decorator.__doc__}")  # 输出: 问候函数
 ### 作为装饰器工厂使用
 
 ```python
-from btools.core.basic.decoratorutils import DecoratorUtil
+from btools import DecoratorUtil
 
 # 定义一个装饰器函数
 def make_bold(func):
@@ -63,7 +63,7 @@ print(result)  # 输出: <b>Hello, Alice!</b>
 ### 计时装饰器
 
 ```python
-from btools.core.basic.decoratorutils import DecoratorUtil
+from btools import DecoratorUtil
 
 # 创建计时装饰器
 timer_decorator = DecoratorUtil.createTimerDecorator()
@@ -84,7 +84,7 @@ print(result)
 ### 日志装饰器
 
 ```python
-from btools.core.basic.decoratorutils import DecoratorUtil
+from btools import DecoratorUtil
 
 # 创建日志装饰器
 logging_decorator = DecoratorUtil.createLoggingDecorator()
@@ -111,7 +111,7 @@ except Exception as e:
 ### 缓存装饰器
 
 ```python
-from btools.core.basic.decoratorutils import DecoratorUtil
+from btools import DecoratorUtil
 
 # 创建缓存装饰器
 cache_decorator = DecoratorUtil.createCacheDecorator()
@@ -136,7 +136,7 @@ print(f"结果2: {result2}")
 ### 重试装饰器
 
 ```python
-from btools.core.basic.decoratorutils import DecoratorUtil
+from btools import DecoratorUtil
 
 # 创建重试装饰器
 retry_decorator = DecoratorUtil.createRetryDecorator(max_retries=3, delay=0.5)
@@ -157,7 +157,7 @@ print(f"结果: {result}")
 ### 单例装饰器
 
 ```python
-from btools.core.basic.decoratorutils import DecoratorUtil
+from btools import DecoratorUtil
 
 # 创建单例装饰器
 singleton_decorator = DecoratorUtil.createSingletonDecorator()
@@ -184,7 +184,7 @@ print(f"db2 连接字符串: {db2.connection_string}")  # 仍然是第一次的�
 ### 过时警告装饰器
 
 ```python
-from btools.core.basic.decoratorutils import DecoratorUtil
+from btools import DecoratorUtil
 
 # 创建过时警告装饰器
 deprecation_decorator = DecoratorUtil.createDeprecationDecorator("此方法已过时，请使用 new_function() 代替")
@@ -202,7 +202,7 @@ print(result)
 ### 权限检查装饰器
 
 ```python
-from btools.core.basic.decoratorutils import DecoratorUtil
+from btools import DecoratorUtil
 
 # 创建权限检查装饰器
 permission_decorator = DecoratorUtil.createPermissionDecorator("admin")
@@ -237,7 +237,7 @@ except PermissionError as e:
 ### 速率限制装饰器
 
 ```python
-from btools.core.basic.decoratorutils import DecoratorUtil, RateLimitError
+from btools import DecoratorUtil, RateLimitError
 
 # 创建速率限制装饰器（1秒内最多调用2次）
 rate_limit_decorator = DecoratorUtil.createRateLimitDecorator(max_calls=2, period=1)
@@ -261,7 +261,7 @@ except RateLimitError as e:
 ### 组合多个装饰器
 
 ```python
-from btools.core.basic.decoratorutils import DecoratorUtil
+from btools import DecoratorUtil
 
 # 创建多个装饰器
 timer_decorator = DecoratorUtil.createTimerDecorator()
@@ -286,7 +286,7 @@ print(complex_function(10, 20))  # 第二次执行，会从缓存获取，仍然
 ### 检查装饰器
 
 ```python
-from btools.core.basic.decoratorutils import DecoratorUtil
+from btools import DecoratorUtil
 
 # 创建装饰器
 timer_decorator = DecoratorUtil.createTimerDecorator()
@@ -311,7 +311,7 @@ print(f"原始函数名: {original_function.__name__}")
 ### 获取装饰器链
 
 ```python
-from btools.core.basic.decoratorutils import DecoratorUtil
+from btools import DecoratorUtil
 
 # 创建装饰器
 timer_decorator = DecoratorUtil.createTimerDecorator()
@@ -332,7 +332,7 @@ print(f"函数名列表: {[func.__name__ for func in chain]}")
 ### 条件装饰器
 
 ```python
-from btools.core.basic.decoratorutils import DecoratorUtil
+from btools import DecoratorUtil
 
 # 创建条件函数
 def should_cache(args, kwargs):
@@ -372,7 +372,7 @@ print(f"调用次数: {call_count}")
 ## 自定义装饰器
 
 ```python
-from btools.core.basic.decoratorutils import DecoratorUtil
+from btools import DecoratorUtil
 
 # 定义装饰器函数
 def custom_decorator(func):
@@ -409,7 +409,7 @@ print(result)
 ## 完整示例
 
 ```python
-from btools.core.basic.decoratorutils import DecoratorUtil
+from btools import DecoratorUtil
 
 # 创建各种装饰器
 timer_decorator = DecoratorUtil.createTimerDecorator()

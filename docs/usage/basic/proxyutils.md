@@ -16,7 +16,7 @@
 ### 创建动态代理
 
 ```python
-from btools.core.basic.proxyutils import ProxyUtil
+from btools import ProxyUtil
 
 # 定义一个目标类
 class Calculator:
@@ -44,7 +44,7 @@ print(f"结果: {result}")
 ### 创建切面
 
 ```python
-from btools.core.basic.proxyutils import ProxyUtil
+from btools import ProxyUtil
 
 # 定义一个目标类
 class Calculator:
@@ -78,7 +78,7 @@ print(f"结果: {result}")
 ### 计时切面
 
 ```python
-from btools.core.basic.proxyutils import ProxyUtil
+from btools import ProxyUtil
 
 # 定义一个目标类
 class Calculator:
@@ -99,7 +99,7 @@ print(f"结果: {result}")
 ### 日志切面
 
 ```python
-from btools.core.basic.proxyutils import ProxyUtil
+from btools import ProxyUtil
 
 # 定义一个目标类
 class Calculator:
@@ -118,7 +118,7 @@ print(f"结果: {result}")
 ### 事务切面
 
 ```python
-from btools.core.basic.proxyutils import ProxyUtil
+from btools import ProxyUtil
 
 # 定义一个目标类
 class UserService:
@@ -158,7 +158,7 @@ except Exception as e:
 ## 代理对象管理
 
 ```python
-from btools.core.basic.proxyutils import ProxyUtil
+from btools import ProxyUtil
 
 # 定义一个目标类
 class Calculator:
@@ -194,7 +194,7 @@ print(f"原始对象: {original}")
 ### 为类创建代理
 
 ```python
-from btools.core.basic.proxyutils import ProxyUtil
+from btools import ProxyUtil
 
 # 定义一个目标类
 class Calculator:
@@ -216,7 +216,7 @@ print(f"结果: {result}")
 ### 链式调用多个切面
 
 ```python
-from btools.core.basic.proxyutils import ProxyUtil
+from btools import ProxyUtil
 
 # 定义一个目标类
 class Calculator:
@@ -249,7 +249,7 @@ print(f"结果: {result}")
 ## 完整示例
 
 ```python
-from btools.core.basic.proxyutils import ProxyUtil
+from btools import ProxyUtil
 
 # 定义一个业务类
 class OrderService:

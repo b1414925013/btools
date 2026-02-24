@@ -16,7 +16,7 @@
 ### 导入模块
 
 ```python
-from btools.core.basic import AnnotationUtil
+from btools import AnnotationUtil
 ```
 
 ### 1. 获取类上的所有注解

@@ -8,7 +8,7 @@
 import subprocess
 import os
 import shutil
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple
 
 
 class PackagingUtils:
@@ -17,7 +17,7 @@ class PackagingUtils:
     """
 
     @staticmethod
-    def run_python_command(cmd: List[str]) -> tuple[int, str, str]:
+    def run_python_command(cmd: List[str]) -> Tuple[int, str, str]:
         """
         运行 Python 命令
 

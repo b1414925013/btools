@@ -17,10 +17,6 @@
 
 ```python
 from btools import ResourceUtils
-# 或
-from btools.core import ResourceUtils
-# 或
-from btools.core.basic import ResourceUtils
 ```
 
 ### 示例

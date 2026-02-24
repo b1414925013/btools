@@ -18,7 +18,7 @@
 ### 导入 DictUtil
 
 ```python
-from btools.core.basic.dictutils import DictUtil
+from btools import DictUtil
 ```
 
 ### 字典空值判断

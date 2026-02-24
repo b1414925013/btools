@@ -23,7 +23,7 @@
 ### 导入模块
 
 ```python
-from btools.core.basic import RuntimeUtil
+from btools import RuntimeUtil
 ```
 
 ### 1. 执行命令并返回结果
