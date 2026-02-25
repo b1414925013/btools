@@ -84,6 +84,25 @@ from .ai.aiutils import AIUtils
 # API工具类
 from .api.fastapiutils import FastAPIUtils, APIResponse, APIErrorResponse
 
+# 容器化支持工具类
+from .container.dockerutils import DockerUtils
+from .container.kubernetesutils import KubernetesUtils
+
+# 项目管理工具类
+from .project.projectutils import ProjectUtils
+from .project.gitutils import GitUtils
+
+# 打包与发布工具类
+from .release.packagingutils import PackagingUtils
+from .release.releaseutils import ReleaseUtils
+from .release.distributionutils import DistributionUtils
+
+# 高级测试工具类
+from .test.performancetestutils import PerformanceTestUtils
+from .test.loadtestutils import LoadTestUtils
+from .test.mockutils import MockUtils
+from .test.contracttestutils import ContractTestUtils
+
 __all__ = [
     # 基础工具类
     'StringUtils',
@@ -164,5 +183,24 @@ __all__ = [
     # API工具类
     'FastAPIUtils',
     'APIResponse',
-    'APIErrorResponse'
+    'APIErrorResponse',
+    
+    # 容器化支持工具类
+    'DockerUtils',
+    'KubernetesUtils',
+    
+    # 项目管理工具类
+    'ProjectUtils',
+    'GitUtils',
+    
+    # 打包与发布工具类
+    'PackagingUtils',
+    'ReleaseUtils',
+    'DistributionUtils',
+    
+    # 高级测试工具类
+    'PerformanceTestUtils',
+    'LoadTestUtils',
+    'MockUtils',
+    'ContractTestUtils'
 ]
