@@ -312,6 +312,265 @@ class SSHClient:
         channel.invoke_shell()
         return channel
     
+    def su_to_root(self, root_password: str, timeout: int = 10) -> Dict[str, Any]:
+        """
+        执行 su - root 命令并动态输入密码切换到 root 用户
+        
+        该方法通过打开交互式 shell，执行 su - root 命令，
+        然后动态输入密码完成用户切换。
+        
+        Args:
+            root_password (str): root 用户密码
+            timeout (int): 等待超时时间（秒），默认为 10
+            
+        Returns:
+            dict: 包含执行结果的字典，格式为 {
+                'success': bool,      # 是否切换成功
+                'stdout': str,        # 标准输出内容
+                'stderr': str,        # 标准错误内容
+                'current_user': str   # 当前用户（切换成功时为 root）
+            }
+            
+        Raises:
+            Exception: 未连接到服务器或切换失败
+            
+        Example:
+            >>> ssh = SSHClient()
+            >>> ssh.connect('192.168.1.1', username='user', password='user_pass')
+            >>> result = ssh.su_to_root('root_password')
+            >>> if result['success']:
+            ...     print("成功切换到 root 用户")
+            ...     # 现在可以执行 root 权限的命令
+            ...     output = ssh.execute_as_root('whoami')
+            ... else:
+            ...     print(f"切换失败: {result['stderr']}")
+        """
+        if not self.is_connected:
+            raise Exception("Not connected to SSH server")
+        
+        import time
+        
+        # 打开交互式 shell
+        channel = self.open_shell()
+        
+        try:
+            # 等待 shell 准备就绪
+            time.sleep(0.5)
+            
+            # 清空缓冲区中的初始输出
+            while channel.recv_ready():
+                channel.recv(1024)
+            
+            # 执行 su - root 命令
+            channel.send("su - root\n")
+            
+            # 等待密码提示
+            start_time = time.time()
+            output_buffer = b""
+            password_prompt_found = False
+            
+            while time.time() - start_time < timeout:
+                if channel.recv_ready():
+                    data = channel.recv(1024)
+                    output_buffer += data
+                    
+                    # 检查是否出现密码提示（支持中英文提示）
+                    output_str = output_buffer.decode('utf-8', errors='ignore')
+                    if 'Password:' in output_str or '密码：' in output_str or 'password:' in output_str.lower():
+                        password_prompt_found = True
+                        break
+                
+                time.sleep(0.1)
+            
+            if not password_prompt_found:
+                return {
+                    'success': False,
+                    'stdout': output_buffer.decode('utf-8', errors='ignore'),
+                    'stderr': 'Timeout waiting for password prompt',
+                    'current_user': None
+                }
+            
+            # 输入密码
+            channel.send(root_password + "\n")
+            
+            # 等待命令执行结果
+            time.sleep(1)
+            start_time = time.time()
+            output_buffer = b""
+            
+            while time.time() - start_time < timeout:
+                if channel.recv_ready():
+                    data = channel.recv(4096)
+                    output_buffer += data
+                    
+                    # 检查是否切换成功或失败
+                    output_str = output_buffer.decode('utf-8', errors='ignore')
+                    
+                    # 检查认证失败的情况
+                    if 'authentication failure' in output_str.lower() or \
+                       'incorrect password' in output_str.lower() or \
+                       'su: incorrect password' in output_str.lower() or \
+                       'sorry' in output_str.lower():
+                        return {
+                            'success': False,
+                            'stdout': output_str,
+                            'stderr': 'Authentication failed: incorrect password',
+                            'current_user': None
+                        }
+                    
+                    # 检查是否成功切换到 root（通过提示符判断）
+                    if output_str.strip().endswith('#') or 'root@' in output_str:
+                        # 验证当前用户
+                        channel.send("whoami\n")
+                        time.sleep(0.5)
+                        
+                        # 读取 whoami 输出
+                        whoami_output = b""
+                        while channel.recv_ready():
+                            whoami_output += channel.recv(1024)
+                        
+                        whoami_str = whoami_output.decode('utf-8', errors='ignore')
+                        
+                        # 创建新的 root shell 会话
+                        return {
+                            'success': True,
+                            'stdout': output_str + whoami_str,
+                            'stderr': '',
+                            'current_user': 'root'
+                        }
+                
+                time.sleep(0.1)
+            
+            # 超时，返回当前结果
+            output_str = output_buffer.decode('utf-8', errors='ignore')
+            
+            # 尝试判断是否已经切换成功
+            if output_str.strip().endswith('#'):
+                return {
+                    'success': True,
+                    'stdout': output_str,
+                    'stderr': '',
+                    'current_user': 'root'
+                }
+            else:
+                return {
+                    'success': False,
+                    'stdout': output_str,
+                    'stderr': 'Timeout waiting for su command to complete',
+                    'current_user': None
+                }
+                
+        finally:
+            channel.close()
+    
+    def execute_as_root(self, command: str, root_password: str = None, timeout: int = 30) -> Dict[str, Any]:
+        """
+        以 root 用户身份执行命令
+        
+        如果已经通过 su_to_root 切换到 root，则直接执行命令。
+        否则，使用 su -c 方式执行单条命令。
+        
+        Args:
+            command (str): 要执行的命令
+            root_password (str): root 用户密码（如果未切换过用户）
+            timeout (int): 命令执行超时时间（秒），默认为 30
+            
+        Returns:
+            dict: 包含执行结果的字典，格式为 {'stdout': str, 'stderr': str, 'returncode': int}
+            
+        Raises:
+            Exception: 未连接到服务器或执行失败
+            
+        Example:
+            >>> ssh = SSHClient()
+            >>> ssh.connect('192.168.1.1', username='user', password='user_pass')
+            >>> # 方法1：先切换到 root，然后执行多个命令
+            >>> ssh.su_to_root('root_password')
+            >>> result = ssh.execute_as_root('cat /etc/shadow')
+            >>> 
+            >>> # 方法2：直接使用 su -c 执行单条命令
+            >>> result = ssh.execute_as_root('cat /etc/shadow', root_password='root_password')
+        """
+        if not self.is_connected:
+            raise Exception("Not connected to SSH server")
+        
+        # 如果提供了密码，使用 su -c 方式执行
+        if root_password:
+            # 使用非交互式方式执行命令
+            full_command = f"echo '{root_password}' | su - root -c '{command}'"
+            return self.execute(full_command)
+        else:
+            # 假设已经切换到 root，直接执行命令
+            # 这里需要保持 shell 会话，使用交互式方式
+            return self._execute_in_root_shell(command, timeout)
+    
+    def _execute_in_root_shell(self, command: str, timeout: int = 30) -> Dict[str, Any]:
+        """
+        在已切换的 root shell 中执行命令（内部方法）
+        
+        Args:
+            command (str): 要执行的命令
+            timeout (int): 命令执行超时时间（秒）
+            
+        Returns:
+            dict: 包含执行结果的字典
+        """
+        import time
+        
+        channel = self.open_shell()
+        
+        try:
+            # 等待 shell 准备就绪
+            time.sleep(0.5)
+            
+            # 清空缓冲区
+            while channel.recv_ready():
+                channel.recv(1024)
+            
+            # 发送命令
+            channel.send(command + "\n")
+            
+            # 等待命令执行完成
+            start_time = time.time()
+            output_buffer = b""
+            prompt_found = False
+            
+            while time.time() - start_time < timeout:
+                if channel.recv_ready():
+                    data = channel.recv(4096)
+                    output_buffer += data
+                    
+                    # 检查是否出现命令提示符（表示命令执行完成）
+                    output_str = output_buffer.decode('utf-8', errors='ignore')
+                    lines = output_str.strip().split('\n')
+                    
+                    # 如果最后一行以 # 或 $ 结尾，说明命令已完成
+                    if lines and (lines[-1].strip().endswith('#') or lines[-1].strip().endswith('$')):
+                        prompt_found = True
+                        break
+                
+                time.sleep(0.1)
+            
+            output_str = output_buffer.decode('utf-8', errors='ignore')
+            
+            # 解析输出，移除命令本身和最后的提示符
+            lines = output_str.split('\n')
+            if len(lines) > 1:
+                # 第一行通常是命令本身，最后一行是提示符
+                result_lines = lines[1:-1] if prompt_found else lines[1:]
+                stdout = '\n'.join(result_lines)
+            else:
+                stdout = output_str
+            
+            return {
+                'stdout': stdout,
+                'stderr': '',
+                'returncode': 0 if prompt_found else -1
+            }
+            
+        finally:
+            channel.close()
+    
     def file_operation(self, operation: str, source: str, destination: str = None) -> bool:
         """
         执行文件操作（移动、复制、删除）
