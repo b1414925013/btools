@@ -23,6 +23,8 @@ class SSHClient:
         self.jump_client = None
         self.is_connected = False
         self.transport = None
+        self.root_shell = None  # 保存root shell会话
+        self.root_shell_active = False  # root shell是否激活
     
     def connect(self, hostname: str, port: int = 22, username: str = None, password: str = None, 
                 key_filename: str = None, timeout: int = 30, proxy_type: str = None, 
@@ -463,6 +465,364 @@ class SSHClient:
         finally:
             channel.close()
     
+    def start_root_shell(self, root_password: str, timeout: int = 10) -> Dict[str, Any]:
+        """
+        启动并保持root shell会话
+        
+        该方法创建一个交互式shell，切换到root用户，并保持shell会话打开。
+        之后可以使用execute_in_root_shell()方法在保持的root shell中执行多条命令，
+        无需每次都输入密码。
+        
+        适用场景：
+        - 需要连续执行多条root命令
+        - 命令执行频率较高
+        - 需要共享root会话状态（如工作目录、环境变量等）
+        
+        Args:
+            root_password (str): root 用户密码
+            timeout (int): 等待超时时间（秒），默认为 10
+            
+        Returns:
+            dict: 包含执行结果的字典，格式为 {
+                'success': bool,      # 是否启动成功
+                'stdout': str,        # 标准输出内容
+                'stderr': str,        # 标准错误内容
+                'current_user': str   # 当前用户（成功时为 root）
+            }
+            
+        Raises:
+            Exception: 未连接到服务器
+            
+        Example:
+            >>> ssh = SSHClient()
+            >>> ssh.connect('192.168.1.1', username='user', password='user_pass')
+            >>> result = ssh.start_root_shell('root_password')
+            >>> if result['success']:
+            ...     # 在保持的root shell中执行多条命令
+            ...     result1 = ssh.execute_in_root_shell('whoami')
+            ...     result2 = ssh.execute_in_root_shell('cd /root && ls -la')
+            ...     result3 = ssh.execute_in_root_shell('systemctl status nginx')
+            ...     # 使用完毕后关闭root shell
+            ...     ssh.close_root_shell()
+        """
+        if not self.is_connected:
+            raise Exception("Not connected to SSH server")
+        
+        import time
+        
+        # 如果已经存在root shell，先关闭
+        if self.root_shell and self.root_shell_active:
+            self.close_root_shell()
+        
+        # 打开交互式 shell
+        self.root_shell = self.open_shell()
+        
+        try:
+            # 等待 shell 准备就绪
+            time.sleep(0.5)
+            
+            # 清空缓冲区中的初始输出
+            while self.root_shell.recv_ready():
+                self.root_shell.recv(1024)
+            
+            # 执行 su - root 命令
+            self.root_shell.send("su - root\n")
+            
+            # 等待密码提示
+            start_time = time.time()
+            output_buffer = b""
+            password_prompt_found = False
+            
+            while time.time() - start_time < timeout:
+                if self.root_shell.recv_ready():
+                    data = self.root_shell.recv(1024)
+                    output_buffer += data
+                    
+                    # 检查是否出现密码提示（支持中英文提示）
+                    output_str = output_buffer.decode('utf-8', errors='ignore')
+                    if 'Password:' in output_str or '密码：' in output_str or 'password:' in output_str.lower():
+                        password_prompt_found = True
+                        break
+                
+                time.sleep(0.1)
+            
+            if not password_prompt_found:
+                self.root_shell.close()
+                self.root_shell = None
+                self.root_shell_active = False
+                return {
+                    'success': False,
+                    'stdout': output_buffer.decode('utf-8', errors='ignore'),
+                    'stderr': 'Timeout waiting for password prompt',
+                    'current_user': None
+                }
+            
+            # 输入密码
+            self.root_shell.send(root_password + "\n")
+            
+            # 等待命令执行结果
+            time.sleep(1)
+            start_time = time.time()
+            output_buffer = b""
+            
+            while time.time() - start_time < timeout:
+                if self.root_shell.recv_ready():
+                    data = self.root_shell.recv(4096)
+                    output_buffer += data
+                    
+                    # 检查是否切换成功或失败
+                    output_str = output_buffer.decode('utf-8', errors='ignore')
+                    
+                    # 检查认证失败的情况
+                    if 'authentication failure' in output_str.lower() or \
+                       'incorrect password' in output_str.lower() or \
+                       'su: incorrect password' in output_str.lower() or \
+                       'sorry' in output_str.lower():
+                        self.root_shell.close()
+                        self.root_shell = None
+                        self.root_shell_active = False
+                        return {
+                            'success': False,
+                            'stdout': output_str,
+                            'stderr': 'Authentication failed: incorrect password',
+                            'current_user': None
+                        }
+                    
+                    # 检查是否成功切换到 root（通过提示符判断）
+                    if output_str.strip().endswith('#') or 'root@' in output_str:
+                        # 验证当前用户
+                        self.root_shell.send("whoami\n")
+                        time.sleep(0.5)
+                        
+                        # 读取 whoami 输出
+                        whoami_output = b""
+                        while self.root_shell.recv_ready():
+                            whoami_output += self.root_shell.recv(1024)
+                        
+                        whoami_str = whoami_output.decode('utf-8', errors='ignore')
+                        
+                        # 标记root shell为激活状态
+                        self.root_shell_active = True
+                        
+                        return {
+                            'success': True,
+                            'stdout': output_str + whoami_str,
+                            'stderr': '',
+                            'current_user': 'root'
+                        }
+                
+                time.sleep(0.1)
+            
+            # 超时，返回当前结果
+            output_str = output_buffer.decode('utf-8', errors='ignore')
+            
+            # 尝试判断是否已经切换成功
+            if output_str.strip().endswith('#'):
+                self.root_shell_active = True
+                return {
+                    'success': True,
+                    'stdout': output_str,
+                    'stderr': '',
+                    'current_user': 'root'
+                }
+            else:
+                self.root_shell.close()
+                self.root_shell = None
+                self.root_shell_active = False
+                return {
+                    'success': False,
+                    'stdout': output_str,
+                    'stderr': 'Timeout waiting for su command to complete',
+                    'current_user': None
+                }
+                
+        except Exception as e:
+            self.root_shell.close()
+            self.root_shell = None
+            self.root_shell_active = False
+            raise
+    
+    def execute_in_root_shell(self, command: str, timeout: int = 30) -> Dict[str, Any]:
+        """
+        在保持的root shell中执行命令
+        
+        使用start_root_shell()方法启动root shell后，可以使用此方法
+        在保持的root shell中执行命令，无需每次都输入密码。
+        
+        优点：
+        - 无需每次输入密码
+        - 保持shell会话状态（工作目录、环境变量等）
+        - 执行速度更快
+        
+        注意：
+        - 必须先调用start_root_shell()启动root shell
+        - 使用完毕后应调用close_root_shell()关闭root shell
+        - root shell会占用服务器资源，长时间不使用应关闭
+        
+        Args:
+            command (str): 要执行的命令
+            timeout (int): 命令执行超时时间（秒），默认为 30
+            
+        Returns:
+            dict: 包含执行结果的字典，格式为 {
+                'stdout': str,        # 标准输出内容
+                'stderr': str,        # 标准错误内容
+                'returncode': int,    # 返回码（0表示成功）
+                'success': bool       # 是否执行成功
+            }
+            
+        Raises:
+            Exception: 未连接到服务器或root shell未启动
+            
+        Example:
+            >>> ssh = SSHClient()
+            >>> ssh.connect('192.168.1.1', username='user', password='user_pass')
+            >>> 
+            >>> # 启动root shell
+            >>> result = ssh.start_root_shell('root_password')
+            >>> if result['success']:
+            ...     # 在保持的root shell中执行多条命令
+            ...     result1 = ssh.execute_in_root_shell('whoami')
+            ...     print(result1['stdout'])  # 输出: root
+            ...     
+            ...     result2 = ssh.execute_in_root_shell('cd /root && pwd')
+            ...     print(result2['stdout'])  # 输出: /root
+            ...     
+            ...     result3 = ssh.execute_in_root_shell('systemctl status nginx')
+            ...     print(result3['stdout'])
+            ...     
+            ...     # 关闭root shell
+            ...     ssh.close_root_shell()
+        """
+        if not self.is_connected:
+            raise Exception("Not connected to SSH server")
+        
+        if not self.root_shell or not self.root_shell_active:
+            raise Exception("Root shell is not active. Please call start_root_shell() first.")
+        
+        import time
+        
+        try:
+            # 发送命令
+            self.root_shell.send(command + "\n")
+            
+            # 等待命令执行完成
+            time.sleep(0.5)
+            
+            # 读取输出
+            start_time = time.time()
+            output_buffer = b""
+            prompt_found = False
+            
+            while time.time() - start_time < timeout:
+                if self.root_shell.recv_ready():
+                    data = self.root_shell.recv(4096)
+                    output_buffer += data
+                    
+                    # 检查是否出现命令提示符（表示命令执行完成）
+                    output_str = output_buffer.decode('utf-8', errors='ignore')
+                    
+                    # 检查是否出现root提示符（#）或用户提示符（$）
+                    # 需要确保至少等待一段时间，避免命令还没执行完就检测到提示符
+                    if time.time() - start_time > 1:
+                        if output_str.strip().endswith('#') or output_str.strip().endswith('$'):
+                            prompt_found = True
+                            break
+                
+                time.sleep(0.1)
+            
+            # 解析输出
+            output_str = output_buffer.decode('utf-8', errors='ignore')
+            
+            # 移除命令本身和提示符，只保留命令输出
+            lines = output_str.split('\n')
+            
+            # 找到命令行并移除
+            command_found = False
+            output_lines = []
+            for line in lines:
+                if command in line and not command_found:
+                    command_found = True
+                    continue
+                # 跳过空行和提示符
+                if line.strip() and not line.strip().endswith('#') and not line.strip().endswith('$'):
+                    output_lines.append(line)
+            
+            stdout = '\n'.join(output_lines)
+            
+            # 判断执行是否成功
+            # 如果输出中包含错误信息，认为执行失败
+            stderr = ""
+            returncode = 0
+            success = True
+            
+            # 检查常见的错误模式
+            error_patterns = [
+                'error:', 'Error:', 'ERROR:',
+                'failed', 'Failed', 'FAILED',
+                'cannot', 'Cannot', 'CANNOT',
+                'permission denied', 'Permission denied',
+                'no such file', 'No such file',
+                'command not found', 'Command not found'
+            ]
+            
+            for pattern in error_patterns:
+                if pattern in stdout:
+                    stderr = stdout
+                    returncode = 1
+                    success = False
+                    break
+            
+            return {
+                'stdout': stdout,
+                'stderr': stderr,
+                'returncode': returncode,
+                'success': success
+            }
+            
+        except Exception as e:
+            return {
+                'stdout': '',
+                'stderr': str(e),
+                'returncode': -1,
+                'success': False
+            }
+    
+    def close_root_shell(self):
+        """
+        关闭保持的root shell会话
+        
+        使用start_root_shell()启动root shell后，在完成所有root命令执行后，
+        应调用此方法关闭root shell，释放服务器资源。
+        
+        Example:
+            >>> ssh = SSHClient()
+            >>> ssh.connect('192.168.1.1', username='user', password='user_pass')
+            >>> 
+            >>> # 启动root shell
+            >>> ssh.start_root_shell('root_password')
+            >>> 
+            >>> # 执行一些root命令
+            >>> ssh.execute_in_root_shell('whoami')
+            >>> ssh.execute_in_root_shell('systemctl status nginx')
+            >>> 
+            >>> # 关闭root shell
+            >>> ssh.close_root_shell()
+        """
+        if self.root_shell:
+            try:
+                # 发送exit命令退出root shell
+                self.root_shell.send("exit\n")
+                time.sleep(0.5)
+                
+                # 关闭通道
+                self.root_shell.close()
+            except:
+                pass
+            finally:
+                self.root_shell = None
+                self.root_shell_active = False
+
     def execute_as_root(self, command: str, root_password: str = None, timeout: int = 30) -> Dict[str, Any]:
         """
         以 root 用户身份执行命令
@@ -547,6 +907,12 @@ class SSHClient:
         """
         关闭SSH连接
         """
+        # 先关闭root shell
+        try:
+            self.close_root_shell()
+        except:
+            pass
+        
         try:
             if self.client:
                 self.client.close()
