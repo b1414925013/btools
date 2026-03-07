@@ -467,12 +467,12 @@ class SSHClient:
         """
         以 root 用户身份执行命令
         
-        如果已经通过 su_to_root 切换到 root，则直接执行命令。
-        否则，使用 su -c 方式执行单条命令。
+        无论是否已经通过 su_to_root 切换到 root，都使用 su -c 方式执行命令，
+        确保命令始终以 root 权限执行。
         
         Args:
             command (str): 要执行的命令
-            root_password (str): root 用户密码（如果未切换过用户）
+            root_password (str): root 用户密码
             timeout (int): 命令执行超时时间（秒），默认为 30
             
         Returns:
@@ -484,92 +484,24 @@ class SSHClient:
         Example:
             >>> ssh = SSHClient()
             >>> ssh.connect('192.168.1.1', username='user', password='user_pass')
-            >>> # 方法1：先切换到 root，然后执行多个命令
-            >>> ssh.su_to_root('root_password')
-            >>> result = ssh.execute_as_root('cat /etc/shadow')
-            >>> 
-            >>> # 方法2：直接使用 su -c 执行单条命令
+            >>> # 直接执行 root 命令
             >>> result = ssh.execute_as_root('cat /etc/shadow', root_password='root_password')
+            >>> 
+            >>> # 执行多条 root 命令
+            >>> result1 = ssh.execute_as_root('systemctl status sshd', root_password='root_password')
+            >>> result2 = ssh.execute_as_root('fdisk -l', root_password='root_password')
         """
         if not self.is_connected:
             raise Exception("Not connected to SSH server")
         
-        # 如果提供了密码，使用 su -c 方式执行
-        if root_password:
-            # 使用非交互式方式执行命令
-            full_command = f"echo '{root_password}' | su - root -c '{command}'"
-            return self.execute(full_command)
-        else:
-            # 假设已经切换到 root，直接执行命令
-            # 这里需要保持 shell 会话，使用交互式方式
-            return self._execute_in_root_shell(command, timeout)
+        if not root_password:
+            raise Exception("root_password is required for execute_as_root")
+        
+        # 使用 su -c 方式执行命令，确保以 root 权限执行
+        full_command = f"echo '{root_password}' | su - root -c '{command}'"
+        return self.execute(full_command)
     
-    def _execute_in_root_shell(self, command: str, timeout: int = 30) -> Dict[str, Any]:
-        """
-        在已切换的 root shell 中执行命令（内部方法）
-        
-        Args:
-            command (str): 要执行的命令
-            timeout (int): 命令执行超时时间（秒）
-            
-        Returns:
-            dict: 包含执行结果的字典
-        """
-        import time
-        
-        channel = self.open_shell()
-        
-        try:
-            # 等待 shell 准备就绪
-            time.sleep(0.5)
-            
-            # 清空缓冲区
-            while channel.recv_ready():
-                channel.recv(1024)
-            
-            # 发送命令
-            channel.send(command + "\n")
-            
-            # 等待命令执行完成
-            start_time = time.time()
-            output_buffer = b""
-            prompt_found = False
-            
-            while time.time() - start_time < timeout:
-                if channel.recv_ready():
-                    data = channel.recv(4096)
-                    output_buffer += data
-                    
-                    # 检查是否出现命令提示符（表示命令执行完成）
-                    output_str = output_buffer.decode('utf-8', errors='ignore')
-                    lines = output_str.strip().split('\n')
-                    
-                    # 如果最后一行以 # 或 $ 结尾，说明命令已完成
-                    if lines and (lines[-1].strip().endswith('#') or lines[-1].strip().endswith('$')):
-                        prompt_found = True
-                        break
-                
-                time.sleep(0.1)
-            
-            output_str = output_buffer.decode('utf-8', errors='ignore')
-            
-            # 解析输出，移除命令本身和最后的提示符
-            lines = output_str.split('\n')
-            if len(lines) > 1:
-                # 第一行通常是命令本身，最后一行是提示符
-                result_lines = lines[1:-1] if prompt_found else lines[1:]
-                stdout = '\n'.join(result_lines)
-            else:
-                stdout = output_str
-            
-            return {
-                'stdout': stdout,
-                'stderr': '',
-                'returncode': 0 if prompt_found else -1
-            }
-            
-        finally:
-            channel.close()
+
     
     def file_operation(self, operation: str, source: str, destination: str = None) -> bool:
         """

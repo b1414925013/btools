@@ -252,50 +252,9 @@ ssh.file_operation('rm', '/remote/path/non_empty_dir', recursive=True)
 
 ## 切换到 root 用户执行命令
 
-### 方法1：先切换到 root 用户，然后执行多个命令
+### 直接执行 root 命令
 
-适用于需要执行多条 root 权限命令的场景。
-
-```python
-from btools import SSHClient
-
-# 创建SSH客户端实例
-ssh = SSHClient()
-
-# 连接到服务器（使用普通用户）
-ssh.connect(
-    hostname="192.168.1.100",
-    username="user",
-    password="user_password"
-)
-
-# 切换到 root 用户
-result = ssh.su_to_root("root_password")
-
-if result['success']:
-    print("成功切换到 root 用户")
-    print("输出:", result['stdout'])
-    
-    # 现在可以执行 root 权限的命令
-    output = ssh.execute_as_root('cat /etc/shadow')
-    print("/etc/shadow 内容:", output['stdout'])
-    
-    output = ssh.execute_as_root('systemctl status sshd')
-    print("SSH服务状态:", output['stdout'])
-    
-    output = ssh.execute_as_root('fdisk -l')
-    print("磁盘信息:", output['stdout'])
-else:
-    print(f"切换失败: {result['stderr']}")
-    print(f"输出: {result['stdout']}")
-
-# 关闭连接
-ssh.close()
-```
-
-### 方法2：直接使用 su -c 执行单条命令
-
-适用于只需要执行单条 root 权限命令的场景，无需先切换用户。
+通过 `execute_as_root` 方法直接执行 root 权限命令，无论需要执行多少条命令，都使用这种方式。
 
 ```python
 from btools import SSHClient
@@ -310,24 +269,31 @@ ssh.connect(
     password="user_password"
 )
 
-# 直接以 root 身份执行单条命令
+# 执行 root 权限命令
 result = ssh.execute_as_root('cat /etc/shadow', root_password='root_password')
-print("STDOUT:", result['stdout'])
-print("STDERR:", result['stderr'])
-print("Return Code:", result['returncode'])
+print("/etc/shadow 内容:", result['stdout'])
+print("错误信息:", result['stderr'])
+print("返回码:", result['returncode'])
 
-# 执行另一条命令
-result = ssh.execute_as_root('systemctl restart nginx', root_password='root_password')
-if result['returncode'] == 0:
+# 执行多条 root 命令
+result1 = ssh.execute_as_root('systemctl status sshd', root_password='root_password')
+print("SSH服务状态:", result1['stdout'])
+
+result2 = ssh.execute_as_root('fdisk -l', root_password='root_password')
+print("磁盘信息:", result2['stdout'])
+
+# 重启服务
+result3 = ssh.execute_as_root('systemctl restart nginx', root_password='root_password')
+if result3['returncode'] == 0:
     print("Nginx 重启成功")
 else:
-    print(f"Nginx 重启失败: {result['stderr']}")
+    print(f"Nginx 重启失败: {result3['stderr']}")
 
 # 关闭连接
 ssh.close()
 ```
 
-### 方法3：在跳板机场景中使用
+### 在跳板机场景中使用
 
 ```python
 from btools import SSHClient
@@ -345,13 +311,13 @@ ssh.connect_via_jump(
     target_password="user_password"
 )
 
-# 切换到 root 用户
-result = ssh.su_to_root("root_password")
+# 执行 root 权限命令
+result = ssh.execute_as_root('cat /etc/passwd', root_password='root_password')
+print(result['stdout'])
 
-if result['success']:
-    # 执行 root 权限命令
-    output = ssh.execute_as_root('cat /etc/passwd')
-    print(output['stdout'])
+# 执行更多 root 命令
+result = ssh.execute_as_root('ls -la /root', root_password='root_password')
+print(result['stdout'])
 
 # 关闭连接
 ssh.close()
@@ -379,8 +345,7 @@ ssh.close()
        # 处理错误...
    ```
 
-4. **会话保持**：`su_to_root` 切换后的 root 会话在当前 SSHClient 实例中保持，
-   后续调用 `execute_as_root`（不传密码）会使用该会话
+4. **执行方式**：`execute_as_root` 方法始终使用 `su -c` 方式执行命令，确保命令始终以 root 权限执行
 
 5. **兼容性**：该方法适用于大多数 Linux 发行版（CentOS、Ubuntu、Debian 等），
    支持中英文密码提示
