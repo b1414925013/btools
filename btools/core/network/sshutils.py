@@ -706,14 +706,19 @@ class SSHClient:
             # 发送命令
             self.root_shell.send(command + "\n")
             
-            # 等待命令执行完成
-            time.sleep(0.5)
-            
             # 读取输出
             start_time = time.time()
             output_buffer = b""
             prompt_found = False
             
+            # 等待输出开始
+            wait_start = time.time()
+            while time.time() - wait_start < 0.2:  # 最多等待0.2秒
+                if self.root_shell.recv_ready():
+                    break
+                time.sleep(0.05)
+            
+            # 读取所有输出直到找到提示符
             while time.time() - start_time < timeout:
                 if self.root_shell.recv_ready():
                     data = self.root_shell.recv(4096)
@@ -722,14 +727,13 @@ class SSHClient:
                     # 检查是否出现命令提示符（表示命令执行完成）
                     output_str = output_buffer.decode('utf-8', errors='ignore')
                     
-                    # 检查是否出现root提示符（#）或用户提示符（$）
-                    # 需要确保至少等待一段时间，避免命令还没执行完就检测到提示符
-                    if time.time() - start_time > 1:
-                        if output_str.strip().endswith('#') or output_str.strip().endswith('$'):
-                            prompt_found = True
-                            break
-                
-                time.sleep(0.1)
+                    # 检查是否出现root提示符（#）
+                    if output_str.strip().endswith('#'):
+                        prompt_found = True
+                        break
+                else:
+                    # 如果没有更多数据，等待一小段时间
+                    time.sleep(0.05)
             
             # 解析输出
             output_str = output_buffer.decode('utf-8', errors='ignore')
