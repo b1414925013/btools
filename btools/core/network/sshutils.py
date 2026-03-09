@@ -642,7 +642,7 @@ class SSHClient:
             self.root_shell_active = False
             raise
     
-    def execute_in_root_shell(self, command: str, timeout: int = 30) -> Dict[str, Any]:
+    def execute_in_root_shell(self, command: str, timeout: int = 30, expected_prompt: str = None) -> Dict[str, Any]:
         """
         在保持的root shell中执行命令
         
@@ -662,6 +662,7 @@ class SSHClient:
         Args:
             command (str): 要执行的命令
             timeout (int): 命令执行超时时间（秒），默认为 30
+            expected_prompt (str): 期望的提示符，默认为None（自动检测）
             
         Returns:
             dict: 包含执行结果的字典，格式为 {
@@ -685,11 +686,16 @@ class SSHClient:
             ...     result1 = ssh.execute_in_root_shell('whoami')
             ...     print(result1['stdout'])  # 输出: root
             ...     
-            ...     result2 = ssh.execute_in_root_shell('cd /root && pwd')
-            ...     print(result2['stdout'])  # 输出: /root
+            ...     # 切换到dbuser
+            ...     result2 = ssh.execute_in_root_shell('su - dbuser', expected_prompt='$')
             ...     
-            ...     result3 = ssh.execute_in_root_shell('systemctl status nginx')
-            ...     print(result3['stdout'])
+            ...     # 使用docker进入容器
+            ...     result3 = ssh.execute_in_root_shell('docker exec -it container_name bash', expected_prompt='#')
+            ...     
+            ...     # 执行数据库命令
+            ...     result4 = ssh.execute_in_root_shell('mysql -u root -p', expected_prompt='Enter password:')
+            ...     result5 = ssh.execute_in_root_shell('password123', expected_prompt='mysql>')
+            ...     result6 = ssh.execute_in_root_shell('SELECT * FROM users;', expected_prompt='mysql>')
             ...     
             ...     # 关闭root shell
             ...     ssh.close_root_shell()
@@ -727,10 +733,20 @@ class SSHClient:
                     # 检查是否出现命令提示符（表示命令执行完成）
                     output_str = output_buffer.decode('utf-8', errors='ignore')
                     
-                    # 检查是否出现root提示符（#）
-                    if output_str.strip().endswith('#'):
-                        prompt_found = True
-                        break
+                    # 检查是否出现期望的提示符或常见提示符
+                    if expected_prompt:
+                        # 如果指定了期望的提示符，检查是否出现
+                        if expected_prompt in output_str:
+                            prompt_found = True
+                            break
+                    else:
+                        # 自动检测常见提示符
+                        if output_str.strip().endswith('#') or \
+                           output_str.strip().endswith('$') or \
+                           '->' in output_str.strip() or \
+                           output_str.strip().endswith('>'):
+                            prompt_found = True
+                            break
                 else:
                     # 如果没有更多数据，等待一小段时间
                     time.sleep(0.05)
@@ -749,7 +765,13 @@ class SSHClient:
                     command_found = True
                     continue
                 # 跳过空行和提示符
-                if line.strip() and not line.strip().endswith('#') and not line.strip().endswith('$'):
+                line_stripped = line.strip()
+                if line_stripped and not (
+                    line_stripped.endswith('#') or 
+                    line_stripped.endswith('$') or 
+                    '->' in line_stripped or 
+                    line_stripped.endswith('>')
+                ):
                     output_lines.append(line)
             
             stdout = '\n'.join(output_lines)
