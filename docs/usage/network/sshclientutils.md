@@ -369,6 +369,107 @@ else:
 ssh.close()
 ```
 
+### 高级用法：指定提示符
+
+当需要在 root shell 中执行交互式命令或切换到其他用户时，可以使用 `expected_prompt` 参数指定期望的提示符。
+
+**适用场景：**
+- 切换到其他用户（如 dbuser）
+- 进入 Docker 容器
+- 进入数据库命令行（如 MySQL、PostgreSQL）
+- 执行需要交互的命令
+
+```python
+from btools import SSHClient
+
+# 创建SSH客户端实例
+ssh = SSHClient()
+
+# 连接到服务器
+ssh.connect(
+    hostname="192.168.1.100",
+    username="user",
+    password="user_password"
+)
+
+# 启动 root shell 会话
+result = ssh.start_root_shell('root_password')
+if result['success']:
+    print("成功切换到 root 用户")
+    
+    # 1. 切换到 dbuser（提示符变为 $）
+    result1 = ssh.execute_in_root_shell('su - dbuser', expected_prompt='$')
+    print("成功切换到 dbuser")
+    
+    # 2. 使用 docker 进入容器（提示符变为 #）
+    result2 = ssh.execute_in_root_shell(
+        'docker exec -it my_container bash', 
+        expected_prompt='#'
+    )
+    print("成功进入容器")
+    
+    # 3. 进入 MySQL 命令行
+    # 首先输入 mysql 命令，等待密码提示
+    result3 = ssh.execute_in_root_shell(
+        'mysql -u root -p', 
+        expected_prompt='Enter password:'
+    )
+    
+    # 输入密码，等待 mysql> 提示符
+    result4 = ssh.execute_in_root_shell(
+        'mysql_password', 
+        expected_prompt='mysql>'
+    )
+    
+    # 执行 SQL 查询
+    result5 = ssh.execute_in_root_shell(
+        'SELECT * FROM users LIMIT 5;', 
+        expected_prompt='mysql>'
+    )
+    print("查询结果:", result5['stdout'])
+    
+    # 退出 MySQL
+    result6 = ssh.execute_in_root_shell(
+        'exit', 
+        expected_prompt='#'
+    )
+    
+    # 退出容器
+    result7 = ssh.execute_in_root_shell(
+        'exit', 
+        expected_prompt='$'
+    )
+    
+    # 退出 dbuser，回到 root
+    result8 = ssh.execute_in_root_shell(
+        'exit', 
+        expected_prompt='#'
+    )
+    
+    # 关闭 root shell
+    ssh.close_root_shell()
+    print("root shell 已关闭")
+
+# 关闭SSH连接
+ssh.close()
+```
+
+**提示符匹配规则：**
+
+- `#` - root 用户提示符
+- `$` - 普通用户提示符
+- `mysql>` - MySQL 命令行提示符
+- `postgres=#` - PostgreSQL 命令行提示符
+- `->` - 数据库命令行提示符（如某些 NoSQL 数据库）
+- `>` - Windows CMD 或其他命令行提示符
+- 任何自定义字符串 - 根据实际需求指定
+
+**注意事项：**
+
+1. 如果不指定 `expected_prompt`，系统会自动检测常见的提示符（#、$、->、>）
+2. 指定 `expected_prompt` 可以提高匹配的准确性，特别是在复杂的交互场景中
+3. 提示符匹配是包含关系，只要输出中包含指定的字符串即可匹配成功
+
 ### 两种方法对比
 
 | 特性 | execute_as_root | 保持 root shell 会话 |
