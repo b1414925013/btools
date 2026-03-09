@@ -20,7 +20,7 @@ class TestDecoratorUtil(unittest.TestCase):
         测试创建计时装饰器
         """
         # 创建计时装饰器
-        timer_decorator = DecoratorUtil.createTimerDecorator()
+        timer_decorator = DecoratorUtil.timer()
         
         # 使用装饰器
         @timer_decorator
@@ -42,7 +42,7 @@ class TestDecoratorUtil(unittest.TestCase):
             logs.append(msg)
         
         # 创建日志装饰器
-        logging_decorator = DecoratorUtil.createLoggingDecorator(custom_logger)
+        logging_decorator = DecoratorUtil.logging(custom_logger)
         
         # 使用装饰器
         @logging_decorator
@@ -63,7 +63,7 @@ class TestDecoratorUtil(unittest.TestCase):
         call_count = 0
         
         # 创建缓存装饰器
-        cache_decorator = DecoratorUtil.createCacheDecorator()
+        cache_decorator = DecoratorUtil.cache()
         
         # 使用装饰器
         @cache_decorator
@@ -90,7 +90,7 @@ class TestDecoratorUtil(unittest.TestCase):
         call_count = 0
         
         # 创建重试装饰器
-        retry_decorator = DecoratorUtil.createRetryDecorator(max_retries=3, delay=0.1)
+        retry_decorator = DecoratorUtil.retry(max_retries=3, delay=0.1)
         
         # 使用装饰器
         @retry_decorator
@@ -111,7 +111,7 @@ class TestDecoratorUtil(unittest.TestCase):
         测试创建单例装饰器
         """
         # 创建单例装饰器
-        singleton_decorator = DecoratorUtil.createSingletonDecorator()
+        singleton_decorator = DecoratorUtil.singleton()
         
         # 使用装饰器
         @singleton_decorator
@@ -132,7 +132,7 @@ class TestDecoratorUtil(unittest.TestCase):
         测试创建过时警告装饰器
         """
         # 创建过时警告装饰器
-        deprecation_decorator = DecoratorUtil.createDeprecationDecorator("此方法已过时，请使用新方法")
+        deprecation_decorator = DecoratorUtil.deprecation("此方法已过时，请使用新方法")
         
         # 使用装饰器
         @deprecation_decorator
@@ -153,7 +153,7 @@ class TestDecoratorUtil(unittest.TestCase):
         测试创建权限检查装饰器
         """
         # 创建权限检查装饰器
-        permission_decorator = DecoratorUtil.createPermissionDecorator("admin")
+        permission_decorator = DecoratorUtil.permission("admin")
         
         # 使用装饰器
         @permission_decorator
@@ -180,7 +180,7 @@ class TestDecoratorUtil(unittest.TestCase):
         测试创建速率限制装饰器
         """
         # 创建速率限制装饰器（1秒内最多调用2次）
-        rate_limit_decorator = DecoratorUtil.createRateLimitDecorator(max_calls=2, period=1)
+        rate_limit_decorator = DecoratorUtil.rate_limit(max_calls=2, period=1)
         
         # 使用装饰器
         @rate_limit_decorator
@@ -209,11 +209,11 @@ class TestDecoratorUtil(unittest.TestCase):
             logs.append(msg)
         
         # 创建装饰器
-        timer_decorator = DecoratorUtil.createTimerDecorator(custom_logger)
-        logging_decorator = DecoratorUtil.createLoggingDecorator(custom_logger)
+        timer_decorator = DecoratorUtil.timer(custom_logger)
+        logging_decorator = DecoratorUtil.logging(custom_logger)
         
         # 组合装饰器
-        combined_decorator = DecoratorUtil.combineDecorators(timer_decorator, logging_decorator)
+        combined_decorator = DecoratorUtil.combine(timer_decorator, logging_decorator)
         
         # 使用装饰器
         @combined_decorator
@@ -233,7 +233,7 @@ class TestDecoratorUtil(unittest.TestCase):
         测试检查对象是否为装饰器
         """
         # 创建装饰器
-        timer_decorator = DecoratorUtil.createTimerDecorator()
+        timer_decorator = DecoratorUtil.timer()
         
         # 使用装饰器
         @timer_decorator
@@ -241,15 +241,15 @@ class TestDecoratorUtil(unittest.TestCase):
             return "test"
         
         # 测试
-        self.assertTrue(DecoratorUtil.isDecorator(test_function))
-        self.assertFalse(DecoratorUtil.isDecorator(lambda x: x))
+        self.assertTrue(DecoratorUtil.is_decorator(test_function))
+        self.assertFalse(DecoratorUtil.is_decorator(lambda x: x))
 
     def test_get_original_function(self):
         """
         测试获取被装饰的原始函数
         """
         # 创建装饰器
-        timer_decorator = DecoratorUtil.createTimerDecorator()
+        timer_decorator = DecoratorUtil.timer()
         
         # 原始函数
         def original_function():
@@ -259,7 +259,7 @@ class TestDecoratorUtil(unittest.TestCase):
         decorated_function = timer_decorator(original_function)
         
         # 测试
-        retrieved_original = DecoratorUtil.getOriginalFunction(decorated_function)
+        retrieved_original = DecoratorUtil.get_original_function(decorated_function)
         self.assertEqual(retrieved_original, original_function)
 
     def test_get_decorator_chain(self):
@@ -267,8 +267,8 @@ class TestDecoratorUtil(unittest.TestCase):
         测试获取装饰器链
         """
         # 创建装饰器
-        timer_decorator = DecoratorUtil.createTimerDecorator()
-        logging_decorator = DecoratorUtil.createLoggingDecorator()
+        timer_decorator = DecoratorUtil.timer()
+        logging_decorator = DecoratorUtil.logging()
         
         # 使用装饰器
         def test_function():
@@ -278,7 +278,7 @@ class TestDecoratorUtil(unittest.TestCase):
         decorated2 = logging_decorator(decorated1)
         
         # 测试
-        chain = DecoratorUtil.getDecoratorChain(decorated2)
+        chain = DecoratorUtil.get_decorator_chain(decorated2)
         self.assertEqual(len(chain), 3)  # 装饰器2 -> 装饰器1 -> 原始函数
 
     def test_create_conditional_decorator(self):
@@ -301,7 +301,7 @@ class TestDecoratorUtil(unittest.TestCase):
             return wrapper
         
         # 创建条件装饰器
-        conditional_decorator = DecoratorUtil.createConditionalDecorator(condition, simple_decorator)
+        conditional_decorator = DecoratorUtil.conditional(condition, simple_decorator)
         
         # 使用装饰器
         @conditional_decorator
