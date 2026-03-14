@@ -194,6 +194,100 @@ class ReleaseUtils:
             return False
 
     @staticmethod
+    def validate_version(version: str) -> bool:
+        """
+        验证版本号格式是否符合语义化版本规范
+
+        Args:
+            version: 版本号字符串
+
+        Returns:
+            是否符合语义化版本规范
+        """
+        if not version:
+            return False
+
+        # 语义化版本正则表达式
+        pattern = r'^(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z0-9.]+))?$'
+        match = re.match(pattern, version)
+
+        if not match:
+            return False
+
+        return True
+
+    @staticmethod
+    def compare_versions(version1: str, version2: str) -> int:
+        """
+        比较两个版本号
+
+        Args:
+            version1: 第一个版本号
+            version2: 第二个版本号
+
+        Returns:
+            1: version1 > version2
+            0: version1 == version2
+            -1: version1 < version2
+        """
+        def parse_version(v):
+            # 分离主版本和预发布版本
+            parts = v.split('-')
+            main_version = parts[0]
+            pre_release = parts[1] if len(parts) > 1 else None
+
+            # 解析主版本号
+            main_parts = list(map(int, main_version.split('.')))
+
+            return (main_parts, pre_release)
+
+        v1_parts, v1_pre = parse_version(version1)
+        v2_parts, v2_pre = parse_version(version2)
+
+        # 比较主版本号
+        for i in range(max(len(v1_parts), len(v2_parts))):
+            p1 = v1_parts[i] if i < len(v1_parts) else 0
+            p2 = v2_parts[i] if i < len(v2_parts) else 0
+
+            if p1 > p2:
+                return 1
+            elif p1 < p2:
+                return -1
+
+        # 主版本号相同，比较预发布版本
+        if v1_pre is None and v2_pre is None:
+            return 0
+        elif v1_pre is None:
+            return 1  # 正式版本 > 预发布版本
+        elif v2_pre is None:
+            return -1
+        else:
+            # 比较预发布版本字符串
+            if v1_pre < v2_pre:
+                return -1
+            elif v1_pre > v2_pre:
+                return 1
+            else:
+                return 0
+
+    @staticmethod
+    def is_prerelease(version: str) -> bool:
+        """
+        检查版本号是否为预发布版本
+
+        Args:
+            version: 版本号字符串
+
+        Returns:
+            是否为预发布版本
+        """
+        if not version:
+            return False
+
+        # 检查是否包含预发布标识
+        return '-' in version
+
+    @staticmethod
     def check_release_ready(path: str = ".") -> List[str]:
         """
         检查是否准备好发布

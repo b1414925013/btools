@@ -215,6 +215,48 @@ class PackagingUtils:
         return info
 
     @staticmethod
+    def get_project_info(project_path: str = ".") -> Dict[str, Optional[str]]:
+        """
+        获取项目信息
+
+        Args:
+            project_path: 项目路径
+
+        Returns:
+            项目信息字典
+        """
+        info = {"name": None, "version": None, "description": None, "author": None}
+
+        # 检查 setup.py
+        setup_file = os.path.join(project_path, "setup.py")
+        if os.path.exists(setup_file):
+            with open(setup_file, "r", encoding="utf-8") as f:
+                content = f.read()
+                import re
+
+                for key in info.keys():
+                    match = re.search(rf'{key}\s*=\s*[\'"]([^\'"]+)[\'"]', content)
+                    if match:
+                        info[key] = match.group(1)
+
+        # 检查 pyproject.toml
+        pyproject_file = os.path.join(project_path, "pyproject.toml")
+        if os.path.exists(pyproject_file):
+            try:
+                import tomli
+
+                with open(pyproject_file, "rb") as f:
+                    data = tomli.load(f)
+                    if "project" in data:
+                        for key in info.keys():
+                            if key in data["project"]:
+                                info[key] = str(data["project"][key])
+            except:
+                pass
+
+        return info
+
+    @staticmethod
     def verify_package(package_path: str) -> bool:
         """
         验证包

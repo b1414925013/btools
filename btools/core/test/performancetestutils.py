@@ -348,3 +348,83 @@ class PerformanceTestUtils:
             "memory_usages": memory_usages,
             "is_leaking": is_leaking,
         }
+
+    @staticmethod
+    def measure_time(
+        func: Callable,
+        iterations: int = 1,
+        warmup: int = 0,
+        *args,
+        **kwargs,
+    ) -> Dict[str, Any]:
+        """
+        测量函数执行时间
+
+        Args:
+            func: 要测量的函数
+            iterations: 执行次数
+            warmup: 预热次数
+            *args: 函数参数
+            **kwargs: 函数关键字参数
+
+        Returns:
+            包含执行时间的字典
+        """
+        # 预热
+        for _ in range(warmup):
+            func(*args, **kwargs)
+
+        # 测量
+        times = []
+        for _ in range(iterations):
+            start_time = time.time()
+            result = func(*args, **kwargs)
+            end_time = time.time()
+            times.append(end_time - start_time)
+
+        avg_time = sum(times) / len(times) if times else 0
+        min_time = min(times) if times else 0
+        max_time = max(times) if times else 0
+
+        return {
+            "time": avg_time,
+            "average_time": avg_time,
+            "min_time": min_time,
+            "max_time": max_time,
+            "times": times,
+            "iterations": iterations,
+            "result": result if iterations > 0 else None,
+        }
+
+    @staticmethod
+    def benchmark(
+        functions: list,
+        names: list = None,
+        iterations: int = 100,
+        *args,
+        **kwargs,
+    ) -> Dict[str, Any]:
+        """
+        基准测试多个函数
+
+        Args:
+            functions: 函数列表
+            names: 函数名称列表
+            iterations: 每个函数执行次数
+            *args: 函数参数
+            **kwargs: 函数关键字参数
+
+        Returns:
+            包含基准测试结果的字典
+        """
+        if names is None:
+            names = [f"func_{i}" for i in range(len(functions))]
+
+        results = {}
+        for name, func in zip(names, functions):
+            result = PerformanceTestUtils.measure_time(
+                func, iterations=iterations, *args, **kwargs
+            )
+            results[name] = result
+
+        return results

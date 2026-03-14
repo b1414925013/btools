@@ -273,6 +273,20 @@ class GitUtils:
         return issues
 
     @staticmethod
+    def validate_commit_message(message: str) -> bool:
+        """
+        验证提交信息是否符合规范
+
+        Args:
+            message: 提交信息
+
+        Returns:
+            是否符合规范
+        """
+        issues = GitUtils.check_commit_message(message)
+        return len(issues) == 0
+
+    @staticmethod
     def get_commit_history(limit: int = 10, cwd: str = ".") -> List[Dict[str, str]]:
         """
         获取提交历史

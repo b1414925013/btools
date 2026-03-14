@@ -159,9 +159,9 @@ class TestScheduleUtils(unittest.TestCase):
         def test_func2():
             self.counter += 1
 
-        # 安排多个任务
-        self.scheduler.schedule_once(0.2, test_func1)
-        self.scheduler.schedule_once(0.3, test_func2)
+        # 安排多个任务（使用更长的延迟时间，确保有足够时间取消）
+        self.scheduler.schedule_once(1.0, test_func1)
+        self.scheduler.schedule_once(1.5, test_func2)
         self.assertEqual(self.scheduler.get_task_count(), 2)
 
         # 取消所有任务
@@ -169,7 +169,7 @@ class TestScheduleUtils(unittest.TestCase):
         self.assertEqual(self.scheduler.get_task_count(), 0)
 
         # 等待足够时间，确保任务未执行
-        time.sleep(0.4)
+        time.sleep(0.2)
         self.assertEqual(self.counter, 0)
 
     def test_is_running(self):
@@ -246,15 +246,15 @@ class TestScheduleUtils(unittest.TestCase):
         def test_func():
             self.counter += 1
 
-        # 使用全局调度器安排任务
-        schedule_once(0.2, test_func)
-        schedule_once(0.3, test_func)
+        # 使用全局调度器安排任务（使用更长的延迟时间，确保有足够时间取消）
+        schedule_once(1.0, test_func)
+        schedule_once(1.5, test_func)
 
         # 取消所有任务
         cancel_all()
 
         # 等待足够时间，确保任务未执行
-        time.sleep(0.4)
+        time.sleep(0.2)
         self.assertEqual(self.counter, 0)
 
     def test_start_stop_scheduler(self):

@@ -241,15 +241,102 @@ class PathUtils:
     @staticmethod
     def get_extension(path: str) -> str:
         """
-        获取文件扩展名
+        获取文件扩展名（不含点号）
 
         Args:
             path: 路径
 
         Returns:
-            文件扩展名
+            文件扩展名（不含点号）
         """
-        return os.path.splitext(path)[1]
+        ext = os.path.splitext(path)[1]
+        return ext[1:] if ext.startswith(".") else ext
+
+    @staticmethod
+    def get_filename(path: str) -> str:
+        """
+        获取文件名（含扩展名）
+
+        Args:
+            path: 路径
+
+        Returns:
+            文件名（含扩展名）
+        """
+        return os.path.basename(path)
+
+    @staticmethod
+    def get_basename(path: str) -> str:
+        """
+        获取文件名（不含扩展名）
+
+        Args:
+            path: 路径
+
+        Returns:
+            文件名（不含扩展名）
+        """
+        return os.path.splitext(os.path.basename(path))[0]
+
+    @staticmethod
+    def get_dirname(path: str) -> str:
+        """
+        获取目录名
+
+        Args:
+            path: 路径
+
+        Returns:
+            目录名
+        """
+        return os.path.dirname(path)
+
+    @staticmethod
+    def normalize(path: str) -> str:
+        """
+        规范化路径
+
+        Args:
+            path: 路径
+
+        Returns:
+            规范化后的路径
+        """
+        return os.path.normpath(path)
+
+    @staticmethod
+    def is_absolute(path: str) -> bool:
+        """
+        检查是否为绝对路径
+
+        Args:
+            path: 路径
+
+        Returns:
+            是否为绝对路径
+        """
+        return os.path.isabs(path)
+
+    @staticmethod
+    def get_temp_dir() -> str:
+        """
+        获取临时目录
+
+        Returns:
+            临时目录路径
+        """
+        import tempfile
+        return tempfile.gettempdir()
+
+    @staticmethod
+    def get_home_dir() -> str:
+        """
+        获取用户主目录
+
+        Returns:
+            用户主目录路径
+        """
+        return os.path.expanduser("~")
 
     @staticmethod
     def get_filename_without_extension(path: str) -> str:

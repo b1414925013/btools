@@ -413,3 +413,83 @@ class LoadTestUtils:
             results[f"p{p}"] = sorted_times[index]
 
         return results
+
+    @staticmethod
+    def run_load_test(
+        func: Callable,
+        concurrent_users: int,
+        duration: int,
+        ramp_up: int = 0,
+        *args,
+        **kwargs,
+    ) -> Dict[str, Any]:
+        """
+        运行负载测试
+
+        Args:
+            func: 要测试的函数
+            concurrent_users: 并发用户数
+            duration: 测试持续时间（秒）
+            ramp_up: 启动时间（秒）
+            *args: 函数参数
+            **kwargs: 函数关键字参数
+
+        Returns:
+            负载测试结果字典
+        """
+        return LoadTestUtils.load_test(func, concurrent_users, duration, *args, **kwargs)
+
+    @staticmethod
+    def check_thresholds(
+        results: Dict[str, Any], thresholds: Dict[str, float]
+    ) -> Dict[str, Any]:
+        """
+        检查结果是否符合阈值
+
+        Args:
+            results: 测试结果字典
+            thresholds: 阈值字典
+                - min_success_rate: 最小成功率
+                - max_response_time: 最大响应时间
+
+        Returns:
+            检查结果字典
+        """
+        passed = True
+        issues = []
+
+        # 获取成功率
+        success_rate = results.get("success_rate")
+        if success_rate is None:
+            # 计算成功率
+            total_requests = results.get("total_requests", 0)
+            success_requests = results.get("success_requests", 0)
+            success_rate = (
+                (success_requests / total_requests * 100) if total_requests > 0 else 0
+            )
+
+        # 检查最小成功率
+        min_success_rate = thresholds.get("min_success_rate")
+        if min_success_rate is not None and success_rate < min_success_rate:
+            passed = False
+            issues.append(
+                f"Success rate {success_rate:.2f}% is below threshold {min_success_rate}%"
+            )
+
+        # 检查最大响应时间
+        max_response_time = thresholds.get("max_response_time")
+        avg_response_time = results.get("avg_response_time")
+        if avg_response_time is None:
+            avg_response_time = results.get("average_response_time", 0)
+        if max_response_time is not None and avg_response_time > max_response_time:
+            passed = False
+            issues.append(
+                f"Average response time {avg_response_time:.2f}s exceeds threshold {max_response_time}s"
+            )
+
+        return {
+            "passed": passed,
+            "success_rate": success_rate,
+            "avg_response_time": avg_response_time,
+            "issues": issues,
+        }

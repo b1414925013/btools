@@ -28,6 +28,16 @@ class PlatformUtils:
         return platform.system()
 
     @staticmethod
+    def get_os_name() -> str:
+        """
+        获取操作系统名称（别名方法）
+
+        Returns:
+            操作系统名称
+        """
+        return PlatformUtils.get_os()
+
+    @staticmethod
     def get_os_version() -> str:
         """
         获取操作系统版本
@@ -180,6 +190,26 @@ class PlatformUtils:
             return "\r\n"
         else:
             return "\n"
+
+    @staticmethod
+    def get_newline() -> str:
+        """
+        获取行结束符（别名方法）
+
+        Returns:
+            行结束符
+        """
+        return PlatformUtils.get_line_ending()
+
+    @staticmethod
+    def get_home_dir() -> str:
+        """
+        获取用户主目录
+
+        Returns:
+            用户主目录路径
+        """
+        return os.path.expanduser("~")
 
     @staticmethod
     def get_path_separator() -> str:

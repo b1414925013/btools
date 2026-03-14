@@ -150,6 +150,53 @@ class ProjectUtils:
         return info
 
     @staticmethod
+    def is_python_project(project_path: str = ".") -> bool:
+        """
+        检查是否为 Python 项目
+
+        Args:
+            project_path: 项目路径
+
+        Returns:
+            是否为 Python 项目
+        """
+        # 检查是否存在 Python 项目标志文件
+        python_files = [
+            "setup.py",
+            "pyproject.toml",
+            "requirements.txt",
+            "Pipfile",
+            "setup.cfg",
+        ]
+        for file in python_files:
+            if os.path.exists(os.path.join(project_path, file)):
+                return True
+
+        # 检查是否存在 .py 文件
+        for root, dirs, files in os.walk(project_path):
+            # 跳过虚拟环境目录
+            dirs[:] = [d for d in dirs if d not in ["venv", ".venv", "env", ".env", "__pycache__", ".git"]]
+            for file in files:
+                if file.endswith(".py"):
+                    return True
+
+        return False
+
+    @staticmethod
+    def has_git_repository(project_path: str = ".") -> bool:
+        """
+        检查是否有 Git 仓库
+
+        Args:
+            project_path: 项目路径
+
+        Returns:
+            是否有 Git 仓库
+        """
+        git_dir = os.path.join(project_path, ".git")
+        return os.path.isdir(git_dir)
+
+    @staticmethod
     def validate_project_structure(project_path: str = ".") -> List[str]:
         """
         验证项目结构

@@ -85,8 +85,11 @@ print(f"返回值注解: {return_annotation}")
 class TestClass:
     name: str
     age: int
+    
+    def method(self):
+        pass
 
-# 获取类所有属性的注解
+# 获取类所有属性的注解（会排除方法）
 field_annotations = AnnotationUtil.get_field_annotations(TestClass)
 print(f"属性注解: {field_annotations}")
 # 输出: 属性注解: {'name': <class 'str'>, 'age': <class 'int'>}

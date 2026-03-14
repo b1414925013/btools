@@ -93,7 +93,10 @@ class RuntimeUtil:
             list: 命令的标准输出行列表
         """
         stdout = RuntimeUtil.execForStr(cmd, cwd, shell, timeout)
-        return stdout.splitlines() if stdout else []
+        if not stdout:
+            return []
+        # 对每一行进行strip，去除首尾空白
+        return [line.strip() for line in stdout.splitlines()]
 
     @staticmethod
     def execWait(
@@ -322,7 +325,7 @@ class RuntimeUtil:
             result = subprocess.run(
                 cmd, cwd=cwd, shell=shell, capture_output=True, text=True
             )
-            return result.returncode, result.stdout, result.stderr
+            return result.returncode, result.stdout.strip(), result.stderr.strip()
         except Exception as e:
             return -1, "", f"脚本执行失败: {str(e)}"
 

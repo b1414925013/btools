@@ -394,7 +394,7 @@ class FakerUtils:
 
         # 18位：校验码
         # 这里简化处理，实际身份证号的校验码有复杂的算法
-        check_code = random.choice(string.digits + ["X"])
+        check_code = random.choice(string.digits + "X")
 
         return f"{prefix}{birth_str}{sequence}{check_code}"
 

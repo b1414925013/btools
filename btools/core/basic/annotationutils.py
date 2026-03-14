@@ -75,7 +75,7 @@ class AnnotationUtil:
         return annotations.get("return")
 
     @staticmethod
-    def get_field_annotations(cls: Type[Any]) -> Dict[str, Dict[str, Any]]:
+    def get_field_annotations(cls: Type[Any]) -> Dict[str, Any]:
         """
         获取类所有属性的注解
 
@@ -83,21 +83,19 @@ class AnnotationUtil:
             cls: 类
 
         Returns:
-            Dict[str, Dict[str, Any]]: 属性名到注解的映射
+            Dict[str, Any]: 属性名到注解的映射
         """
         fields = {}
 
-        # 遍历类的所有成员
-        for name, member in inspect.getmembers(cls):
-            # 跳过特殊成员
-            if name.startswith("__") and name.endswith("__"):
-                continue
-
-            # 检查是否为属性
-            if hasattr(member, "__annotations__"):
-                fields[name] = dict(member.__annotations__)
-            elif hasattr(cls, "__annotations__") and name in cls.__annotations__:
-                fields[name] = cls.__annotations__[name]
+        # 首先获取类本身的注解（类属性）
+        if hasattr(cls, "__annotations__"):
+            for name, annotation in cls.__annotations__.items():
+                # 跳过特殊成员
+                if name.startswith("__") and name.endswith("__"):
+                    continue
+                # 只包含类属性（不是方法）
+                if not hasattr(cls, name) or not inspect.isfunction(getattr(cls, name)):
+                    fields[name] = annotation
 
         return fields
 
@@ -210,13 +208,13 @@ class AnnotationUtil:
         return annotated_methods
 
     @staticmethod
-    def get_annotated_fields(cls: Type[Any], annotation_name: str) -> List[str]:
+    def get_annotated_fields(cls: Type[Any], annotation_name: Optional[str] = None) -> List[str]:
         """
-        获取类中带有指定注解的属性名列表
+        获取类中带有注解的属性名列表
 
         Args:
             cls: 类
-            annotation_name: 注解名称
+            annotation_name: 可选的注解名称过滤器
 
         Returns:
             List[str]: 属性名列表
@@ -224,11 +222,11 @@ class AnnotationUtil:
         annotated_fields = []
         field_annotations = AnnotationUtil.get_field_annotations(cls)
 
-        for field_name, annotations in field_annotations.items():
-            if isinstance(annotations, dict):
-                if annotation_name in annotations:
-                    annotated_fields.append(field_name)
-            elif annotations == annotation_name:
+        for field_name, annotation in field_annotations.items():
+            if annotation_name is None:
+                # 返回所有带注解的字段
+                annotated_fields.append(field_name)
+            elif annotation == annotation_name:
                 annotated_fields.append(field_name)
 
         return annotated_fields
@@ -250,9 +248,21 @@ class AnnotationUtil:
         # 获取参数注解
         param_annotations = AnnotationUtil.get_param_annotations(method)
 
+        def format_annotation(annotation):
+            """格式化注解，使其更易读"""
+            if annotation is None:
+                return "None"
+            elif annotation is type(None):
+                return "None"
+            elif hasattr(annotation, "__name__"):
+                return annotation.__name__
+            else:
+                return str(annotation)
+
         for name, param in sig.parameters.items():
             if name in param_annotations:
-                param_str = f"{name}: {param_annotations[name]}"
+                annotation_str = format_annotation(param_annotations[name])
+                param_str = f"{name}: {annotation_str}"
                 if param.default is not inspect.Parameter.empty:
                     param_str += f" = {param.default}"
             else:
@@ -263,7 +273,7 @@ class AnnotationUtil:
 
         # 获取返回值注解
         return_annotation = AnnotationUtil.get_return_annotation(method)
-        return_str = f" -> {return_annotation}" if return_annotation else ""
+        return_str = f" -> {format_annotation(return_annotation)}" if return_annotation else ""
 
         # 构建方法签名
         method_name = method.__name__

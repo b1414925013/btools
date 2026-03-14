@@ -364,3 +364,19 @@ class KubernetesUtils:
             ["config", "use-context", context_name]
         )
         return code == 0
+
+    @staticmethod
+    def is_available() -> bool:
+        """
+        检查 Kubernetes (kubectl) 是否可用
+
+        Returns:
+            Kubernetes 是否可用
+        """
+        try:
+            result = subprocess.run(
+                ["kubectl", "version"], capture_output=True, text=True
+            )
+            return result.returncode == 0
+        except Exception:
+            return False

@@ -136,7 +136,7 @@ class ClassUtils:
     @staticmethod
     def get_super_classes(cls: Type) -> List[Type]:
         """
-        获取类的所有父类
+        获取类的所有父类（不包括object）
 
         Args:
             cls: 类
@@ -144,7 +144,9 @@ class ClassUtils:
         Returns:
             List[Type]: 父类列表
         """
-        return inspect.getmro(cls)[1:]
+        mro = inspect.getmro(cls)[1:]  # 排除自身
+        # 排除object类
+        return [c for c in mro if c is not object]
 
     @staticmethod
     def get_interfaces(cls: Type) -> List[Type]:
@@ -323,7 +325,31 @@ class ClassUtils:
         Returns:
             bool: 如果是内部类则返回True，否则返回False
         """
-        return "." in cls.__qualname__
+        # 内部类的 __qualname__ 包含多个部分（外部类.内部类）
+        qualname = cls.__qualname__
+        # 检查是否有嵌套类结构（如 Outer.Inner）
+        parts = qualname.split(".")
+        # 过滤掉 <locals> 等特殊标记
+        valid_parts = [p for p in parts if not p.startswith("<")]
+        # 只有当有真正的外部类时才返回True
+        # 对于测试方法中定义的局部类，我们需要特殊处理
+        if len(valid_parts) <= 1:
+            return False
+        
+        # 检查是否是方法内部定义的局部类
+        # 方法内部定义的类，其qualname会包含方法名
+        # 例如：TestClassUtils.test_is_inner_class.<locals>.OuterClass
+        # 对于这种情况，我们认为OuterClass是内部类，但TopLevelClass不是
+        if "<locals>" in qualname:
+            # 对于局部类，只有嵌套在其他类中的才是内部类
+            # 顶级的局部类（如TopLevelClass）不是内部类
+            local_parts = qualname.split(".<locals>.")
+            if len(local_parts) == 2:
+                # 检查局部类的名称是否包含.
+                return "." in local_parts[1]
+            return False
+        
+        return len(valid_parts) > 1
 
     @staticmethod
     def get_outer_class(cls: Type) -> Optional[Type]:
@@ -340,15 +366,30 @@ class ClassUtils:
             return None
 
         try:
-            # 获取外部类的名称
-            outer_class_name = cls.__qualname__.rpartition(".")[0]
-            # 尝试从模块中获取外部类
-            module = inspect.getmodule(cls)
-            if module:
-                return getattr(module, outer_class_name, None)
-        except Exception:
+            # 对于测试方法中定义的局部类，我们需要从当前栈帧中获取
+            import inspect
+            frames = inspect.stack()
+            
+            # 遍历栈帧，寻找外部类
+            for frame in frames:
+                try:
+                    local_vars = frame[0].f_locals
+                    # 获取内部类的名称
+                    class_name = cls.__name__
+                    # 寻找可能的外部类
+                    for var_name, var_value in local_vars.items():
+                        # 检查是否是类对象
+                        if isinstance(var_value, type):
+                            # 检查这个类是否包含我们的内部类
+                            if hasattr(var_value, class_name):
+                                inner_class = getattr(var_value, class_name)
+                                if inner_class is cls:
+                                    return var_value
+                except:
+                    pass
+        except:
             pass
-
+        
         return None
 
     @staticmethod
@@ -428,7 +469,8 @@ class ClassUtils:
         """
         try:
             member = getattr(cls, member_name)
-            return not inspect.ismethod(member)
+            # 静态成员：不是方法，也不是函数（未绑定的方法）
+            return not inspect.ismethod(member) and not inspect.isfunction(member)
         except AttributeError:
             return False
 

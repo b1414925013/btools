@@ -317,3 +317,19 @@ class DockerUtils:
         if code == 0:
             return json.loads(stdout)[0]
         return None
+
+    @staticmethod
+    def is_available() -> bool:
+        """
+        检查 Docker 是否可用
+
+        Returns:
+            Docker 是否可用
+        """
+        try:
+            result = subprocess.run(
+                ["docker", "--version"], capture_output=True, text=True
+            )
+            return result.returncode == 0
+        except Exception:
+            return False

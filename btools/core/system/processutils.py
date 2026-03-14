@@ -591,6 +591,158 @@ class ProcessUtils:
             result = ProcessUtils.run_command(command, **kwargs)
             if result["success"]:
                 return result
+
+    @staticmethod
+    def get_current_pid() -> int:
+        """
+        获取当前进程ID（别名方法）
+
+        Returns:
+            当前进程ID
+        """
+        return ProcessUtils.get_current_process_id()
+
+    @staticmethod
+    def is_process_running(pid: int) -> bool:
+        """
+        检查进程是否正在运行
+
+        Args:
+            pid: 进程ID
+
+        Returns:
+            是否正在运行
+        """
+        try:
+            if os.name == "nt":  # Windows
+                import ctypes
+                kernel32 = ctypes.windll.kernel32
+                handle = kernel32.OpenProcess(1, False, pid)
+                if handle:
+                    kernel32.CloseHandle(handle)
+                    return True
+                return False
+            else:  # Unix-like
+                os.kill(pid, 0)
+                return True
+        except (OSError, ProcessLookupError):
+            return False
+
+    @staticmethod
+    def run_process(command: list, capture_output: bool = False, **kwargs) -> subprocess.CompletedProcess:
+        """
+        运行进程
+
+        Args:
+            command: 命令列表
+            capture_output: 是否捕获输出
+            **kwargs: 其他参数
+
+        Returns:
+            CompletedProcess对象
+        """
+        try:
+            result = subprocess.run(
+                command,
+                capture_output=capture_output,
+                text=True,
+                **kwargs
+            )
+            return result
+        except Exception as e:
+            # 创建一个失败的CompletedProcess
+            return subprocess.CompletedProcess(
+                args=command,
+                returncode=-1,
+                stdout="",
+                stderr=str(e)
+            )
+
+    @staticmethod
+    def list_processes() -> List[Dict[str, Any]]:
+        """
+        列出所有进程（别名方法）
+
+        Returns:
+            进程列表
+        """
+        return ProcessUtils.get_process_list()
+
+    @staticmethod
+    def find_processes_by_name(name: str) -> List[Dict[str, Any]]:
+        """
+        根据名称查找进程（别名方法）
+
+        Args:
+            name: 进程名称
+
+        Returns:
+            进程列表
+        """
+        return ProcessUtils.find_process_by_name(name)
+
+    @staticmethod
+    def get_process_info(pid: int) -> Dict[str, Any]:
+        """
+        获取进程信息
+
+        Args:
+            pid: 进程ID
+
+        Returns:
+            进程信息字典
+        """
+        try:
+            # 尝试使用psutil获取更详细的信息
+            import psutil
+            process = psutil.Process(pid)
+            return {
+                "pid": pid,
+                "name": process.name(),
+                "status": process.status(),
+                "created": process.create_time(),
+                "memory_percent": process.memory_percent(),
+                "cpu_percent": process.cpu_percent(interval=0.1),
+            }
+        except:
+            # 如果psutil不可用，使用基本方法
+            info = ProcessUtils.find_process_by_pid(pid)
+            if info:
+                return {"pid": pid, **info}
+            return {"pid": pid, "name": "", "status": "unknown"}
+
+    @staticmethod
+    def get_resource_usage(pid: int) -> Dict[str, Any]:
+        """
+        获取进程资源使用情况
+
+        Args:
+            pid: 进程ID
+
+        Returns:
+            资源使用情况字典
+        """
+        try:
+            import psutil
+            process = psutil.Process(pid)
+            with process.oneshot():
+                return {
+                    "pid": pid,
+                    "cpu_percent": process.cpu_percent(interval=0.1),
+                    "memory_info": process.memory_info()._asdict(),
+                    "memory_percent": process.memory_percent(),
+                    "num_threads": process.num_threads(),
+                    "num_fds": process.num_fds() if hasattr(process, 'num_fds') else None,
+                }
+        except:
+            # 如果psutil不可用，使用基本方法
+            mem_usage = ProcessUtils.get_process_memory_usage(pid)
+            cpu_usage = ProcessUtils.get_process_cpu_usage(pid)
+            return {
+                "pid": pid,
+                "memory_usage": mem_usage,
+                "cpu_usage": cpu_usage,
+            }
             if attempt < max_retries - 1:
                 time.sleep(retry_delay)
         return result
@@ -676,28 +828,7 @@ class ProcessUtils:
         except Exception:
             return None
 
-    @staticmethod
-    def is_process_running(pid: int) -> bool:
-        """
-        检查进程是否在运行
 
-        Args:
-            pid: 进程 ID
-
-        Returns:
-            是否在运行
-        """
-        try:
-            if os.name == "nt":  # Windows
-                result = subprocess.run(
-                    ["tasklist", "/fi", f"PID eq {pid}"], capture_output=True, text=True
-                )
-                return f"PID {pid}" in result.stdout
-            else:  # Unix-like
-                os.kill(pid, 0)  # 发送空信号检查进程是否存在
-                return True
-        except:
-            return False
 
     @staticmethod
     def wait_for_process_start(pid: int, timeout: int = 10) -> bool:

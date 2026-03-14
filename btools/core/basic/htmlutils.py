@@ -15,14 +15,13 @@ class HtmlUtil:
     HTML工具类
     """
 
-    # HTML转义映射
+    # HTML转义映射（基本转义，不包含/）
     _ESCAPE_MAP = {
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
         "'": "&#x27;",
-        "/": "&#x2F;",
     }
 
     # HTML反转义映射
@@ -32,7 +31,6 @@ class HtmlUtil:
         "&gt;": ">",
         "&quot;": '"',
         "&#x27;": "'",
-        "&#x2F;": "/",
     }
 
     @staticmethod
@@ -208,9 +206,14 @@ class HtmlUtil:
                     i += 2
                     tag_end = html.find(">", i)
                     if tag_end != -1:
-                        result.append(
-                            " " * (indent_level * indent) + "</" + html[i:tag_end] + ">"
-                        )
+                        # 检查是否有内联文本需要追加
+                        if result and not result[-1].endswith(">"):
+                            # 上一个元素是文本，追加结束标签
+                            result[-1] += "</" + html[i:tag_end] + ">"
+                        else:
+                            result.append(
+                                " " * (indent_level * indent) + "</" + html[i:tag_end] + ">"
+                            )
                         i = tag_end + 1
                 else:
                     # 开始标签
@@ -226,12 +229,19 @@ class HtmlUtil:
                 if text_end != -1:
                     text = html[i:text_end].strip()
                     if text:
-                        result.append(" " * (indent_level * indent) + text)
+                        # 文本内容追加到上一个标签后面
+                        if result:
+                            result[-1] += text
+                        else:
+                            result.append(" " * (indent_level * indent) + text)
                     i = text_end
                 else:
                     text = html[i:].strip()
                     if text:
-                        result.append(" " * (indent_level * indent) + text)
+                        if result:
+                            result[-1] += text
+                        else:
+                            result.append(" " * (indent_level * indent) + text)
                     break
 
         return "\n".join(result)
@@ -289,8 +299,8 @@ class HtmlUtil:
         Returns:
             str: 完整的HTML文档
         """
-        html = f"""
-<!DOCTYPE html>
+        if body:
+            html = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="{charset}">
@@ -299,9 +309,17 @@ class HtmlUtil:
 <body>
     {body}
 </body>
-</html>
-        """
-        return html.strip()
+</html>"""
+        else:
+            html = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="{charset}">
+    <title>{HtmlUtil.escape(title)}</title>
+</head>
+<body></body>
+</html>"""
+        return html
 
     @staticmethod
     def createTag(

@@ -112,7 +112,9 @@ thresholds = {
 # 检查阈值
 check_result = LoadTestUtils.check_thresholds(results, thresholds)
 print(f"是否通过: {check_result['passed']}")
-print(f"失败原因: {check_result['failures']}")
+print(f"成功率: {check_result['success_rate']:.2f}%")
+print(f"平均响应时间: {check_result['avg_response_time']:.2f}s")
+print(f"问题: {check_result['issues']}")
 ```
 
 ## HTTP 请求测试

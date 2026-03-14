@@ -198,6 +198,115 @@ class ContractTestUtils:
         return differences
 
     @staticmethod
+    def create_request_contract(
+        method: str = "GET",
+        path: str = "/",
+        headers: Optional[Dict[str, str]] = None,
+        body: Optional[Any] = None,
+    ) -> Dict[str, Any]:
+        """
+        创建请求契约
+
+        Args:
+            method: HTTP方法
+            path: 请求路径
+            headers: 请求头
+            body: 请求体
+
+        Returns:
+            请求契约字典
+        """
+        contract = {
+            "method": method,
+            "path": path,
+        }
+        if headers:
+            contract["headers"] = headers
+        if body is not None:
+            contract["body"] = body
+        return contract
+
+    @staticmethod
+    def create_response_contract(
+        status: int = 200,
+        headers: Optional[Dict[str, str]] = None,
+        body: Optional[Any] = None,
+    ) -> Dict[str, Any]:
+        """
+        创建响应契约
+
+        Args:
+            status: HTTP状态码
+            headers: 响应头
+            body: 响应体
+
+        Returns:
+            响应契约字典
+        """
+        contract = {
+            "status": status,
+        }
+        if headers:
+            contract["headers"] = headers
+        if body is not None:
+            contract["body"] = body
+        return contract
+
+    @staticmethod
+    def validate_request(contract: Dict[str, Any], actual: Dict[str, Any]) -> bool:
+        """
+        验证实际请求是否符合契约
+
+        Args:
+            contract: 请求契约
+            actual: 实际请求
+
+        Returns:
+            是否匹配
+        """
+        # 检查必需字段
+        if "method" in contract and contract["method"] != actual.get("method"):
+            return False
+        if "path" in contract and contract["path"] != actual.get("path"):
+            return False
+
+        # 检查请求头
+        if "headers" in contract:
+            expected_headers = contract["headers"]
+            actual_headers = actual.get("headers", {})
+            for key, value in expected_headers.items():
+                if actual_headers.get(key) != value:
+                    return False
+
+        return True
+
+    @staticmethod
+    def validate_response(contract: Dict[str, Any], actual: Dict[str, Any]) -> bool:
+        """
+        验证实际响应是否符合契约
+
+        Args:
+            contract: 响应契约
+            actual: 实际响应
+
+        Returns:
+            是否匹配
+        """
+        # 检查状态码
+        if "status" in contract and contract["status"] != actual.get("status"):
+            return False
+
+        # 检查响应头
+        if "headers" in contract:
+            expected_headers = contract["headers"]
+            actual_headers = actual.get("headers", {})
+            for key, value in expected_headers.items():
+                if actual_headers.get(key) != value:
+                    return False
+
+        return True
+
+    @staticmethod
     def test_consumer_contract(
         contract: Dict[str, Any], client: Callable
     ) -> List[Dict[str, Any]]:
