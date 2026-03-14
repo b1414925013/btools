@@ -1,5 +1,7 @@
 """测试MailUtils类"""
+
 import unittest
+
 from btools.core.network.mailutils import MailUtils
 
 

@@ -1,7 +1,9 @@
 """测试Logger类"""
-import unittest
+
 import os
 import tempfile
+import unittest
+
 from btools.core.log.logutils import Logger
 
 
@@ -18,11 +20,12 @@ class TestLogger(unittest.TestCase):
         """清理测试环境"""
         # 关闭所有日志处理器
         for logger in self.loggers:
-            if hasattr(logger, 'close'):
+            if hasattr(logger, "close"):
                 logger.close()
         # 删除临时目录
         if os.path.exists(self.temp_dir):
             import shutil
+
             shutil.rmtree(self.temp_dir)
 
     def test_create_logger(self):

@@ -1,5 +1,5 @@
 import platform
-from typing import Optional, Union, Any
+from typing import Any, Optional, Union
 
 
 class ClipboardUtils:
@@ -11,21 +11,21 @@ class ClipboardUtils:
     def copy_text(text: str) -> bool:
         """
         复制文本到剪贴板
-        
+
         Args:
             text: 要复制的文本
-            
+
         Returns:
             bool: 操作是否成功
         """
         try:
             system = platform.system()
-            
-            if system == 'Windows':
+
+            if system == "Windows":
                 return ClipboardUtils._copy_text_windows(text)
-            elif system == 'Darwin':
+            elif system == "Darwin":
                 return ClipboardUtils._copy_text_macos(text)
-            elif system == 'Linux':
+            elif system == "Linux":
                 return ClipboardUtils._copy_text_linux(text)
             else:
                 return False
@@ -36,18 +36,18 @@ class ClipboardUtils:
     def get_text() -> Optional[str]:
         """
         从剪贴板获取文本
-        
+
         Returns:
             Optional[str]: 剪贴板中的文本，如果获取失败则返回None
         """
         try:
             system = platform.system()
-            
-            if system == 'Windows':
+
+            if system == "Windows":
                 return ClipboardUtils._get_text_windows()
-            elif system == 'Darwin':
+            elif system == "Darwin":
                 return ClipboardUtils._get_text_macos()
-            elif system == 'Linux':
+            elif system == "Linux":
                 return ClipboardUtils._get_text_linux()
             else:
                 return None
@@ -58,21 +58,21 @@ class ClipboardUtils:
     def copy_image(image: Any) -> bool:
         """
         复制图片到剪贴板
-        
+
         Args:
             image: 要复制的图片对象
-            
+
         Returns:
             bool: 操作是否成功
         """
         try:
             system = platform.system()
-            
-            if system == 'Windows':
+
+            if system == "Windows":
                 return ClipboardUtils._copy_image_windows(image)
-            elif system == 'Darwin':
+            elif system == "Darwin":
                 return ClipboardUtils._copy_image_macos(image)
-            elif system == 'Linux':
+            elif system == "Linux":
                 return ClipboardUtils._copy_image_linux(image)
             else:
                 return False
@@ -83,18 +83,18 @@ class ClipboardUtils:
     def get_image() -> Optional[Any]:
         """
         从剪贴板获取图片
-        
+
         Returns:
             Optional[Any]: 剪贴板中的图片对象，如果获取失败则返回None
         """
         try:
             system = platform.system()
-            
-            if system == 'Windows':
+
+            if system == "Windows":
                 return ClipboardUtils._get_image_windows()
-            elif system == 'Darwin':
+            elif system == "Darwin":
                 return ClipboardUtils._get_image_macos()
-            elif system == 'Linux':
+            elif system == "Linux":
                 return ClipboardUtils._get_image_linux()
             else:
                 return None
@@ -105,18 +105,18 @@ class ClipboardUtils:
     def clear() -> bool:
         """
         清空剪贴板
-        
+
         Returns:
             bool: 操作是否成功
         """
         try:
             system = platform.system()
-            
-            if system == 'Windows':
+
+            if system == "Windows":
                 return ClipboardUtils._clear_windows()
-            elif system == 'Darwin':
+            elif system == "Darwin":
                 return ClipboardUtils._clear_macos()
-            elif system == 'Linux':
+            elif system == "Linux":
                 return ClipboardUtils._clear_linux()
             else:
                 return False
@@ -131,6 +131,7 @@ class ClipboardUtils:
         """
         try:
             import win32clipboard
+
             win32clipboard.OpenClipboard()
             win32clipboard.EmptyClipboard()
             win32clipboard.SetClipboardText(text, win32clipboard.CF_UNICODETEXT)
@@ -140,32 +141,33 @@ class ClipboardUtils:
             # 如果没有安装pywin32，尝试使用ctypes
             try:
                 import ctypes
+
                 user32 = ctypes.windll.user32
                 kernel32 = ctypes.windll.kernel32
-                
+
                 # 打开剪贴板
                 if not user32.OpenClipboard(None):
                     return False
-                
+
                 # 清空剪贴板
                 user32.EmptyClipboard()
-                
+
                 # 分配内存并复制文本
-                text_bytes = text.encode('utf-16-le') + b'\x00\x00'
+                text_bytes = text.encode("utf-16-le") + b"\x00\x00"
                 hglobal = kernel32.GlobalAlloc(0x42, len(text_bytes))
                 if hglobal == 0:
                     user32.CloseClipboard()
                     return False
-                
+
                 locked_memory = kernel32.GlobalLock(hglobal)
                 if locked_memory is None:
                     kernel32.GlobalFree(hglobal)
                     user32.CloseClipboard()
                     return False
-                
+
                 ctypes.memmove(locked_memory, text_bytes, len(text_bytes))
                 kernel32.GlobalUnlock(hglobal)
-                
+
                 # 设置剪贴板数据
                 user32.SetClipboardData(13, hglobal)  # CF_UNICODETEXT
                 user32.CloseClipboard()
@@ -180,6 +182,7 @@ class ClipboardUtils:
         """
         try:
             import win32clipboard
+
             win32clipboard.OpenClipboard()
             text = win32clipboard.GetClipboardData(win32clipboard.CF_UNICODETEXT)
             win32clipboard.CloseClipboard()
@@ -188,30 +191,31 @@ class ClipboardUtils:
             # 如果没有安装pywin32，尝试使用ctypes
             try:
                 import ctypes
+
                 user32 = ctypes.windll.user32
                 kernel32 = ctypes.windll.kernel32
-                
+
                 # 打开剪贴板
                 if not user32.OpenClipboard(None):
                     return None
-                
+
                 # 获取剪贴板数据
                 hglobal = user32.GetClipboardData(13)  # CF_UNICODETEXT
                 if hglobal == 0:
                     user32.CloseClipboard()
                     return None
-                
+
                 # 锁定内存并读取文本
                 locked_memory = kernel32.GlobalLock(hglobal)
                 if locked_memory is None:
                     user32.CloseClipboard()
                     return None
-                
+
                 # 计算文本长度
                 text_length = 0
-                while ctypes.c_wchar_p(locked_memory)[text_length] != '\x00':
+                while ctypes.c_wchar_p(locked_memory)[text_length] != "\x00":
                     text_length += 1
-                
+
                 # 复制文本
                 text = ctypes.wstring_at(locked_memory, text_length)
                 kernel32.GlobalUnlock(hglobal)
@@ -226,20 +230,21 @@ class ClipboardUtils:
         Windows平台复制图片到剪贴板
         """
         try:
+            import io
+
             import win32clipboard
             from PIL import Image
-            import io
-            
+
             # 确保图片是PIL Image对象
             if not isinstance(image, Image.Image):
                 return False
-            
+
             # 转换为BMP格式
             output = io.BytesIO()
-            image.save(output, format='BMP')
+            image.save(output, format="BMP")
             data = output.getvalue()[14:]  # 跳过BMP文件头
             output.close()
-            
+
             # 复制到剪贴板
             win32clipboard.OpenClipboard()
             win32clipboard.EmptyClipboard()
@@ -255,18 +260,23 @@ class ClipboardUtils:
         Windows平台从剪贴板获取图片
         """
         try:
+            import io
+
             import win32clipboard
             from PIL import Image
-            import io
-            
+
             win32clipboard.OpenClipboard()
             data = win32clipboard.GetClipboardData(win32clipboard.CF_DIB)
             win32clipboard.CloseClipboard()
-            
+
             # 重建BMP文件
-            bmp_header = b'BM' + (len(data) + 14).to_bytes(4, byteorder='little') + b'\x00\x00\x00\x00\x14\x00\x00\x00'
+            bmp_header = (
+                b"BM"
+                + (len(data) + 14).to_bytes(4, byteorder="little")
+                + b"\x00\x00\x00\x00\x14\x00\x00\x00"
+            )
             bmp_data = bmp_header + data
-            
+
             # 转换为PIL Image
             image = Image.open(io.BytesIO(bmp_data))
             return image
@@ -280,6 +290,7 @@ class ClipboardUtils:
         """
         try:
             import win32clipboard
+
             win32clipboard.OpenClipboard()
             win32clipboard.EmptyClipboard()
             win32clipboard.CloseClipboard()
@@ -288,6 +299,7 @@ class ClipboardUtils:
             # 如果没有安装pywin32，尝试使用ctypes
             try:
                 import ctypes
+
                 user32 = ctypes.windll.user32
                 if not user32.OpenClipboard(None):
                     return False
@@ -305,7 +317,8 @@ class ClipboardUtils:
         """
         try:
             import subprocess
-            subprocess.run(['pbcopy'], input=text.encode('utf-8'), check=True)
+
+            subprocess.run(["pbcopy"], input=text.encode("utf-8"), check=True)
             return True
         except Exception:
             return False
@@ -317,7 +330,10 @@ class ClipboardUtils:
         """
         try:
             import subprocess
-            result = subprocess.run(['pbpaste'], capture_output=True, text=True, check=True)
+
+            result = subprocess.run(
+                ["pbpaste"], capture_output=True, text=True, check=True
+            )
             return result.stdout
         except Exception:
             return None
@@ -328,22 +344,25 @@ class ClipboardUtils:
         macOS平台复制图片到剪贴板
         """
         try:
-            from PIL import Image
             import io
             import subprocess
-            
+
+            from PIL import Image
+
             # 确保图片是PIL Image对象
             if not isinstance(image, Image.Image):
                 return False
-            
+
             # 转换为PNG格式
             output = io.BytesIO()
-            image.save(output, format='PNG')
+            image.save(output, format="PNG")
             data = output.getvalue()
             output.close()
-            
+
             # 复制到剪贴板
-            process = subprocess.Popen(['pbcopy', '-Prefer', 'png'], stdin=subprocess.PIPE)
+            process = subprocess.Popen(
+                ["pbcopy", "-Prefer", "png"], stdin=subprocess.PIPE
+            )
             process.communicate(input=data)
             return process.returncode == 0
         except Exception:
@@ -355,12 +374,15 @@ class ClipboardUtils:
         macOS平台从剪贴板获取图片
         """
         try:
-            from PIL import Image
             import io
             import subprocess
-            
+
+            from PIL import Image
+
             # 从剪贴板获取图片
-            result = subprocess.run(['pbpaste', '-Prefer', 'png'], capture_output=True, check=True)
+            result = subprocess.run(
+                ["pbpaste", "-Prefer", "png"], capture_output=True, check=True
+            )
             image = Image.open(io.BytesIO(result.stdout))
             return image
         except Exception:
@@ -373,7 +395,8 @@ class ClipboardUtils:
         """
         try:
             import subprocess
-            subprocess.run(['pbcopy'], input=b'', check=True)
+
+            subprocess.run(["pbcopy"], input=b"", check=True)
             return True
         except Exception:
             return False
@@ -386,24 +409,29 @@ class ClipboardUtils:
         """
         try:
             import subprocess
+
             # 尝试使用xclip
             try:
-                process = subprocess.Popen(['xclip', '-selection', 'clipboard'], stdin=subprocess.PIPE)
-                process.communicate(input=text.encode('utf-8'))
+                process = subprocess.Popen(
+                    ["xclip", "-selection", "clipboard"], stdin=subprocess.PIPE
+                )
+                process.communicate(input=text.encode("utf-8"))
                 if process.returncode == 0:
                     return True
             except FileNotFoundError:
                 pass
-            
+
             # 尝试使用xsel
             try:
-                process = subprocess.Popen(['xsel', '--input', '--clipboard'], stdin=subprocess.PIPE)
-                process.communicate(input=text.encode('utf-8'))
+                process = subprocess.Popen(
+                    ["xsel", "--input", "--clipboard"], stdin=subprocess.PIPE
+                )
+                process.communicate(input=text.encode("utf-8"))
                 if process.returncode == 0:
                     return True
             except FileNotFoundError:
                 pass
-            
+
             return False
         except Exception:
             return False
@@ -415,22 +443,29 @@ class ClipboardUtils:
         """
         try:
             import subprocess
+
             # 尝试使用xclip
             try:
-                result = subprocess.run(['xclip', '-selection', 'clipboard', '-o'], capture_output=True, text=True)
+                result = subprocess.run(
+                    ["xclip", "-selection", "clipboard", "-o"],
+                    capture_output=True,
+                    text=True,
+                )
                 if result.returncode == 0:
                     return result.stdout
             except FileNotFoundError:
                 pass
-            
+
             # 尝试使用xsel
             try:
-                result = subprocess.run(['xsel', '--output', '--clipboard'], capture_output=True, text=True)
+                result = subprocess.run(
+                    ["xsel", "--output", "--clipboard"], capture_output=True, text=True
+                )
                 if result.returncode == 0:
                     return result.stdout
             except FileNotFoundError:
                 pass
-            
+
             return None
         except Exception:
             return None
@@ -441,29 +476,33 @@ class ClipboardUtils:
         Linux平台复制图片到剪贴板
         """
         try:
-            from PIL import Image
             import io
             import subprocess
-            
+
+            from PIL import Image
+
             # 确保图片是PIL Image对象
             if not isinstance(image, Image.Image):
                 return False
-            
+
             # 转换为PNG格式
             output = io.BytesIO()
-            image.save(output, format='PNG')
+            image.save(output, format="PNG")
             data = output.getvalue()
             output.close()
-            
+
             # 尝试使用xclip
             try:
-                process = subprocess.Popen(['xclip', '-selection', 'clipboard', '-t', 'image/png'], stdin=subprocess.PIPE)
+                process = subprocess.Popen(
+                    ["xclip", "-selection", "clipboard", "-t", "image/png"],
+                    stdin=subprocess.PIPE,
+                )
                 process.communicate(input=data)
                 if process.returncode == 0:
                     return True
             except FileNotFoundError:
                 pass
-            
+
             return False
         except Exception:
             return False
@@ -474,19 +513,23 @@ class ClipboardUtils:
         Linux平台从剪贴板获取图片
         """
         try:
-            from PIL import Image
             import io
             import subprocess
-            
+
+            from PIL import Image
+
             # 尝试使用xclip
             try:
-                result = subprocess.run(['xclip', '-selection', 'clipboard', '-o', '-t', 'image/png'], capture_output=True)
+                result = subprocess.run(
+                    ["xclip", "-selection", "clipboard", "-o", "-t", "image/png"],
+                    capture_output=True,
+                )
                 if result.returncode == 0 and result.stdout:
                     image = Image.open(io.BytesIO(result.stdout))
                     return image
             except FileNotFoundError:
                 pass
-            
+
             return None
         except Exception:
             return None
@@ -498,24 +541,29 @@ class ClipboardUtils:
         """
         try:
             import subprocess
+
             # 尝试使用xclip
             try:
-                process = subprocess.Popen(['xclip', '-selection', 'clipboard'], stdin=subprocess.PIPE)
-                process.communicate(input=b'')
+                process = subprocess.Popen(
+                    ["xclip", "-selection", "clipboard"], stdin=subprocess.PIPE
+                )
+                process.communicate(input=b"")
                 if process.returncode == 0:
                     return True
             except FileNotFoundError:
                 pass
-            
+
             # 尝试使用xsel
             try:
-                process = subprocess.Popen(['xsel', '--input', '--clipboard'], stdin=subprocess.PIPE)
-                process.communicate(input=b'')
+                process = subprocess.Popen(
+                    ["xsel", "--input", "--clipboard"], stdin=subprocess.PIPE
+                )
+                process.communicate(input=b"")
                 if process.returncode == 0:
                     return True
             except FileNotFoundError:
                 pass
-            
+
             return False
         except Exception:
             return False

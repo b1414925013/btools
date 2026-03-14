@@ -1,5 +1,7 @@
 """数组工具类"""
-from typing import Any, List, Optional, Tuple, Union, Callable
+
+from typing import Any, Callable, List, Optional, Tuple, Union
+
 import numpy as np
 
 
@@ -10,10 +12,10 @@ class ArrayUtils:
     def is_empty(array: Any) -> bool:
         """
         判断数组是否为空
-        
+
         Args:
             array: 要判断的数组
-            
+
         Returns:
             bool: 如果为空则返回True，否则返回False
         """
@@ -27,10 +29,10 @@ class ArrayUtils:
     def is_not_empty(array: Any) -> bool:
         """
         判断数组是否不为空
-        
+
         Args:
             array: 要判断的数组
-            
+
         Returns:
             bool: 如果不为空则返回True，否则返回False
         """
@@ -40,10 +42,10 @@ class ArrayUtils:
     def size(array: Any) -> int:
         """
         获取数组大小
-        
+
         Args:
             array: 要获取大小的数组
-            
+
         Returns:
             int: 数组大小
         """
@@ -57,7 +59,7 @@ class ArrayUtils:
     def add(array: List, element: Any) -> None:
         """
         向数组添加元素
-        
+
         Args:
             array: 要添加元素的数组
             element: 要添加的元素
@@ -69,7 +71,7 @@ class ArrayUtils:
     def add_all(array: List, elements: Union[List, Tuple]) -> None:
         """
         向数组添加多个元素
-        
+
         Args:
             array: 要添加元素的数组
             elements: 要添加的元素集合
@@ -81,11 +83,11 @@ class ArrayUtils:
     def remove(array: List, element: Any) -> bool:
         """
         从数组中移除元素
-        
+
         Args:
             array: 要移除元素的数组
             element: 要移除的元素
-            
+
         Returns:
             bool: 如果移除成功则返回True，否则返回False
         """
@@ -101,11 +103,11 @@ class ArrayUtils:
     def remove_at(array: List, index: int) -> Any:
         """
         从数组中移除指定位置的元素
-        
+
         Args:
             array: 要移除元素的数组
             index: 要移除的元素位置
-            
+
         Returns:
             Any: 被移除的元素，如果移除失败则返回None
         """
@@ -117,11 +119,11 @@ class ArrayUtils:
     def get(array: Union[List, Tuple], index: int) -> Any:
         """
         获取数组指定位置的元素
-        
+
         Args:
             array: 要获取元素的数组
             index: 元素位置
-            
+
         Returns:
             Any: 数组元素，如果位置无效则返回None
         """
@@ -133,12 +135,12 @@ class ArrayUtils:
     def set(array: List, index: int, element: Any) -> bool:
         """
         设置数组指定位置的元素
-        
+
         Args:
             array: 要设置元素的数组
             index: 元素位置
             element: 要设置的元素
-            
+
         Returns:
             bool: 如果设置成功则返回True，否则返回False
         """
@@ -151,11 +153,11 @@ class ArrayUtils:
     def index_of(array: Union[List, Tuple], element: Any) -> int:
         """
         查找元素在数组中第一次出现的位置
-        
+
         Args:
             array: 要查找的数组
             element: 要查找的元素
-            
+
         Returns:
             int: 元素在数组中第一次出现的位置，如果没有找到则返回-1
         """
@@ -170,11 +172,11 @@ class ArrayUtils:
     def last_index_of(array: Union[List, Tuple], element: Any) -> int:
         """
         查找元素在数组中最后一次出现的位置
-        
+
         Args:
             array: 要查找的数组
             element: 要查找的元素
-            
+
         Returns:
             int: 元素在数组中最后一次出现的位置，如果没有找到则返回-1
         """
@@ -189,11 +191,11 @@ class ArrayUtils:
     def contains(array: Union[List, Tuple], element: Any) -> bool:
         """
         判断数组是否包含指定元素
-        
+
         Args:
             array: 要判断的数组
             element: 要检查的元素
-            
+
         Returns:
             bool: 如果包含指定元素则返回True，否则返回False
         """
@@ -202,10 +204,12 @@ class ArrayUtils:
         return False
 
     @staticmethod
-    def sort(array: List, key: Optional[Callable[[Any], Any]] = None, reverse: bool = False) -> None:
+    def sort(
+        array: List, key: Optional[Callable[[Any], Any]] = None, reverse: bool = False
+    ) -> None:
         """
         排序数组
-        
+
         Args:
             array: 要排序的数组
             key: 排序键函数
@@ -215,15 +219,19 @@ class ArrayUtils:
             array.sort(key=key, reverse=reverse)
 
     @staticmethod
-    def sorted(array: Union[List, Tuple], key: Optional[Callable[[Any], Any]] = None, reverse: bool = False) -> List:
+    def sorted(
+        array: Union[List, Tuple],
+        key: Optional[Callable[[Any], Any]] = None,
+        reverse: bool = False,
+    ) -> List:
         """
         排序数组并返回新数组
-        
+
         Args:
             array: 要排序的数组
             key: 排序键函数
             reverse: 是否倒序
-            
+
         Returns:
             List: 排序后的新数组
         """
@@ -237,7 +245,7 @@ class ArrayUtils:
     def reverse(array: List) -> None:
         """
         反转数组
-        
+
         Args:
             array: 要反转的数组
         """
@@ -248,10 +256,10 @@ class ArrayUtils:
     def reversed(array: Union[List, Tuple]) -> List:
         """
         反转数组并返回新数组
-        
+
         Args:
             array: 要反转的数组
-            
+
         Returns:
             List: 反转后的新数组
         """
@@ -263,10 +271,10 @@ class ArrayUtils:
     def copy(array: Union[List, Tuple]) -> List:
         """
         复制数组
-        
+
         Args:
             array: 要复制的数组
-            
+
         Returns:
             List: 复制后的新数组
         """
@@ -275,15 +283,17 @@ class ArrayUtils:
         return list(array)
 
     @staticmethod
-    def sub_array(array: Union[List, Tuple], start: int, end: Optional[int] = None) -> List:
+    def sub_array(
+        array: Union[List, Tuple], start: int, end: Optional[int] = None
+    ) -> List:
         """
         截取数组
-        
+
         Args:
             array: 要截取的数组
             start: 起始位置
             end: 结束位置
-            
+
         Returns:
             List: 截取后的新数组
         """
@@ -295,10 +305,10 @@ class ArrayUtils:
     def concat(*arrays: Union[List, Tuple]) -> List:
         """
         合并多个数组
-        
+
         Args:
             *arrays: 要合并的数组
-            
+
         Returns:
             List: 合并后的新数组
         """
@@ -312,10 +322,10 @@ class ArrayUtils:
     def flatten(array: Union[List, Tuple]) -> List:
         """
         扁平化数组
-        
+
         Args:
             array: 要扁平化的数组
-            
+
         Returns:
             List: 扁平化后的新数组
         """
@@ -333,10 +343,10 @@ class ArrayUtils:
     def distinct(array: Union[List, Tuple]) -> List:
         """
         去重数组
-        
+
         Args:
             array: 要去重的数组
-            
+
         Returns:
             List: 去重后的新数组
         """
@@ -349,11 +359,11 @@ class ArrayUtils:
     def chunk(array: Union[List, Tuple], size: int) -> List[List]:
         """
         将数组分块
-        
+
         Args:
             array: 要分块的数组
             size: 块大小
-            
+
         Returns:
             List[List]: 分块后的新数组
         """
@@ -361,13 +371,15 @@ class ArrayUtils:
             return []
         if size <= 0:
             return [list(array)]
-        return [list(array[i:i+size]) for i in range(0, len(array), size)]
+        return [list(array[i : i + size]) for i in range(0, len(array), size)]
 
     @staticmethod
-    def fill(array: List, value: Any, start: int = 0, end: Optional[int] = None) -> None:
+    def fill(
+        array: List, value: Any, start: int = 0, end: Optional[int] = None
+    ) -> None:
         """
         填充数组
-        
+
         Args:
             array: 要填充的数组
             value: 填充值
@@ -383,10 +395,10 @@ class ArrayUtils:
     def to_list(array: Any) -> List:
         """
         将对象转换为数组
-        
+
         Args:
             array: 要转换的对象
-            
+
         Returns:
             List: 转换后的数组
         """
@@ -396,7 +408,7 @@ class ArrayUtils:
             return array
         if isinstance(array, (tuple, np.ndarray)):
             return list(array)
-        if hasattr(array, '__iter__'):
+        if hasattr(array, "__iter__"):
             return list(array)
         return [array]
 
@@ -404,10 +416,10 @@ class ArrayUtils:
     def to_tuple(array: Any) -> Tuple:
         """
         将对象转换为元组
-        
+
         Args:
             array: 要转换的对象
-            
+
         Returns:
             Tuple: 转换后的元组
         """
@@ -417,7 +429,7 @@ class ArrayUtils:
             return array
         if isinstance(array, (list, np.ndarray)):
             return tuple(array)
-        if hasattr(array, '__iter__'):
+        if hasattr(array, "__iter__"):
             return tuple(array)
         return (array,)
 
@@ -425,10 +437,10 @@ class ArrayUtils:
     def to_numpy(array: Any) -> np.ndarray:
         """
         将对象转换为NumPy数组
-        
+
         Args:
             array: 要转换的对象
-            
+
         Returns:
             np.ndarray: 转换后的NumPy数组
         """
@@ -442,10 +454,10 @@ class ArrayUtils:
     def max(array: Union[List, Tuple]) -> Any:
         """
         获取数组中的最大值
-        
+
         Args:
             array: 要获取最大值的数组
-            
+
         Returns:
             Any: 最大值，如果数组为空则返回None
         """
@@ -457,10 +469,10 @@ class ArrayUtils:
     def min(array: Union[List, Tuple]) -> Any:
         """
         获取数组中的最小值
-        
+
         Args:
             array: 要获取最小值的数组
-            
+
         Returns:
             Any: 最小值，如果数组为空则返回None
         """
@@ -472,10 +484,10 @@ class ArrayUtils:
     def sum(array: Union[List, Tuple]) -> Any:
         """
         计算数组中元素的和
-        
+
         Args:
             array: 要计算和的数组
-            
+
         Returns:
             Any: 元素的和，如果数组为空则返回0
         """
@@ -487,10 +499,10 @@ class ArrayUtils:
     def average(array: Union[List, Tuple]) -> float:
         """
         计算数组中元素的平均值
-        
+
         Args:
             array: 要计算平均值的数组
-            
+
         Returns:
             float: 元素的平均值，如果数组为空则返回0.0
         """
@@ -502,10 +514,10 @@ class ArrayUtils:
     def median(array: Union[List, Tuple]) -> float:
         """
         计算数组中元素的中位数
-        
+
         Args:
             array: 要计算中位数的数组
-            
+
         Returns:
             float: 元素的中位数，如果数组为空则返回0.0
         """
@@ -514,19 +526,19 @@ class ArrayUtils:
         sorted_array = sorted(array)
         n = len(sorted_array)
         if n % 2 == 0:
-            return (sorted_array[n//2 - 1] + sorted_array[n//2]) / 2
+            return (sorted_array[n // 2 - 1] + sorted_array[n // 2]) / 2
         else:
-            return sorted_array[n//2]
+            return sorted_array[n // 2]
 
     @staticmethod
     def frequency(array: Union[List, Tuple], element: Any) -> int:
         """
         计算元素在数组中出现的频率
-        
+
         Args:
             array: 要计算的数组
             element: 要计算频率的元素
-            
+
         Returns:
             int: 元素出现的频率
         """
@@ -538,11 +550,11 @@ class ArrayUtils:
     def filter(array: Union[List, Tuple], predicate: Callable[[Any], bool]) -> List:
         """
         过滤数组中符合条件的元素
-        
+
         Args:
             array: 要过滤的数组
             predicate: 条件函数
-            
+
         Returns:
             List: 符合条件的元素数组
         """
@@ -554,11 +566,11 @@ class ArrayUtils:
     def map(array: Union[List, Tuple], mapper: Callable[[Any], Any]) -> List:
         """
         映射数组中的元素
-        
+
         Args:
             array: 要映射的数组
             mapper: 映射函数
-            
+
         Returns:
             List: 映射后的元素数组
         """
@@ -570,7 +582,7 @@ class ArrayUtils:
     def for_each(array: Union[List, Tuple], action: Callable[[Any], None]) -> None:
         """
         遍历数组中的元素并执行操作
-        
+
         Args:
             array: 要遍历的数组
             action: 操作函数
@@ -583,11 +595,11 @@ class ArrayUtils:
     def any_match(array: Union[List, Tuple], predicate: Callable[[Any], bool]) -> bool:
         """
         判断数组中是否存在符合条件的元素
-        
+
         Args:
             array: 要判断的数组
             predicate: 条件函数
-            
+
         Returns:
             bool: 如果存在符合条件的元素则返回True，否则返回False
         """
@@ -601,11 +613,11 @@ class ArrayUtils:
     def all_match(array: Union[List, Tuple], predicate: Callable[[Any], bool]) -> bool:
         """
         判断数组中是否所有元素都符合条件
-        
+
         Args:
             array: 要判断的数组
             predicate: 条件函数
-            
+
         Returns:
             bool: 如果所有元素都符合条件则返回True，否则返回False
         """
@@ -620,11 +632,11 @@ class ArrayUtils:
     def none_match(array: Union[List, Tuple], predicate: Callable[[Any], bool]) -> bool:
         """
         判断数组中是否没有符合条件的元素
-        
+
         Args:
             array: 要判断的数组
             predicate: 条件函数
-            
+
         Returns:
             bool: 如果没有符合条件的元素则返回True，否则返回False
         """

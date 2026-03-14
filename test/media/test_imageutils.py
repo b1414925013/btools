@@ -3,10 +3,13 @@
 """
 ImageUtils 测试文件
 """
-import unittest
+
 import os
 import tempfile
+import unittest
+
 from PIL import Image
+
 from btools.core.media.imageutils import ImageUtils
 
 
@@ -24,7 +27,7 @@ class TestImageUtils(unittest.TestCase):
         # 创建测试图片
         self.test_image_path = os.path.join(self.temp_dir, "test_image.jpg")
         # 创建一个简单的测试图片
-        img = Image.new('RGB', (200, 200), color='red')
+        img = Image.new("RGB", (200, 200), color="red")
         img.save(self.test_image_path)
 
     def tearDown(self):
@@ -85,5 +88,5 @@ class TestImageUtils(unittest.TestCase):
         self.assertEqual(size, (200, 200))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

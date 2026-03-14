@@ -1,5 +1,7 @@
 """测试I18nUtils类"""
+
 import unittest
+
 from btools.core.template.i18nutils import I18nUtils
 
 
@@ -8,14 +10,7 @@ class TestI18nUtils(unittest.TestCase):
 
     def test_load_translations(self):
         """测试加载翻译"""
-        translations = {
-            "en": {
-                "hello": "Hello"
-            },
-            "zh": {
-                "hello": "你好"
-            }
-        }
+        translations = {"en": {"hello": "Hello"}, "zh": {"hello": "你好"}}
         I18nUtils.load_translations(translations)
         # 测试默认语言
         self.assertEqual(I18nUtils.get("hello"), "Hello")
@@ -25,14 +20,7 @@ class TestI18nUtils(unittest.TestCase):
 
     def test_translate(self):
         """测试翻译"""
-        translations = {
-            "en": {
-                "hello": "Hello"
-            },
-            "zh": {
-                "hello": "你好"
-            }
-        }
+        translations = {"en": {"hello": "Hello"}, "zh": {"hello": "你好"}}
         I18nUtils.load_translations(translations)
         self.assertEqual(I18nUtils.translate("hello", locale="zh"), "你好")
 

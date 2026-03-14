@@ -2,9 +2,19 @@
 """
 JSONPath工具测试
 """
+
 import unittest
+
 from btools.core.data.jsonpathutils import (
-    JSONPathUtils, parse, find, find_first, exists, update, delete, extract, apply
+    JSONPathUtils,
+    apply,
+    delete,
+    exists,
+    extract,
+    find,
+    find_first,
+    parse,
+    update,
 )
 
 
@@ -20,22 +30,12 @@ class TestJSONPathUtils(unittest.TestCase):
         self.test_data = {
             "name": "John",
             "age": 30,
-            "address": {
-                "street": "123 Main St",
-                "city": "New York",
-                "zip": "10001"
-            },
+            "address": {"street": "123 Main St", "city": "New York", "zip": "10001"},
             "phone_numbers": [
-                {
-                    "type": "home",
-                    "number": "555-1234"
-                },
-                {
-                    "type": "work",
-                    "number": "555-5678"
-                }
+                {"type": "home", "number": "555-1234"},
+                {"type": "work", "number": "555-5678"},
             ],
-            "email": "john@example.com"
+            "email": "john@example.com",
         }
 
     def test_parse(self):
@@ -129,7 +129,7 @@ class TestJSONPathUtils(unittest.TestCase):
         jsonpath_map = {
             "person_name": "$.name",
             "person_age": "$.age",
-            "city": "$.address.city"
+            "city": "$.address.city",
         }
         result = JSONPathUtils.extract(self.test_data, jsonpath_map)
         self.assertEqual(result["person_name"], "John")
@@ -182,10 +182,7 @@ class TestJSONPathUtils(unittest.TestCase):
         self.assertNotIn("email", updated_data)
 
         # 测试extract便捷函数
-        jsonpath_map = {
-            "person_name": "$.name",
-            "person_age": "$.age"
-        }
+        jsonpath_map = {"person_name": "$.name", "person_age": "$.age"}
         result = extract(self.test_data, jsonpath_map)
         self.assertEqual(result["person_name"], "John")
         self.assertEqual(result["person_age"], 30)
@@ -196,5 +193,5 @@ class TestJSONPathUtils(unittest.TestCase):
         self.assertEqual(updated_data["age"], 31)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

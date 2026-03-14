@@ -5,9 +5,11 @@
 
 提供环境变量管理，不同环境配置切换等功能
 """
+
 import os
+from typing import Any, Dict, List, Optional
+
 import dotenv
-from typing import Dict, Optional, Any, List
 
 
 class EnvironmentUtils:
@@ -16,7 +18,7 @@ class EnvironmentUtils:
     """
 
     @staticmethod
-    def load_env(file_path: str = '.env') -> bool:
+    def load_env(file_path: str = ".env") -> bool:
         """
         加载环境变量文件
 
@@ -81,7 +83,7 @@ class EnvironmentUtils:
         value = os.getenv(key)
         if value is None:
             return default
-        return value.lower() in ('true', '1', 'yes', 'y', 't')
+        return value.lower() in ("true", "1", "yes", "y", "t")
 
     @staticmethod
     def get_env_float(key: str, default: float = 0.0) -> float:
@@ -166,7 +168,7 @@ class EnvironmentUtils:
         return result
 
     @staticmethod
-    def load_environment(environment: str = 'development') -> bool:
+    def load_environment(environment: str = "development") -> bool:
         """
         加载指定环境的配置
 
@@ -177,11 +179,7 @@ class EnvironmentUtils:
             是否成功
         """
         # 尝试加载对应环境的配置文件
-        env_files = [
-            f'.env.{environment}',
-            f'.env.{environment}.local',
-            '.env'
-        ]
+        env_files = [f".env.{environment}", f".env.{environment}.local", ".env"]
 
         success = False
         for env_file in env_files:
@@ -190,7 +188,7 @@ class EnvironmentUtils:
                     success = True
 
         # 设置当前环境
-        EnvironmentUtils.set_env('ENVIRONMENT', environment)
+        EnvironmentUtils.set_env("ENVIRONMENT", environment)
 
         return success
 
@@ -202,7 +200,7 @@ class EnvironmentUtils:
         Returns:
             当前环境名称
         """
-        return EnvironmentUtils.get_env('ENVIRONMENT', 'development')
+        return EnvironmentUtils.get_env("ENVIRONMENT", "development")
 
     @staticmethod
     def is_development() -> bool:
@@ -212,7 +210,7 @@ class EnvironmentUtils:
         Returns:
             是否为开发环境
         """
-        return EnvironmentUtils.get_current_environment() == 'development'
+        return EnvironmentUtils.get_current_environment() == "development"
 
     @staticmethod
     def is_production() -> bool:
@@ -222,7 +220,7 @@ class EnvironmentUtils:
         Returns:
             是否为生产环境
         """
-        return EnvironmentUtils.get_current_environment() == 'production'
+        return EnvironmentUtils.get_current_environment() == "production"
 
     @staticmethod
     def is_test() -> bool:
@@ -232,10 +230,10 @@ class EnvironmentUtils:
         Returns:
             是否为测试环境
         """
-        return EnvironmentUtils.get_current_environment() == 'test'
+        return EnvironmentUtils.get_current_environment() == "test"
 
     @staticmethod
-    def export_env(file_path: str = '.env') -> bool:
+    def export_env(file_path: str = ".env") -> bool:
         """
         导出环境变量到文件
 
@@ -246,7 +244,7 @@ class EnvironmentUtils:
             是否成功
         """
         try:
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 for key, value in os.environ.items():
                     f.write(f"{key}={value}\n")
             return True
@@ -282,7 +280,9 @@ class EnvironmentUtils:
             EnvironmentUtils.set_env(key, value)
 
     @staticmethod
-    def get_env_list(key: str, separator: str = ',', default: List[str] = None) -> List[str]:
+    def get_env_list(
+        key: str, separator: str = ",", default: List[str] = None
+    ) -> List[str]:
         """
         获取列表型环境变量
 
@@ -300,7 +300,12 @@ class EnvironmentUtils:
         return [item.strip() for item in value.split(separator) if item.strip()]
 
     @staticmethod
-    def get_env_dict(key: str, pair_separator: str = ',', kv_separator: str = '=', default: Dict[str, str] = None) -> Dict[str, str]:
+    def get_env_dict(
+        key: str,
+        pair_separator: str = ",",
+        kv_separator: str = "=",
+        default: Dict[str, str] = None,
+    ) -> Dict[str, str]:
         """
         获取字典型环境变量
 
@@ -335,14 +340,14 @@ class EnvironmentUtils:
         """
         # 清除当前环境变量
         for key in list(os.environ.keys()):
-            if not key.startswith('PYTHON'):
+            if not key.startswith("PYTHON"):
                 del os.environ[key]
 
         # 重新加载
         return EnvironmentUtils.load_environment()
 
     @staticmethod
-    def get_env_file_path(environment: str = 'development') -> str:
+    def get_env_file_path(environment: str = "development") -> str:
         """
         获取环境变量文件路径
 
@@ -354,17 +359,17 @@ class EnvironmentUtils:
         """
         # 优先返回存在的文件
         env_files = [
-            f'.env.{environment}.local',
-            f'.env.{environment}',
-            '.env.local',
-            '.env'
+            f".env.{environment}.local",
+            f".env.{environment}",
+            ".env.local",
+            ".env",
         ]
 
         for env_file in env_files:
             if os.path.exists(env_file):
                 return env_file
 
-        return '.env'
+        return ".env"
 
     @staticmethod
     def create_env_file(file_path: str, vars: Dict[str, str]) -> bool:
@@ -379,7 +384,7 @@ class EnvironmentUtils:
             是否成功
         """
         try:
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 for key, value in vars.items():
                     f.write(f"{key}={value}\n")
             return True
@@ -404,16 +409,16 @@ class EnvironmentUtils:
             # 按顺序加载文件，后面的文件会覆盖前面的
             for file_path in file_paths:
                 if os.path.exists(file_path):
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, "r", encoding="utf-8") as f:
                         for line in f:
                             line = line.strip()
-                            if line and not line.startswith('#'):
-                                if '=' in line:
-                                    key, value = line.split('=', 1)
+                            if line and not line.startswith("#"):
+                                if "=" in line:
+                                    key, value = line.split("=", 1)
                                     merged_vars[key.strip()] = value.strip()
 
             # 写入合并后的文件
-            with open(output_path, 'w', encoding='utf-8') as f:
+            with open(output_path, "w", encoding="utf-8") as f:
                 for key, value in merged_vars.items():
                     f.write(f"{key}={value}\n")
 

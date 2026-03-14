@@ -3,8 +3,10 @@
 """
 RandomUtil 测试文件
 """
+
 import string
 import unittest
+
 from btools.core.basic import RandomUtil
 
 
@@ -201,8 +203,9 @@ class TestRandomUtil(unittest.TestCase):
         测试生成随机UUID
         """
         import re
-        uuid_pattern = r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
-        
+
+        uuid_pattern = r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+
         for _ in range(100):
             value = RandomUtil.randomUUID()
             self.assertIsInstance(value, str)
@@ -213,16 +216,16 @@ class TestRandomUtil(unittest.TestCase):
         测试生成随机颜色
         """
         import re
-        
+
         # 测试不包含透明度
-        color_pattern = r'^#[0-9a-f]{6}$'
+        color_pattern = r"^#[0-9a-f]{6}$"
         for _ in range(100):
             value = RandomUtil.randomColor()
             self.assertIsInstance(value, str)
             self.assertTrue(re.match(color_pattern, value))
 
         # 测试包含透明度
-        color_with_alpha_pattern = r'^#[0-9a-f]{8}$'
+        color_with_alpha_pattern = r"^#[0-9a-f]{8}$"
         for _ in range(100):
             value = RandomUtil.randomColor(alpha=True)
             self.assertIsInstance(value, str)
@@ -233,8 +236,9 @@ class TestRandomUtil(unittest.TestCase):
         测试生成随机邮箱地址
         """
         import re
-        email_pattern = r'^[a-z0-9]+@example\.com$'
-        
+
+        email_pattern = r"^[a-z0-9]+@example\.com$"
+
         for _ in range(100):
             value = RandomUtil.randomEmail()
             self.assertIsInstance(value, str)
@@ -245,8 +249,9 @@ class TestRandomUtil(unittest.TestCase):
         测试生成随机手机号
         """
         import re
-        phone_pattern = r'^138\d{8}$'
-        
+
+        phone_pattern = r"^138\d{8}$"
+
         for _ in range(100):
             value = RandomUtil.randomPhone()
             self.assertIsInstance(value, str)
@@ -257,7 +262,7 @@ class TestRandomUtil(unittest.TestCase):
         测试生成随机密码
         """
         import re
-        
+
         for _ in range(100):
             value = RandomUtil.randomPassword(12)
             self.assertIsInstance(value, str)
@@ -307,10 +312,10 @@ class TestRandomUtil(unittest.TestCase):
         # 设置种子后，生成的随机数应该相同
         RandomUtil.setSeed(12345)
         value1 = RandomUtil.randomInt()
-        
+
         RandomUtil.setSeed(12345)
         value2 = RandomUtil.randomInt()
-        
+
         self.assertEqual(value1, value2)
 
     def test_getRandom(self):
@@ -318,7 +323,7 @@ class TestRandomUtil(unittest.TestCase):
         测试获取随机数生成器实例
         """
         import random
-        
+
         r = RandomUtil.getRandom()
         self.assertIsInstance(r, type(random))
 
@@ -350,5 +355,5 @@ class TestRandomUtil(unittest.TestCase):
             self.assertGreater(value, 0.0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -1,10 +1,6 @@
 # Media utilities
+from .compressutils import CompressUtils
 from .imageutils import ImageUtils
 from .qrcodeutils import QrCodeUtils
-from .compressutils import CompressUtils
 
-__all__ = [
-    'ImageUtils',
-    'QrCodeUtils',
-    'CompressUtils'
-]
+__all__ = ["ImageUtils", "QrCodeUtils", "CompressUtils"]

@@ -1,6 +1,8 @@
 """测试PathUtils类"""
-import unittest
+
 import os
+import unittest
+
 from btools.core.system.pathutils import PathUtils
 
 
@@ -46,7 +48,7 @@ class TestPathUtils(unittest.TestCase):
 
     def test_is_absolute(self):
         """测试检查是否为绝对路径"""
-        if os.name == 'nt':  # Windows
+        if os.name == "nt":  # Windows
             self.assertTrue(PathUtils.is_absolute("C:\\path\\to\\file.txt"))
         else:  # Unix
             self.assertTrue(PathUtils.is_absolute("/path/to/file.txt"))

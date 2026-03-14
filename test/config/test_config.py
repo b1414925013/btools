@@ -1,7 +1,9 @@
 """测试Config类"""
-import unittest
+
 import os
 import tempfile
+import unittest
+
 from btools.core.config.configutils import Config
 
 
@@ -14,8 +16,15 @@ class TestConfig(unittest.TestCase):
         self.temp_file = tempfile.mktemp(suffix=".json")
         # 写入测试配置
         import json
+
         with open(self.temp_file, "w", encoding="utf-8") as f:
-            json.dump({"database": {"host": "localhost", "port": 3306}, "api": {"key": "test_key"}}, f)
+            json.dump(
+                {
+                    "database": {"host": "localhost", "port": 3306},
+                    "api": {"key": "test_key"},
+                },
+                f,
+            )
 
     def tearDown(self):
         """清理测试环境"""
@@ -67,8 +76,6 @@ class TestConfig(unittest.TestCase):
         new_config = Config(self.temp_file)
         # 检查配置是否保存成功
         self.assertEqual(new_config.get("database.host"), "newhost")
-
-
 
 
 if __name__ == "__main__":

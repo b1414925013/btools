@@ -1,10 +1,12 @@
 """二维码工具类"""
-import qrcode
-from pyzbar import pyzbar
-from PIL import Image
-import io
+
 import base64
-from typing import Optional, Dict, Any
+import io
+from typing import Any, Dict, Optional
+
+import qrcode
+from PIL import Image
+from pyzbar import pyzbar
 
 
 class QrCodeUtils:
@@ -17,12 +19,12 @@ class QrCodeUtils:
         error_correction: int = qrcode.constants.ERROR_CORRECT_M,
         box_size: int = 10,
         border: int = 4,
-        fill_color: str = 'black',
-        back_color: str = 'white'
+        fill_color: str = "black",
+        back_color: str = "white",
     ) -> Image.Image:
         """
         生成二维码
-        
+
         Args:
             data: 要编码的数据
             version: 二维码版本（1-40），None表示自动选择
@@ -31,7 +33,7 @@ class QrCodeUtils:
             border: 边框大小
             fill_color: 填充颜色
             back_color: 背景颜色
-            
+
         Returns:
             Image.Image: 二维码图片对象
         """
@@ -39,7 +41,7 @@ class QrCodeUtils:
             version=version,
             error_correction=error_correction,
             box_size=box_size,
-            border=border
+            border=border,
         )
         qr.add_data(data)
         qr.make(fit=True)
@@ -54,13 +56,13 @@ class QrCodeUtils:
         error_correction: int = qrcode.constants.ERROR_CORRECT_M,
         box_size: int = 10,
         border: int = 4,
-        fill_color: str = 'black',
-        back_color: str = 'white',
-        format: Optional[str] = None
+        fill_color: str = "black",
+        back_color: str = "white",
+        format: Optional[str] = None,
     ) -> bool:
         """
         生成并保存二维码
-        
+
         Args:
             data: 要编码的数据
             save_path: 保存路径
@@ -71,7 +73,7 @@ class QrCodeUtils:
             fill_color: 填充颜色
             back_color: 背景颜色
             format: 图片格式
-            
+
         Returns:
             bool: 如果保存成功则返回True，否则返回False
         """
@@ -83,7 +85,7 @@ class QrCodeUtils:
                 box_size=box_size,
                 border=border,
                 fill_color=fill_color,
-                back_color=back_color
+                back_color=back_color,
             )
             img.save(save_path, format=format)
             return True
@@ -97,13 +99,13 @@ class QrCodeUtils:
         error_correction: int = qrcode.constants.ERROR_CORRECT_M,
         box_size: int = 10,
         border: int = 4,
-        fill_color: str = 'black',
-        back_color: str = 'white',
-        format: str = 'PNG'
+        fill_color: str = "black",
+        back_color: str = "white",
+        format: str = "PNG",
     ) -> bytes:
         """
         生成二维码并转换为字节
-        
+
         Args:
             data: 要编码的数据
             version: 二维码版本（1-40），None表示自动选择
@@ -113,7 +115,7 @@ class QrCodeUtils:
             fill_color: 填充颜色
             back_color: 背景颜色
             format: 图片格式
-            
+
         Returns:
             bytes: 二维码图片字节
         """
@@ -124,7 +126,7 @@ class QrCodeUtils:
             box_size=box_size,
             border=border,
             fill_color=fill_color,
-            back_color=back_color
+            back_color=back_color,
         )
         buffer = io.BytesIO()
         img.save(buffer, format=format)
@@ -137,13 +139,13 @@ class QrCodeUtils:
         error_correction: int = qrcode.constants.ERROR_CORRECT_M,
         box_size: int = 10,
         border: int = 4,
-        fill_color: str = 'black',
-        back_color: str = 'white',
-        format: str = 'PNG'
+        fill_color: str = "black",
+        back_color: str = "white",
+        format: str = "PNG",
     ) -> str:
         """
         生成二维码并转换为base64
-        
+
         Args:
             data: 要编码的数据
             version: 二维码版本（1-40），None表示自动选择
@@ -153,7 +155,7 @@ class QrCodeUtils:
             fill_color: 填充颜色
             back_color: 背景颜色
             format: 图片格式
-            
+
         Returns:
             str: 二维码图片base64字符串
         """
@@ -165,25 +167,25 @@ class QrCodeUtils:
             border=border,
             fill_color=fill_color,
             back_color=back_color,
-            format=format
+            format=format,
         )
-        return base64.b64encode(img_bytes).decode('utf-8')
+        return base64.b64encode(img_bytes).decode("utf-8")
 
     @staticmethod
     def decode_qr_code(image: Image.Image) -> Optional[str]:
         """
         解析二维码
-        
+
         Args:
             image: 二维码图片对象
-            
+
         Returns:
             Optional[str]: 解析出的数据，如果解析失败则返回None
         """
         try:
             decoded_objects = pyzbar.decode(image)
             if decoded_objects:
-                return decoded_objects[0].data.decode('utf-8')
+                return decoded_objects[0].data.decode("utf-8")
             return None
         except Exception:
             return None
@@ -192,10 +194,10 @@ class QrCodeUtils:
     def decode_qr_code_from_file(image_path: str) -> Optional[str]:
         """
         从文件解析二维码
-        
+
         Args:
             image_path: 二维码图片路径
-            
+
         Returns:
             Optional[str]: 解析出的数据，如果解析失败则返回None
         """
@@ -209,10 +211,10 @@ class QrCodeUtils:
     def decode_qr_code_from_bytes(image_bytes: bytes) -> Optional[str]:
         """
         从字节解析二维码
-        
+
         Args:
             image_bytes: 二维码图片字节
-            
+
         Returns:
             Optional[str]: 解析出的数据，如果解析失败则返回None
         """
@@ -226,10 +228,10 @@ class QrCodeUtils:
     def decode_qr_code_from_base64(base64_str: str) -> Optional[str]:
         """
         从base64解析二维码
-        
+
         Args:
             base64_str: 二维码图片base64字符串
-            
+
         Returns:
             Optional[str]: 解析出的数据，如果解析失败则返回None
         """
@@ -248,12 +250,12 @@ class QrCodeUtils:
         error_correction: int = qrcode.constants.ERROR_CORRECT_H,
         box_size: int = 10,
         border: int = 4,
-        fill_color: str = 'black',
-        back_color: str = 'white'
+        fill_color: str = "black",
+        back_color: str = "white",
     ) -> Image.Image:
         """
         生成带Logo的二维码
-        
+
         Args:
             data: 要编码的数据
             logo_path: Logo图片路径
@@ -264,7 +266,7 @@ class QrCodeUtils:
             border: 边框大小
             fill_color: 填充颜色
             back_color: 背景颜色
-            
+
         Returns:
             Image.Image: 带Logo的二维码图片对象
         """
@@ -276,25 +278,25 @@ class QrCodeUtils:
             box_size=box_size,
             border=border,
             fill_color=fill_color,
-            back_color=back_color
+            back_color=back_color,
         )
-        
+
         # 打开Logo图片
         logo = Image.open(logo_path)
-        
+
         # 计算Logo大小
         qr_width, qr_height = qr_img.size
         logo_width = int(qr_width * logo_size)
         logo_height = int(qr_height * logo_size)
         logo = logo.resize((logo_width, logo_height), Image.Resampling.LANCZOS)
-        
+
         # 计算Logo位置
         logo_x = (qr_width - logo_width) // 2
         logo_y = (qr_height - logo_height) // 2
-        
+
         # 添加Logo到二维码
         qr_img.paste(logo, (logo_x, logo_y))
-        
+
         return qr_img
 
     @staticmethod
@@ -307,13 +309,13 @@ class QrCodeUtils:
         error_correction: int = qrcode.constants.ERROR_CORRECT_H,
         box_size: int = 10,
         border: int = 4,
-        fill_color: str = 'black',
-        back_color: str = 'white',
-        format: Optional[str] = None
+        fill_color: str = "black",
+        back_color: str = "white",
+        format: Optional[str] = None,
     ) -> bool:
         """
         生成并保存带Logo的二维码
-        
+
         Args:
             data: 要编码的数据
             logo_path: Logo图片路径
@@ -326,7 +328,7 @@ class QrCodeUtils:
             fill_color: 填充颜色
             back_color: 背景颜色
             format: 图片格式
-            
+
         Returns:
             bool: 如果保存成功则返回True，否则返回False
         """
@@ -340,7 +342,7 @@ class QrCodeUtils:
                 box_size=box_size,
                 border=border,
                 fill_color=fill_color,
-                back_color=back_color
+                back_color=back_color,
             )
             img.save(save_path, format=format)
             return True
@@ -351,18 +353,18 @@ class QrCodeUtils:
     def get_error_correction_level(level: str) -> int:
         """
         获取错误校正级别
-        
+
         Args:
             level: 错误校正级别字符串（L, M, Q, H）
-            
+
         Returns:
             int: 错误校正级别常量
         """
         levels = {
-            'L': qrcode.constants.ERROR_CORRECT_L,
-            'M': qrcode.constants.ERROR_CORRECT_M,
-            'Q': qrcode.constants.ERROR_CORRECT_Q,
-            'H': qrcode.constants.ERROR_CORRECT_H
+            "L": qrcode.constants.ERROR_CORRECT_L,
+            "M": qrcode.constants.ERROR_CORRECT_M,
+            "Q": qrcode.constants.ERROR_CORRECT_Q,
+            "H": qrcode.constants.ERROR_CORRECT_H,
         }
         return levels.get(level.upper(), qrcode.constants.ERROR_CORRECT_M)
 
@@ -370,10 +372,10 @@ class QrCodeUtils:
     def validate_qr_code_data(data: str) -> bool:
         """
         验证二维码数据
-        
+
         Args:
             data: 要编码的数据
-            
+
         Returns:
             bool: 如果数据有效则返回True，否则返回False
         """
@@ -387,11 +389,11 @@ class QrCodeUtils:
         company: Optional[str] = None,
         title: Optional[str] = None,
         url: Optional[str] = None,
-        address: Optional[str] = None
+        address: Optional[str] = None,
     ) -> Image.Image:
         """
         生成VCARD二维码
-        
+
         Args:
             name: 姓名
             phone: 电话号码
@@ -400,7 +402,7 @@ class QrCodeUtils:
             title: 职位
             url: 个人网站
             address: 地址
-            
+
         Returns:
             Image.Image: VCARD二维码图片对象
         """
@@ -418,17 +420,17 @@ class QrCodeUtils:
         if address:
             vcard_data += f"ADR:{address}\n"
         vcard_data += "END:VCARD"
-        
+
         return QrCodeUtils.generate_qr_code(vcard_data)
 
     @staticmethod
     def generate_url_qr_code(url: str) -> Image.Image:
         """
         生成URL二维码
-        
+
         Args:
             url: URL地址
-            
+
         Returns:
             Image.Image: URL二维码图片对象
         """
@@ -438,10 +440,10 @@ class QrCodeUtils:
     def generate_text_qr_code(text: str) -> Image.Image:
         """
         生成文本二维码
-        
+
         Args:
             text: 文本内容
-            
+
         Returns:
             Image.Image: 文本二维码图片对象
         """

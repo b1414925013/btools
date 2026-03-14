@@ -1,5 +1,6 @@
 import unittest
-from typing import Any, List, Dict, Tuple, Optional, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 from btools.core.basic.typeutils import TypeUtils
 
 
@@ -250,6 +251,7 @@ class TestTypeUtils(unittest.TestCase):
         """
         测试检查对象是否为可调用对象
         """
+
         def test_func():
             pass
 
@@ -266,6 +268,7 @@ class TestTypeUtils(unittest.TestCase):
         """
         测试检查对象是否为函数
         """
+
         def test_func():
             pass
 
@@ -286,6 +289,7 @@ class TestTypeUtils(unittest.TestCase):
         """
         测试检查对象是否为方法
         """
+
         class TestClass:
             def method(self):
                 pass
@@ -303,6 +307,7 @@ class TestTypeUtils(unittest.TestCase):
         """
         测试检查对象是否为类
         """
+
         class TestClass:
             pass
 
@@ -315,6 +320,7 @@ class TestTypeUtils(unittest.TestCase):
         """
         测试检查对象是否为指定类型的实例
         """
+
         class TestClass:
             pass
 
@@ -329,6 +335,7 @@ class TestTypeUtils(unittest.TestCase):
         """
         测试检查类是否为指定类的子类
         """
+
         class BaseClass:
             pass
 
@@ -345,6 +352,7 @@ class TestTypeUtils(unittest.TestCase):
         """
         测试获取类的所有父类
         """
+
         class BaseClass:
             pass
 
@@ -360,6 +368,7 @@ class TestTypeUtils(unittest.TestCase):
         """
         测试获取类的注解
         """
+
         class TestClass:
             a: int
             b: str
@@ -373,6 +382,7 @@ class TestTypeUtils(unittest.TestCase):
         """
         测试获取函数的注解
         """
+
         def test_func(a: int, b: str) -> bool:
             return True
 
@@ -387,6 +397,7 @@ class TestTypeUtils(unittest.TestCase):
         测试获取对象所在的模块名称
         """
         import os
+
         # 在Windows系统上，os.path实际上是ntpath的别名
         module_name = TypeUtils.get_module_name(os.path.join)
         self.assertTrue(module_name in ["os.path", "ntpath"])
@@ -397,6 +408,7 @@ class TestTypeUtils(unittest.TestCase):
         """
         测试获取对象的限定名称
         """
+
         def test_func():
             pass
 
@@ -407,10 +419,10 @@ class TestTypeUtils(unittest.TestCase):
         # 在方法内部定义的函数和类会包含完整的限定名称
         func_name = TypeUtils.get_qualified_name(test_func)
         self.assertTrue("test_func" in func_name)
-        
+
         method_name = TypeUtils.get_qualified_name(TestClass.method)
         self.assertTrue("TestClass.method" in method_name)
-        
+
         self.assertEqual(TypeUtils.get_qualified_name(1), "1")
         self.assertEqual(TypeUtils.get_qualified_name(None), "")
 
@@ -432,6 +444,7 @@ class TestTypeUtils(unittest.TestCase):
         """
         测试检查类型是否为自定义类型
         """
+
         class TestClass:
             pass
 
@@ -441,5 +454,5 @@ class TestTypeUtils(unittest.TestCase):
         self.assertFalse(TypeUtils.is_custom_type(list))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

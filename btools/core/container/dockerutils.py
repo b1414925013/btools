@@ -5,9 +5,10 @@ Docker 操作工具类
 
 提供 Docker 操作封装，镜像构建、容器管理等功能
 """
-import subprocess
+
 import json
-from typing import List, Dict, Optional, Any, Tuple
+import subprocess
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class DockerUtils:
@@ -27,14 +28,10 @@ class DockerUtils:
             (返回码, 标准输出, 标准错误)
         """
         try:
-            result = subprocess.run(
-                ['docker'] + cmd,
-                capture_output=True,
-                text=True
-            )
+            result = subprocess.run(["docker"] + cmd, capture_output=True, text=True)
             return result.returncode, result.stdout.strip(), result.stderr.strip()
         except Exception as e:
-            return 1, '', str(e)
+            return 1, "", str(e)
 
     @staticmethod
     def build_image(path: str, tag: str, dockerfile: str = None) -> bool:
@@ -49,9 +46,9 @@ class DockerUtils:
         Returns:
             是否成功
         """
-        cmd = ['build', '-t', tag]
+        cmd = ["build", "-t", tag]
         if dockerfile:
-            cmd.extend(['-f', dockerfile])
+            cmd.extend(["-f", dockerfile])
         cmd.append(path)
         code, _, _ = DockerUtils.run_docker_command(cmd)
         return code == 0
@@ -64,10 +61,12 @@ class DockerUtils:
         Returns:
             镜像列表
         """
-        code, stdout, _ = DockerUtils.run_docker_command(['images', '--format', '{{json .}}'])
+        code, stdout, _ = DockerUtils.run_docker_command(
+            ["images", "--format", "{{json .}}"]
+        )
         if code == 0:
             images = []
-            for line in stdout.split('\n'):
+            for line in stdout.split("\n"):
                 if line:
                     images.append(json.loads(line))
             return images
@@ -84,7 +83,7 @@ class DockerUtils:
         Returns:
             是否成功
         """
-        code, _, _ = DockerUtils.run_docker_command(['pull', image])
+        code, _, _ = DockerUtils.run_docker_command(["pull", image])
         return code == 0
 
     @staticmethod
@@ -98,7 +97,7 @@ class DockerUtils:
         Returns:
             是否成功
         """
-        code, _, _ = DockerUtils.run_docker_command(['push', image])
+        code, _, _ = DockerUtils.run_docker_command(["push", image])
         return code == 0
 
     @staticmethod
@@ -113,17 +112,22 @@ class DockerUtils:
         Returns:
             是否成功
         """
-        cmd = ['rmi']
+        cmd = ["rmi"]
         if force:
-            cmd.append('-f')
+            cmd.append("-f")
         cmd.append(image)
         code, _, _ = DockerUtils.run_docker_command(cmd)
         return code == 0
 
     @staticmethod
-    def run_container(image: str, name: str = None, ports: List[str] = None, 
-                     volumes: List[str] = None, environment: Dict[str, str] = None, 
-                     detach: bool = True) -> Optional[str]:
+    def run_container(
+        image: str,
+        name: str = None,
+        ports: List[str] = None,
+        volumes: List[str] = None,
+        environment: Dict[str, str] = None,
+        detach: bool = True,
+    ) -> Optional[str]:
         """
         运行 Docker 容器
 
@@ -138,22 +142,22 @@ class DockerUtils:
         Returns:
             容器 ID
         """
-        cmd = ['run']
+        cmd = ["run"]
         if name:
-            cmd.extend(['--name', name])
+            cmd.extend(["--name", name])
         if ports:
             for port in ports:
-                cmd.extend(['-p', port])
+                cmd.extend(["-p", port])
         if volumes:
             for volume in volumes:
-                cmd.extend(['-v', volume])
+                cmd.extend(["-v", volume])
         if environment:
             for key, value in environment.items():
-                cmd.extend(['-e', f'{key}={value}'])
+                cmd.extend(["-e", f"{key}={value}"])
         if detach:
-            cmd.append('-d')
+            cmd.append("-d")
         cmd.append(image)
-        
+
         code, stdout, _ = DockerUtils.run_docker_command(cmd)
         if code == 0:
             return stdout
@@ -170,14 +174,14 @@ class DockerUtils:
         Returns:
             容器列表
         """
-        cmd = ['ps']
+        cmd = ["ps"]
         if all:
-            cmd.append('-a')
-        cmd.extend(['--format', '{{json .}}'])
+            cmd.append("-a")
+        cmd.extend(["--format", "{{json .}}"])
         code, stdout, _ = DockerUtils.run_docker_command(cmd)
         if code == 0:
             containers = []
-            for line in stdout.split('\n'):
+            for line in stdout.split("\n"):
                 if line:
                     containers.append(json.loads(line))
             return containers
@@ -194,7 +198,7 @@ class DockerUtils:
         Returns:
             是否成功
         """
-        code, _, _ = DockerUtils.run_docker_command(['start', container])
+        code, _, _ = DockerUtils.run_docker_command(["start", container])
         return code == 0
 
     @staticmethod
@@ -208,7 +212,7 @@ class DockerUtils:
         Returns:
             是否成功
         """
-        code, _, _ = DockerUtils.run_docker_command(['stop', container])
+        code, _, _ = DockerUtils.run_docker_command(["stop", container])
         return code == 0
 
     @staticmethod
@@ -222,7 +226,7 @@ class DockerUtils:
         Returns:
             是否成功
         """
-        code, _, _ = DockerUtils.run_docker_command(['restart', container])
+        code, _, _ = DockerUtils.run_docker_command(["restart", container])
         return code == 0
 
     @staticmethod
@@ -237,9 +241,9 @@ class DockerUtils:
         Returns:
             是否成功
         """
-        cmd = ['rm']
+        cmd = ["rm"]
         if force:
-            cmd.append('-f')
+            cmd.append("-f")
         cmd.append(container)
         code, _, _ = DockerUtils.run_docker_command(cmd)
         return code == 0
@@ -256,10 +260,12 @@ class DockerUtils:
         Returns:
             日志内容
         """
-        code, stdout, _ = DockerUtils.run_docker_command(['logs', '--tail', str(tail), container])
+        code, stdout, _ = DockerUtils.run_docker_command(
+            ["logs", "--tail", str(tail), container]
+        )
         if code == 0:
             return stdout
-        return ''
+        return ""
 
     @staticmethod
     def exec_command(container: str, command: List[str]) -> Optional[str]:
@@ -273,7 +279,7 @@ class DockerUtils:
         Returns:
             命令输出
         """
-        cmd = ['exec', container]
+        cmd = ["exec", container]
         cmd.extend(command)
         code, stdout, _ = DockerUtils.run_docker_command(cmd)
         if code == 0:
@@ -291,7 +297,7 @@ class DockerUtils:
         Returns:
             容器信息
         """
-        code, stdout, _ = DockerUtils.run_docker_command(['inspect', container])
+        code, stdout, _ = DockerUtils.run_docker_command(["inspect", container])
         if code == 0:
             return json.loads(stdout)[0]
         return None
@@ -307,7 +313,7 @@ class DockerUtils:
         Returns:
             镜像信息
         """
-        code, stdout, _ = DockerUtils.run_docker_command(['inspect', image])
+        code, stdout, _ = DockerUtils.run_docker_command(["inspect", image])
         if code == 0:
             return json.loads(stdout)[0]
         return None

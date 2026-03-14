@@ -1,5 +1,7 @@
 """测试ExceptionUtils类"""
+
 import unittest
+
 from btools.core.basic.exceptionutils import ExceptionUtils
 
 
@@ -33,10 +35,13 @@ class TestExceptionUtils(unittest.TestCase):
 
     def test_safe_call(self):
         """测试安全调用"""
+
         def test_func():
             return "Success"
+
         def error_func():
             raise ValueError("Test error")
+
         result = ExceptionUtils.safe_call(test_func)
         self.assertEqual(result, "Success")
         result = ExceptionUtils.safe_call(error_func)
@@ -44,8 +49,10 @@ class TestExceptionUtils(unittest.TestCase):
 
     def test_safe_call_with_default(self):
         """测试带默认值的安全调用"""
+
         def error_func():
             raise ValueError("Test error")
+
         result = ExceptionUtils.safe_call_with_default(error_func, "Default")
         self.assertEqual(result, "Default")
 

@@ -5,11 +5,12 @@
 
 提供密钥管理，安全存储和访问敏感信息等功能
 """
-import os
-import json
+
 import base64
 import hashlib
-from typing import Dict, Optional, Any, List
+import json
+import os
+from typing import Any, Dict, List, Optional
 
 
 class SecretsUtils:
@@ -30,10 +31,11 @@ class SecretsUtils:
             加密后的字符串
         """
         try:
+            import secrets
+
             from cryptography.fernet import Fernet
             from cryptography.hazmat.primitives import hashes
             from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-            import secrets
 
             # 生成密钥
             salt = secrets.token_bytes(16)
@@ -107,25 +109,27 @@ class SecretsUtils:
             密钥字典
         """
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
             # 如果文件被加密
-            if 'encrypted' in data and data['encrypted']:
+            if "encrypted" in data and data["encrypted"]:
                 if not password:
                     raise ValueError("Password is required for encrypted secrets file")
-                
+
                 # 解密数据
-                encrypted_data = data['data']
+                encrypted_data = data["data"]
                 decrypted_data = SecretsUtils.decrypt_string(encrypted_data, password)
                 return json.loads(decrypted_data)
             else:
-                return data.get('data', {})
+                return data.get("data", {})
         except Exception as e:
             return {}
 
     @staticmethod
-    def save_secrets(file_path: str, secrets: Dict[str, Any], password: str = None) -> bool:
+    def save_secrets(
+        file_path: str, secrets: Dict[str, Any], password: str = None
+    ) -> bool:
         """
         保存密钥文件
 
@@ -142,26 +146,20 @@ class SecretsUtils:
                 # 加密数据
                 data_str = json.dumps(secrets)
                 encrypted_data = SecretsUtils.encrypt_string(data_str, password)
-                output_data = {
-                    'encrypted': True,
-                    'data': encrypted_data
-                }
+                output_data = {"encrypted": True, "data": encrypted_data}
             else:
                 # 不加密
-                output_data = {
-                    'encrypted': False,
-                    'data': secrets
-                }
+                output_data = {"encrypted": False, "data": secrets}
 
             # 确保目录存在
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
             # 写入文件
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(output_data, f, indent=2, ensure_ascii=False)
 
             # 设置文件权限（仅当前用户可读写）
-            if os.name == 'posix':  # Unix-like
+            if os.name == "posix":  # Unix-like
                 os.chmod(file_path, 0o600)
 
             return True
@@ -169,7 +167,12 @@ class SecretsUtils:
             return False
 
     @staticmethod
-    def get_secret(key: str, default: Optional[Any] = None, secrets_file: str = 'secrets.json', password: str = None) -> Optional[Any]:
+    def get_secret(
+        key: str,
+        default: Optional[Any] = None,
+        secrets_file: str = "secrets.json",
+        password: str = None,
+    ) -> Optional[Any]:
         """
         获取密钥
 
@@ -186,7 +189,9 @@ class SecretsUtils:
         return secrets.get(key, default)
 
     @staticmethod
-    def set_secret(key: str, value: Any, secrets_file: str = 'secrets.json', password: str = None) -> bool:
+    def set_secret(
+        key: str, value: Any, secrets_file: str = "secrets.json", password: str = None
+    ) -> bool:
         """
         设置密钥
 
@@ -204,7 +209,9 @@ class SecretsUtils:
         return SecretsUtils.save_secrets(secrets_file, secrets, password)
 
     @staticmethod
-    def delete_secret(key: str, secrets_file: str = 'secrets.json', password: str = None) -> bool:
+    def delete_secret(
+        key: str, secrets_file: str = "secrets.json", password: str = None
+    ) -> bool:
         """
         删除密钥
 
@@ -237,10 +244,10 @@ class SecretsUtils:
         import string
 
         alphabet = string.ascii_letters + string.digits + string.punctuation
-        return ''.join(secrets.choice(alphabet) for _ in range(length))
+        return "".join(secrets.choice(alphabet) for _ in range(length))
 
     @staticmethod
-    def generate_api_key(prefix: str = 'sk', length: int = 32) -> str:
+    def generate_api_key(prefix: str = "sk", length: int = 32) -> str:
         """
         生成 API 密钥
 
@@ -255,7 +262,7 @@ class SecretsUtils:
         import string
 
         alphabet = string.ascii_letters + string.digits
-        secret_part = ''.join(secrets.choice(alphabet) for _ in range(length))
+        secret_part = "".join(secrets.choice(alphabet) for _ in range(length))
         return f"{prefix}_{secret_part}"
 
     @staticmethod
@@ -271,6 +278,7 @@ class SecretsUtils:
         """
         try:
             import bcrypt
+
             return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
         except Exception as e:
             # 如果 bcrypt 不可用，使用简单的哈希（不推荐在生产环境使用）
@@ -290,13 +298,18 @@ class SecretsUtils:
         """
         try:
             import bcrypt
+
             return bcrypt.checkpw(password.encode(), hashed_password.encode())
         except Exception as e:
             # 如果 bcrypt 不可用，使用简单的哈希比较（不推荐在生产环境使用）
             return hashlib.sha256(password.encode()).hexdigest() == hashed_password
 
     @staticmethod
-    def load_env_secrets(prefix: str = 'SECRET_', secrets_file: str = 'secrets.json', password: str = None) -> bool:
+    def load_env_secrets(
+        prefix: str = "SECRET_",
+        secrets_file: str = "secrets.json",
+        password: str = None,
+    ) -> bool:
         """
         从密钥文件加载到环境变量
 
@@ -318,7 +331,11 @@ class SecretsUtils:
             return False
 
     @staticmethod
-    def store_env_secrets(prefix: str = 'SECRET_', secrets_file: str = 'secrets.json', password: str = None) -> bool:
+    def store_env_secrets(
+        prefix: str = "SECRET_",
+        secrets_file: str = "secrets.json",
+        password: str = None,
+    ) -> bool:
         """
         从环境变量存储到密钥文件
 
@@ -334,14 +351,18 @@ class SecretsUtils:
             secrets = {}
             for key, value in os.environ.items():
                 if key.startswith(prefix):
-                    secret_key = key[len(prefix):].lower()
+                    secret_key = key[len(prefix) :].lower()
                     secrets[secret_key] = value
             return SecretsUtils.save_secrets(secrets_file, secrets, password)
         except Exception as e:
             return False
 
     @staticmethod
-    def validate_secrets(required_secrets: List[str], secrets_file: str = 'secrets.json', password: str = None) -> List[str]:
+    def validate_secrets(
+        required_secrets: List[str],
+        secrets_file: str = "secrets.json",
+        password: str = None,
+    ) -> List[str]:
         """
         验证必需的密钥
 
@@ -361,7 +382,9 @@ class SecretsUtils:
         return missing
 
     @staticmethod
-    def rotate_secret(key: str, secrets_file: str = 'secrets.json', password: str = None) -> Optional[str]:
+    def rotate_secret(
+        key: str, secrets_file: str = "secrets.json", password: str = None
+    ) -> Optional[str]:
         """
         轮换密钥
 
@@ -379,7 +402,11 @@ class SecretsUtils:
         return None
 
     @staticmethod
-    def backup_secrets(source_file: str = 'secrets.json', backup_file: str = 'secrets.backup.json', password: str = None) -> bool:
+    def backup_secrets(
+        source_file: str = "secrets.json",
+        backup_file: str = "secrets.backup.json",
+        password: str = None,
+    ) -> bool:
         """
         备份密钥文件
 
@@ -398,7 +425,11 @@ class SecretsUtils:
             return False
 
     @staticmethod
-    def restore_secrets(backup_file: str = 'secrets.backup.json', target_file: str = 'secrets.json', password: str = None) -> bool:
+    def restore_secrets(
+        backup_file: str = "secrets.backup.json",
+        target_file: str = "secrets.json",
+        password: str = None,
+    ) -> bool:
         """
         恢复密钥文件
 
@@ -417,7 +448,9 @@ class SecretsUtils:
             return False
 
     @staticmethod
-    def get_secrets_summary(secrets_file: str = 'secrets.json', password: str = None) -> Dict[str, Any]:
+    def get_secrets_summary(
+        secrets_file: str = "secrets.json", password: str = None
+    ) -> Dict[str, Any]:
         """
         获取密钥摘要
 
@@ -431,21 +464,21 @@ class SecretsUtils:
         try:
             secrets = SecretsUtils.load_secrets(secrets_file, password)
             summary = {
-                'total_secrets': len(secrets),
-                'secret_keys': list(secrets.keys()),
-                'file_path': secrets_file
+                "total_secrets": len(secrets),
+                "secret_keys": list(secrets.keys()),
+                "file_path": secrets_file,
             }
             return summary
         except Exception as e:
             return {
-                'total_secrets': 0,
-                'secret_keys': [],
-                'file_path': secrets_file,
-                'error': str(e)
+                "total_secrets": 0,
+                "secret_keys": [],
+                "file_path": secrets_file,
+                "error": str(e),
             }
 
     @staticmethod
-    def clear_secrets(secrets_file: str = 'secrets.json') -> bool:
+    def clear_secrets(secrets_file: str = "secrets.json") -> bool:
         """
         清除所有密钥
 
@@ -463,7 +496,7 @@ class SecretsUtils:
             return False
 
     @staticmethod
-    def is_secret_file_secure(secrets_file: str = 'secrets.json') -> bool:
+    def is_secret_file_secure(secrets_file: str = "secrets.json") -> bool:
         """
         检查密钥文件是否安全
 
@@ -478,8 +511,9 @@ class SecretsUtils:
                 return False
 
             # 检查文件权限
-            if os.name == 'posix':  # Unix-like
+            if os.name == "posix":  # Unix-like
                 import stat
+
                 file_stat = os.stat(secrets_file)
                 # 只允许所有者读写
                 return file_stat.st_mode & (stat.S_IRWXG | stat.S_IRWXO) == 0
@@ -490,7 +524,9 @@ class SecretsUtils:
             return False
 
     @staticmethod
-    def get_aws_secrets(secret_name: str, region_name: str = 'us-east-1') -> Optional[Dict[str, Any]]:
+    def get_aws_secrets(
+        secret_name: str, region_name: str = "us-east-1"
+    ) -> Optional[Dict[str, Any]]:
         """
         从 AWS Secrets Manager 获取密钥
 
@@ -507,26 +543,27 @@ class SecretsUtils:
 
             session = boto3.session.Session()
             client = session.client(
-                service_name='secretsmanager',
-                region_name=region_name
+                service_name="secretsmanager", region_name=region_name
             )
 
-            get_secret_value_response = client.get_secret_value(
-                SecretId=secret_name
-            )
+            get_secret_value_response = client.get_secret_value(SecretId=secret_name)
 
-            if 'SecretString' in get_secret_value_response:
-                return json.loads(get_secret_value_response['SecretString'])
+            if "SecretString" in get_secret_value_response:
+                return json.loads(get_secret_value_response["SecretString"])
             else:
                 # 二进制密钥
                 return {
-                    'binary_secret': base64.b64encode(get_secret_value_response['SecretBinary']).decode()
+                    "binary_secret": base64.b64encode(
+                        get_secret_value_response["SecretBinary"]
+                    ).decode()
                 }
         except Exception as e:
             return None
 
     @staticmethod
-    def get_gcp_secrets(secret_name: str, version_id: str = 'latest') -> Optional[Dict[str, Any]]:
+    def get_gcp_secrets(
+        secret_name: str, version_id: str = "latest"
+    ) -> Optional[Dict[str, Any]]:
         """
         从 GCP Secret Manager 获取密钥
 
@@ -542,13 +579,11 @@ class SecretsUtils:
 
             client = secretmanager.SecretManagerServiceClient()
             name = client.secret_version_path(
-                os.environ.get('GOOGLE_CLOUD_PROJECT'),
-                secret_name,
-                version_id
+                os.environ.get("GOOGLE_CLOUD_PROJECT"), secret_name, version_id
             )
 
-            response = client.access_secret_version(request={'name': name})
-            secret_string = response.payload.data.decode('UTF-8')
+            response = client.access_secret_version(request={"name": name})
+            secret_string = response.payload.data.decode("UTF-8")
             return json.loads(secret_string)
         except Exception as e:
             return None

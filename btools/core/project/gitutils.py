@@ -5,9 +5,10 @@ Git 操作工具类
 
 提供 Git 操作封装，分支管理、提交规范检查等功能
 """
-import subprocess
+
 import os
-from typing import List, Dict, Optional, Tuple
+import subprocess
+from typing import Dict, List, Optional, Tuple
 
 
 class GitUtils:
@@ -29,14 +30,11 @@ class GitUtils:
         """
         try:
             result = subprocess.run(
-                ['git'] + cmd,
-                cwd=cwd,
-                capture_output=True,
-                text=True
+                ["git"] + cmd, cwd=cwd, capture_output=True, text=True
             )
             return result.returncode, result.stdout.strip(), result.stderr.strip()
         except Exception as e:
-            return 1, '', str(e)
+            return 1, "", str(e)
 
     @staticmethod
     def get_current_branch(cwd: str = ".") -> Optional[str]:
@@ -49,7 +47,9 @@ class GitUtils:
         Returns:
             当前分支名
         """
-        code, stdout, _ = GitUtils.run_git_command(['rev-parse', '--abbrev-ref', 'HEAD'], cwd)
+        code, stdout, _ = GitUtils.run_git_command(
+            ["rev-parse", "--abbrev-ref", "HEAD"], cwd
+        )
         if code == 0:
             return stdout
         return None
@@ -65,14 +65,14 @@ class GitUtils:
         Returns:
             分支列表
         """
-        code, stdout, _ = GitUtils.run_git_command(['branch', '--list'], cwd)
+        code, stdout, _ = GitUtils.run_git_command(["branch", "--list"], cwd)
         if code == 0:
             branches = []
-            for line in stdout.split('\n'):
+            for line in stdout.split("\n"):
                 line = line.strip()
                 if line:
                     # 移除分支前的 * 标记
-                    branches.append(line.replace('* ', ''))
+                    branches.append(line.replace("* ", ""))
             return branches
         return []
 
@@ -88,7 +88,7 @@ class GitUtils:
         Returns:
             是否成功
         """
-        code, _, _ = GitUtils.run_git_command(['checkout', '-b', branch_name], cwd)
+        code, _, _ = GitUtils.run_git_command(["checkout", "-b", branch_name], cwd)
         return code == 0
 
     @staticmethod
@@ -103,7 +103,7 @@ class GitUtils:
         Returns:
             是否成功
         """
-        code, _, _ = GitUtils.run_git_command(['checkout', branch_name], cwd)
+        code, _, _ = GitUtils.run_git_command(["checkout", branch_name], cwd)
         return code == 0
 
     @staticmethod
@@ -118,7 +118,7 @@ class GitUtils:
         Returns:
             是否成功
         """
-        code, _, _ = GitUtils.run_git_command(['merge', branch_name], cwd)
+        code, _, _ = GitUtils.run_git_command(["merge", branch_name], cwd)
         return code == 0
 
     @staticmethod
@@ -134,9 +134,9 @@ class GitUtils:
         Returns:
             是否成功
         """
-        cmd = ['branch', '-d']
+        cmd = ["branch", "-d"]
         if force:
-            cmd = ['branch', '-D']
+            cmd = ["branch", "-D"]
         cmd.append(branch_name)
         code, _, _ = GitUtils.run_git_command(cmd, cwd)
         return code == 0
@@ -152,10 +152,10 @@ class GitUtils:
         Returns:
             状态信息
         """
-        code, stdout, _ = GitUtils.run_git_command(['status', '--porcelain'], cwd)
+        code, stdout, _ = GitUtils.run_git_command(["status", "--porcelain"], cwd)
         if code == 0:
             return stdout
-        return ''
+        return ""
 
     @staticmethod
     def add_files(files: List[str] = [], cwd: str = ".") -> bool:
@@ -169,9 +169,9 @@ class GitUtils:
         Returns:
             是否成功
         """
-        cmd = ['add']
+        cmd = ["add"]
         if not files:
-            cmd.append('.')
+            cmd.append(".")
         else:
             cmd.extend(files)
         code, _, _ = GitUtils.run_git_command(cmd, cwd)
@@ -189,11 +189,13 @@ class GitUtils:
         Returns:
             是否成功
         """
-        code, _, _ = GitUtils.run_git_command(['commit', '-m', message], cwd)
+        code, _, _ = GitUtils.run_git_command(["commit", "-m", message], cwd)
         return code == 0
 
     @staticmethod
-    def push(remote: str = 'origin', branch: Optional[str] = None, cwd: str = ".") -> bool:
+    def push(
+        remote: str = "origin", branch: Optional[str] = None, cwd: str = "."
+    ) -> bool:
         """
         推送更改
 
@@ -205,12 +207,12 @@ class GitUtils:
         Returns:
             是否成功
         """
-        cmd = ['push', remote]
+        cmd = ["push", remote]
         if branch:
             cmd.append(branch)
         else:
-            cmd.append('--set-upstream')
-            cmd.append(f'{remote}')
+            cmd.append("--set-upstream")
+            cmd.append(f"{remote}")
             current_branch = GitUtils.get_current_branch(cwd)
             if current_branch:
                 cmd.append(current_branch)
@@ -220,7 +222,9 @@ class GitUtils:
         return code == 0
 
     @staticmethod
-    def pull(remote: str = 'origin', branch: Optional[str] = None, cwd: str = ".") -> bool:
+    def pull(
+        remote: str = "origin", branch: Optional[str] = None, cwd: str = "."
+    ) -> bool:
         """
         拉取更改
 
@@ -232,7 +236,7 @@ class GitUtils:
         Returns:
             是否成功
         """
-        cmd = ['pull', remote]
+        cmd = ["pull", remote]
         if branch:
             cmd.append(branch)
         code, _, _ = GitUtils.run_git_command(cmd, cwd)
@@ -250,19 +254,22 @@ class GitUtils:
             问题列表
         """
         issues = []
-        
+
         # 检查长度
         if len(message) > 50:
             issues.append("提交信息第一行不应超过50个字符")
-        
+
         if len(message) < 10:
             issues.append("提交信息过于简短")
-        
+
         # 检查格式
         import re
-        if not re.match(r'^(feat|fix|docs|style|refactor|test|chore):\s.*', message):
-            issues.append("提交信息应符合 Conventional Commits 规范，格式为: type: subject")
-        
+
+        if not re.match(r"^(feat|fix|docs|style|refactor|test|chore):\s.*", message):
+            issues.append(
+                "提交信息应符合 Conventional Commits 规范，格式为: type: subject"
+            )
+
         return issues
 
     @staticmethod
@@ -277,20 +284,22 @@ class GitUtils:
         Returns:
             提交历史列表
         """
-        cmd = ['log', f'--max-count={limit}', '--pretty=format:%H|%an|%ad|%s']
+        cmd = ["log", f"--max-count={limit}", "--pretty=format:%H|%an|%ad|%s"]
         code, stdout, _ = GitUtils.run_git_command(cmd, cwd)
         if code == 0:
             commits = []
-            for line in stdout.split('\n'):
+            for line in stdout.split("\n"):
                 if line:
-                    parts = line.split('|', 3)
+                    parts = line.split("|", 3)
                     if len(parts) == 4:
-                        commits.append({
-                            'hash': parts[0],
-                            'author': parts[1],
-                            'date': parts[2],
-                            'message': parts[3]
-                        })
+                        commits.append(
+                            {
+                                "hash": parts[0],
+                                "author": parts[1],
+                                "date": parts[2],
+                                "message": parts[3],
+                            }
+                        )
             return commits
         return []
 
@@ -305,5 +314,7 @@ class GitUtils:
         Returns:
             是否为 Git 仓库
         """
-        code, _, _ = GitUtils.run_git_command(['rev-parse', '--is-inside-work-tree'], cwd)
+        code, _, _ = GitUtils.run_git_command(
+            ["rev-parse", "--is-inside-work-tree"], cwd
+        )
         return code == 0

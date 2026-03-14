@@ -5,6 +5,7 @@
 
 提供装饰器相关的操作功能，包括创建、管理和使用装饰器
 """
+
 import functools
 import inspect
 import time
@@ -27,9 +28,11 @@ class DecoratorUtil:
         Returns:
             Callable: 装饰器
         """
+
         @functools.wraps(func)
         def decorator(*args, **kwargs):
             return func(*args, **kwargs)
+
         return decorator
 
     @staticmethod
@@ -43,6 +46,7 @@ class DecoratorUtil:
         Returns:
             Callable: 计时装饰器
         """
+
         def decorator(func: Callable) -> Callable:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
@@ -51,7 +55,9 @@ class DecoratorUtil:
                 end_time = time.time()
                 logger(f"{func.__name__} 执行耗时: {end_time - start_time:.4f} 秒")
                 return result
+
             return wrapper
+
         return decorator
 
     @staticmethod
@@ -65,6 +71,7 @@ class DecoratorUtil:
         Returns:
             Callable: 日志装饰器
         """
+
         def decorator(func: Callable) -> Callable:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
@@ -76,7 +83,9 @@ class DecoratorUtil:
                 except Exception as e:
                     logger(f"[失败] {func.__name__}: {e}")
                     raise
+
             return wrapper
+
         return decorator
 
     @staticmethod
@@ -87,16 +96,19 @@ class DecoratorUtil:
         Returns:
             Callable: 缓存装饰器
         """
+
         def decorator(func: Callable) -> Callable:
             cache = {}
-            
+
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 key = str(args) + str(kwargs)
                 if key not in cache:
                     cache[key] = func(*args, **kwargs)
                 return cache[key]
+
             return wrapper
+
         return decorator
 
     @staticmethod
@@ -111,6 +123,7 @@ class DecoratorUtil:
         Returns:
             Callable: 重试装饰器
         """
+
         def decorator(func: Callable) -> Callable:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
@@ -123,7 +136,9 @@ class DecoratorUtil:
                         if i < max_retries - 1:
                             time.sleep(delay)
                 raise last_exception
+
             return wrapper
+
         return decorator
 
     @staticmethod
@@ -134,16 +149,18 @@ class DecoratorUtil:
         Returns:
             Callable: 单例装饰器
         """
+
         def decorator(cls: Type[Any]) -> Type[Any]:
             instances = {}
-            
+
             @functools.wraps(cls)
             def get_instance(*args, **kwargs):
                 if cls not in instances:
                     instances[cls] = cls(*args, **kwargs)
                 return instances[cls]
-            
+
             return get_instance
+
         return decorator
 
     @staticmethod
@@ -157,13 +174,17 @@ class DecoratorUtil:
         Returns:
             Callable: 过时警告装饰器
         """
+
         def decorator(func: Callable) -> Callable:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 import warnings
+
                 warnings.warn(message, DeprecationWarning, stacklevel=2)
                 return func(*args, **kwargs)
+
             return wrapper
+
         return decorator
 
     @staticmethod
@@ -177,18 +198,21 @@ class DecoratorUtil:
         Returns:
             Callable: 权限检查装饰器
         """
+
         def decorator(func: Callable) -> Callable:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 # 这里可以根据实际情况实现权限检查逻辑
                 # 例如从用户会话中获取权限信息
                 user_permissions = getattr(args[0], "permissions", []) if args else []
-                
+
                 if required_permission not in user_permissions:
                     raise PermissionError(f"缺少权限: {required_permission}")
-                
+
                 return func(*args, **kwargs)
+
             return wrapper
+
         return decorator
 
     @staticmethod
@@ -203,21 +227,24 @@ class DecoratorUtil:
         Returns:
             Callable: 速率限制装饰器
         """
+
         def decorator(func: Callable) -> Callable:
             calls = []
-            
+
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 current_time = time.time()
                 # 清理过期的调用记录
                 calls[:] = [t for t in calls if current_time - t < period]
-                
+
                 if len(calls) >= max_calls:
                     raise RateLimitError(f"超过速率限制: {max_calls} 次/ {period} 秒")
-                
+
                 calls.append(current_time)
                 return func(*args, **kwargs)
+
             return wrapper
+
         return decorator
 
     @staticmethod
@@ -231,6 +258,7 @@ class DecoratorUtil:
         Returns:
             Callable: 异步计时装饰器
         """
+
         def decorator(func: Callable) -> Callable:
             @functools.wraps(func)
             async def wrapper(*args, **kwargs):
@@ -239,7 +267,9 @@ class DecoratorUtil:
                 end_time = time.time()
                 logger(f"{func.__name__} 执行耗时: {end_time - start_time:.4f} 秒")
                 return result
+
             return wrapper
+
         return decorator
 
     @staticmethod
@@ -253,14 +283,15 @@ class DecoratorUtil:
         Returns:
             Callable: 高级缓存装饰器
         """
+
         def decorator(func: Callable) -> Callable:
             cache = {}
-            
+
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 key = str(args) + str(kwargs)
                 current_time = time.time()
-                
+
                 # 检查缓存是否存在且未过期
                 if key in cache:
                     value, timestamp = cache[key]
@@ -269,12 +300,14 @@ class DecoratorUtil:
                     else:
                         # 缓存过期，删除
                         del cache[key]
-                
+
                 # 计算结果并缓存
                 result = func(*args, **kwargs)
                 cache[key] = (result, current_time)
                 return result
+
             return wrapper
+
         return decorator
 
     @staticmethod
@@ -288,16 +321,21 @@ class DecoratorUtil:
         Returns:
             Callable: 上下文管理装饰器
         """
+
         def decorator(func: Callable) -> Callable:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 with context_manager:
                     return func(*args, **kwargs)
+
             return wrapper
+
         return decorator
 
     @staticmethod
-    def metric_collector(metric_name: str, tags: Optional[Dict[str, str]] = None) -> Callable:
+    def metric_collector(
+        metric_name: str, tags: Optional[Dict[str, str]] = None
+    ) -> Callable:
         """
         创建一个指标收集装饰器
 
@@ -308,12 +346,13 @@ class DecoratorUtil:
         Returns:
             Callable: 指标收集装饰器
         """
+
         def decorator(func: Callable) -> Callable:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 start_time = time.time()
                 success = True
-                
+
                 try:
                     result = func(*args, **kwargs)
                     return result
@@ -323,11 +362,15 @@ class DecoratorUtil:
                 finally:
                     end_time = time.time()
                     duration = end_time - start_time
-                    
+
                     # 这里可以集成到具体的指标收集系统
                     # 例如 Prometheus、StatsD 等
-                    print(f"[指标] {metric_name}: 耗时={duration:.4f}s, 成功={success}, 标签={tags}")
+                    print(
+                        f"[指标] {metric_name}: 耗时={duration:.4f}s, 成功={success}, 标签={tags}"
+                    )
+
             return wrapper
+
         return decorator
 
     @staticmethod
@@ -341,31 +384,34 @@ class DecoratorUtil:
         Returns:
             Callable: 性能分析装饰器
         """
+
         def decorator(func: Callable) -> Callable:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 if enabled:
                     import cProfile
-                    import pstats
                     import io
-                    
+                    import pstats
+
                     pr = cProfile.Profile()
                     pr.enable()
-                    
+
                     try:
                         result = func(*args, **kwargs)
                     finally:
                         pr.disable()
                         s = io.StringIO()
-                        ps = pstats.Stats(pr, stream=s).sort_stats('cumulative')
+                        ps = pstats.Stats(pr, stream=s).sort_stats("cumulative")
                         ps.print_stats()
                         print(f"[性能分析] {func.__name__}:")
                         print(s.getvalue())
                 else:
                     result = func(*args, **kwargs)
-                
+
                 return result
+
             return wrapper
+
         return decorator
 
     @staticmethod
@@ -379,10 +425,12 @@ class DecoratorUtil:
         Returns:
             Callable: 组合后的装饰器
         """
+
         def decorator(func: Callable) -> Callable:
             for decorator in reversed(decorators):
                 func = decorator(func)
             return func
+
         return decorator
 
     @staticmethod
@@ -426,11 +474,11 @@ class DecoratorUtil:
         """
         chain = []
         current = decorated_func
-        
+
         while hasattr(current, "__wrapped__"):
             chain.append(current)
             current = current.__wrapped__
-        
+
         chain.append(current)
         return chain
 
@@ -446,6 +494,7 @@ class DecoratorUtil:
         Returns:
             Callable: 条件装饰器
         """
+
         def conditional_decorator(func: Callable) -> Callable:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
@@ -453,7 +502,9 @@ class DecoratorUtil:
                     return decorator(func)(*args, **kwargs)
                 else:
                     return func(*args, **kwargs)
+
             return wrapper
+
         return conditional_decorator
 
 
@@ -461,4 +512,5 @@ class RateLimitError(Exception):
     """
     速率限制异常
     """
+
     pass

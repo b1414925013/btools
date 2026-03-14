@@ -3,10 +3,11 @@
 XML工具类模块
 提供XML的解析、生成、转换等功能
 """
-import xml.etree.ElementTree as ET
-from typing import Dict, List, Optional, Union, Any, Tuple
-import json
+
 import io
+import json
+import xml.etree.ElementTree as ET
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 
 class XmlUtils:
@@ -48,8 +49,12 @@ class XmlUtils:
         return tree.getroot()
 
     @staticmethod
-    def to_string(element: ET.Element, encoding: str = 'utf-8', xml_declaration: bool = True, 
-                  default_namespace: Optional[str] = None) -> str:
+    def to_string(
+        element: ET.Element,
+        encoding: str = "utf-8",
+        xml_declaration: bool = True,
+        default_namespace: Optional[str] = None,
+    ) -> str:
         """
         将XML元素转换为字符串
 
@@ -64,15 +69,20 @@ class XmlUtils:
         """
         if default_namespace:
             # 处理默认命名空间
-            ET.register_namespace('', default_namespace)
-        
-        xml_str = ET.tostring(element, encoding=encoding, xml_declaration=xml_declaration, 
-                              method='xml').decode(encoding)
+            ET.register_namespace("", default_namespace)
+
+        xml_str = ET.tostring(
+            element, encoding=encoding, xml_declaration=xml_declaration, method="xml"
+        ).decode(encoding)
         return xml_str
 
     @staticmethod
-    def write_to_file(element: ET.Element, file_path: str, encoding: str = 'utf-8', 
-                      xml_declaration: bool = True):
+    def write_to_file(
+        element: ET.Element,
+        file_path: str,
+        encoding: str = "utf-8",
+        xml_declaration: bool = True,
+    ):
         """
         将XML元素写入文件
 
@@ -86,8 +96,11 @@ class XmlUtils:
         tree.write(file_path, encoding=encoding, xml_declaration=xml_declaration)
 
     @staticmethod
-    def create_element(tag: str, text: Optional[str] = None, 
-                      attributes: Optional[Dict[str, str]] = None) -> ET.Element:
+    def create_element(
+        tag: str,
+        text: Optional[str] = None,
+        attributes: Optional[Dict[str, str]] = None,
+    ) -> ET.Element:
         """
         创建XML元素
 
@@ -107,8 +120,12 @@ class XmlUtils:
         return element
 
     @staticmethod
-    def append_child(parent: ET.Element, tag: str, text: Optional[str] = None, 
-                    attributes: Optional[Dict[str, str]] = None) -> ET.Element:
+    def append_child(
+        parent: ET.Element,
+        tag: str,
+        text: Optional[str] = None,
+        attributes: Optional[Dict[str, str]] = None,
+    ) -> ET.Element:
         """
         向父元素添加子元素
 
@@ -154,7 +171,7 @@ class XmlUtils:
         return element.findall(path)
 
     @staticmethod
-    def get_text(element: ET.Element, default: str = '') -> str:
+    def get_text(element: ET.Element, default: str = "") -> str:
         """
         获取元素文本
 
@@ -168,7 +185,7 @@ class XmlUtils:
         return element.text.strip() if element.text else default
 
     @staticmethod
-    def get_attribute(element: ET.Element, name: str, default: str = '') -> str:
+    def get_attribute(element: ET.Element, name: str, default: str = "") -> str:
         """
         获取元素属性
 
@@ -217,11 +234,11 @@ class XmlUtils:
             Dict[str, Any]: 转换后的字典
         """
         result = {}
-        
+
         # 处理属性
         if element.attrib:
-            result['@attributes'] = element.attrib
-        
+            result["@attributes"] = element.attrib
+
         # 处理子元素
         children = list(element)
         if children:
@@ -229,7 +246,7 @@ class XmlUtils:
             for child in children:
                 child_result = XmlUtils.to_dict(child)
                 child_tag = child.tag
-                
+
                 if child_tag in child_dict:
                     if not isinstance(child_dict[child_tag], list):
                         child_dict[child_tag] = [child_dict[child_tag]]
@@ -237,18 +254,18 @@ class XmlUtils:
                 else:
                     child_dict[child_tag] = child_result
             result.update(child_dict)
-        
+
         # 处理文本
         if element.text and element.text.strip():
             if children or element.attrib:
-                result['#text'] = element.text.strip()
+                result["#text"] = element.text.strip()
             else:
                 result = element.text.strip()
-        
+
         return result
 
     @staticmethod
-    def from_dict(data: Dict[str, Any], root_tag: str = 'root') -> ET.Element:
+    def from_dict(data: Dict[str, Any], root_tag: str = "root") -> ET.Element:
         """
         从字典创建XML元素
 
@@ -259,21 +276,22 @@ class XmlUtils:
         Returns:
             ET.Element: XML根元素
         """
+
         def _build_element(parent: ET.Element, data: Any, tag: str):
             element = ET.SubElement(parent, tag)
-            
+
             if isinstance(data, dict):
                 # 处理属性
-                if '@attributes' in data:
-                    element.attrib.update(data['@attributes'])
-                
+                if "@attributes" in data:
+                    element.attrib.update(data["@attributes"])
+
                 # 处理文本
-                if '#text' in data:
-                    element.text = data['#text']
-                
+                if "#text" in data:
+                    element.text = data["#text"]
+
                 # 处理子元素
                 for key, value in data.items():
-                    if key not in ('@attributes', '#text'):
+                    if key not in ("@attributes", "#text"):
                         if isinstance(value, list):
                             for item in value:
                                 _build_element(element, item, key)
@@ -284,7 +302,7 @@ class XmlUtils:
                     _build_element(parent, item, tag)
             else:
                 element.text = str(data)
-        
+
         root = ET.Element(root_tag)
         # 直接处理数据，而不是将整个数据作为root_tag的子元素
         if isinstance(data, dict):
@@ -315,7 +333,7 @@ class XmlUtils:
         return json.dumps(data, ensure_ascii=False, indent=indent)
 
     @staticmethod
-    def from_json(json_str: str, root_tag: str = 'root') -> ET.Element:
+    def from_json(json_str: str, root_tag: str = "root") -> ET.Element:
         """
         从JSON创建XML元素
 
@@ -343,17 +361,17 @@ class XmlUtils:
         """
         try:
             from lxml import etree
-            
+
             # 解析XSD
             xsd_tree = etree.parse(xsd_file)
             xsd_schema = etree.XMLSchema(xsd_tree)
-            
+
             # 解析XML
             if isinstance(xml_data, bytes):
                 xml_tree = etree.fromstring(xml_data)
             else:
-                xml_tree = etree.fromstring(xml_data.encode('utf-8'))
-            
+                xml_tree = etree.fromstring(xml_data.encode("utf-8"))
+
             # 验证
             return xsd_schema.validate(xml_tree)
         except ImportError:
@@ -364,7 +382,7 @@ class XmlUtils:
             return False
 
     @staticmethod
-    def pretty_print(element: ET.Element, encoding: str = 'utf-8') -> str:
+    def pretty_print(element: ET.Element, encoding: str = "utf-8") -> str:
         """
         美化XML输出
 
@@ -377,14 +395,15 @@ class XmlUtils:
         """
         try:
             from lxml import etree
-            
+
             # 转换为lxml元素
             xml_str = ET.tostring(element, encoding=encoding)
             lxml_element = etree.fromstring(xml_str)
-            
+
             # 美化
-            pretty_xml = etree.tostring(lxml_element, encoding=encoding, pretty_print=True, 
-                                       xml_declaration=True).decode(encoding)
+            pretty_xml = etree.tostring(
+                lxml_element, encoding=encoding, pretty_print=True, xml_declaration=True
+            ).decode(encoding)
             return pretty_xml
         except ImportError:
             # lxml库未安装，使用默认方法并添加基本缩进
@@ -399,14 +418,17 @@ class XmlUtils:
                             child.tail = "\n" + indent + "  "
                     if not element.tail or not element.tail.strip():
                         element.tail = "\n" + indent
-            
+
             # 创建元素的深拷贝，避免修改原始元素
             import copy
+
             element_copy = copy.deepcopy(element)
             _indent(element_copy)
-            
+
             # 生成字符串
-            xml_str = ET.tostring(element_copy, encoding=encoding, xml_declaration=True).decode(encoding)
+            xml_str = ET.tostring(
+                element_copy, encoding=encoding, xml_declaration=True
+            ).decode(encoding)
             return xml_str
 
     @staticmethod
@@ -435,18 +457,18 @@ class XmlUtils:
             Dict[str, str]: 命名空间字典
         """
         namespaces = {}
-        
+
         # 检查元素的tag是否包含命名空间
-        if '}' in element.tag:
-            namespace = element.tag.split('}')[0].strip('{')
-            prefix = element.tag.split('}')[1]
+        if "}" in element.tag:
+            namespace = element.tag.split("}")[0].strip("{")
+            prefix = element.tag.split("}")[1]
             namespaces[prefix] = namespace
-        
+
         # 递归检查子元素
         for child in element:
             child_namespaces = XmlUtils.get_namespaces(child)
             namespaces.update(child_namespaces)
-        
+
         return namespaces
 
     @staticmethod
@@ -463,6 +485,7 @@ class XmlUtils:
 
 
 # 便捷函数
+
 
 def parse(xml_data: Union[str, bytes, io.BytesIO]) -> ET.Element:
     """
@@ -490,8 +513,12 @@ def parse_file(file_path: str) -> ET.Element:
     return XmlUtils.parse_file(file_path)
 
 
-def to_string(element: ET.Element, encoding: str = 'utf-8', xml_declaration: bool = True, 
-              default_namespace: Optional[str] = None) -> str:
+def to_string(
+    element: ET.Element,
+    encoding: str = "utf-8",
+    xml_declaration: bool = True,
+    default_namespace: Optional[str] = None,
+) -> str:
     """
     将XML元素转换为字符串
 
@@ -507,8 +534,12 @@ def to_string(element: ET.Element, encoding: str = 'utf-8', xml_declaration: boo
     return XmlUtils.to_string(element, encoding, xml_declaration, default_namespace)
 
 
-def write_to_file(element: ET.Element, file_path: str, encoding: str = 'utf-8', 
-                  xml_declaration: bool = True):
+def write_to_file(
+    element: ET.Element,
+    file_path: str,
+    encoding: str = "utf-8",
+    xml_declaration: bool = True,
+):
     """
     将XML元素写入文件
 
@@ -521,8 +552,9 @@ def write_to_file(element: ET.Element, file_path: str, encoding: str = 'utf-8',
     XmlUtils.write_to_file(element, file_path, encoding, xml_declaration)
 
 
-def create_element(tag: str, text: Optional[str] = None, 
-                  attributes: Optional[Dict[str, str]] = None) -> ET.Element:
+def create_element(
+    tag: str, text: Optional[str] = None, attributes: Optional[Dict[str, str]] = None
+) -> ET.Element:
     """
     创建XML元素
 
@@ -537,8 +569,12 @@ def create_element(tag: str, text: Optional[str] = None,
     return XmlUtils.create_element(tag, text, attributes)
 
 
-def append_child(parent: ET.Element, tag: str, text: Optional[str] = None, 
-                attributes: Optional[Dict[str, str]] = None) -> ET.Element:
+def append_child(
+    parent: ET.Element,
+    tag: str,
+    text: Optional[str] = None,
+    attributes: Optional[Dict[str, str]] = None,
+) -> ET.Element:
     """
     向父元素添加子元素
 
@@ -567,7 +603,7 @@ def to_dict(element: ET.Element) -> Dict[str, Any]:
     return XmlUtils.to_dict(element)
 
 
-def from_dict(data: Dict[str, Any], root_tag: str = 'root') -> ET.Element:
+def from_dict(data: Dict[str, Any], root_tag: str = "root") -> ET.Element:
     """
     从字典创建XML元素
 
@@ -595,7 +631,7 @@ def to_json(element: ET.Element, indent: Optional[int] = 2) -> str:
     return XmlUtils.to_json(element, indent)
 
 
-def from_json(json_str: str, root_tag: str = 'root') -> ET.Element:
+def from_json(json_str: str, root_tag: str = "root") -> ET.Element:
     """
     从JSON创建XML元素
 
@@ -609,7 +645,7 @@ def from_json(json_str: str, root_tag: str = 'root') -> ET.Element:
     return XmlUtils.from_json(json_str, root_tag)
 
 
-def pretty_print(element: ET.Element, encoding: str = 'utf-8') -> str:
+def pretty_print(element: ET.Element, encoding: str = "utf-8") -> str:
     """
     美化XML输出
 

@@ -1,5 +1,7 @@
 """测试MathUtils类"""
+
 import unittest
+
 from btools.core.basic.mathutils import MathUtils
 
 

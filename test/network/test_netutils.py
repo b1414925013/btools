@@ -1,5 +1,7 @@
 """测试NetUtils类"""
+
 import unittest
+
 from btools.core.network.netutils import NetUtils
 
 

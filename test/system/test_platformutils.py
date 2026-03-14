@@ -1,5 +1,7 @@
 """测试PlatformUtils类"""
+
 import unittest
+
 from btools.core.system.platformutils import PlatformUtils
 
 

@@ -1,6 +1,9 @@
 """测试ArrayUtils类"""
+
 import unittest
+
 import numpy as np
+
 from btools.core.basic.arrayutils import ArrayUtils
 
 

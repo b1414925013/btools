@@ -2,9 +2,10 @@
 """
 线程工具类模块
 """
+
+import concurrent.futures
 import threading
 import time
-import concurrent.futures
 from typing import Any, Callable, List, Optional, Tuple, Union
 
 
@@ -15,8 +16,13 @@ class ThreadUtils:
     """
 
     @staticmethod
-    def create_thread(target: Callable, args: tuple = (), kwargs: Optional[dict] = None, 
-                     daemon: bool = False, name: Optional[str] = None) -> threading.Thread:
+    def create_thread(
+        target: Callable,
+        args: tuple = (),
+        kwargs: Optional[dict] = None,
+        daemon: bool = False,
+        name: Optional[str] = None,
+    ) -> threading.Thread:
         """
         创建线程
 
@@ -32,12 +38,19 @@ class ThreadUtils:
         """
         if kwargs is None:
             kwargs = {}
-        thread = threading.Thread(target=target, args=args, kwargs=kwargs, daemon=daemon, name=name)
+        thread = threading.Thread(
+            target=target, args=args, kwargs=kwargs, daemon=daemon, name=name
+        )
         return thread
 
     @staticmethod
-    def start_thread(target: Callable, args: tuple = (), kwargs: Optional[dict] = None, 
-                    daemon: bool = False, name: Optional[str] = None) -> threading.Thread:
+    def start_thread(
+        target: Callable,
+        args: tuple = (),
+        kwargs: Optional[dict] = None,
+        daemon: bool = False,
+        name: Optional[str] = None,
+    ) -> threading.Thread:
         """
         创建并启动线程
 
@@ -56,7 +69,9 @@ class ThreadUtils:
         return thread
 
     @staticmethod
-    def wait_for_threads(threads: List[threading.Thread], timeout: Optional[float] = None) -> bool:
+    def wait_for_threads(
+        threads: List[threading.Thread], timeout: Optional[float] = None
+    ) -> bool:
         """
         等待多个线程完成
 
@@ -75,8 +90,11 @@ class ThreadUtils:
         return True
 
     @staticmethod
-    def run_in_threadpool(funcs: List[Callable], args_list: Optional[List[tuple]] = None, 
-                         max_workers: Optional[int] = None) -> List[Any]:
+    def run_in_threadpool(
+        funcs: List[Callable],
+        args_list: Optional[List[tuple]] = None,
+        max_workers: Optional[int] = None,
+    ) -> List[Any]:
         """
         在线程池中运行多个函数
 
@@ -90,10 +108,13 @@ class ThreadUtils:
         """
         if args_list is None:
             args_list = [() for _ in funcs]
-        
+
         results = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-            future_to_func = {executor.submit(func, *args): func for func, args in zip(funcs, args_list)}
+            future_to_func = {
+                executor.submit(func, *args): func
+                for func, args in zip(funcs, args_list)
+            }
             for future in concurrent.futures.as_completed(future_to_func):
                 try:
                     result = future.result()
@@ -103,8 +124,12 @@ class ThreadUtils:
         return results
 
     @staticmethod
-    def run_with_timeout(func: Callable, args: tuple = (), kwargs: Optional[dict] = None, 
-                        timeout: float = 5.0) -> Any:
+    def run_with_timeout(
+        func: Callable,
+        args: tuple = (),
+        kwargs: Optional[dict] = None,
+        timeout: float = 5.0,
+    ) -> Any:
         """
         带超时的函数执行
 
@@ -122,25 +147,25 @@ class ThreadUtils:
         """
         if kwargs is None:
             kwargs = {}
-        
+
         result = [None]
         exception = [None]
-        
+
         def wrapper():
             try:
                 result[0] = func(*args, **kwargs)
             except Exception as e:
                 exception[0] = e
-        
+
         thread = ThreadUtils.start_thread(wrapper, daemon=True)
         thread.join(timeout)
-        
+
         if thread.is_alive():
             raise TimeoutError(f"Function execution timed out after {timeout} seconds")
-        
+
         if exception[0]:
             raise exception[0]
-        
+
         return result[0]
 
     @staticmethod
@@ -190,7 +215,9 @@ class ThreadPool:
         self._executor = concurrent.futures.ThreadPoolExecutor(max_workers=max_workers)
         self._futures = []
 
-    def submit(self, func: Callable, *args: Any, **kwargs: Any) -> concurrent.futures.Future:
+    def submit(
+        self, func: Callable, *args: Any, **kwargs: Any
+    ) -> concurrent.futures.Future:
         """
         提交任务到线程池
 
@@ -239,7 +266,9 @@ class ThreadPool:
             是否所有任务都在超时前完成
         """
         try:
-            for future in concurrent.futures.as_completed(self._futures, timeout=timeout):
+            for future in concurrent.futures.as_completed(
+                self._futures, timeout=timeout
+            ):
                 pass
             return True
         except concurrent.futures.TimeoutError:
@@ -296,7 +325,7 @@ class ThreadLocal:
         清空线程本地变量
         """
         for attr in dir(self._local):
-            if not attr.startswith('__'):
+            if not attr.startswith("__"):
                 delattr(self._local, attr)
 
 
@@ -306,8 +335,14 @@ thread_local = ThreadLocal()
 
 # 便捷函数
 
-def create_thread(target: Callable, args: tuple = (), kwargs: Optional[dict] = None, 
-                 daemon: bool = False, name: Optional[str] = None) -> threading.Thread:
+
+def create_thread(
+    target: Callable,
+    args: tuple = (),
+    kwargs: Optional[dict] = None,
+    daemon: bool = False,
+    name: Optional[str] = None,
+) -> threading.Thread:
     """
     创建线程
 
@@ -324,8 +359,13 @@ def create_thread(target: Callable, args: tuple = (), kwargs: Optional[dict] = N
     return ThreadUtils.create_thread(target, args, kwargs, daemon, name)
 
 
-def start_thread(target: Callable, args: tuple = (), kwargs: Optional[dict] = None, 
-                daemon: bool = False, name: Optional[str] = None) -> threading.Thread:
+def start_thread(
+    target: Callable,
+    args: tuple = (),
+    kwargs: Optional[dict] = None,
+    daemon: bool = False,
+    name: Optional[str] = None,
+) -> threading.Thread:
     """
     创建并启动线程
 
@@ -342,7 +382,9 @@ def start_thread(target: Callable, args: tuple = (), kwargs: Optional[dict] = No
     return ThreadUtils.start_thread(target, args, kwargs, daemon, name)
 
 
-def wait_for_threads(threads: List[threading.Thread], timeout: Optional[float] = None) -> bool:
+def wait_for_threads(
+    threads: List[threading.Thread], timeout: Optional[float] = None
+) -> bool:
     """
     等待多个线程完成
 
@@ -356,8 +398,11 @@ def wait_for_threads(threads: List[threading.Thread], timeout: Optional[float] =
     return ThreadUtils.wait_for_threads(threads, timeout)
 
 
-def run_in_threadpool(funcs: List[Callable], args_list: Optional[List[tuple]] = None, 
-                     max_workers: Optional[int] = None) -> List[Any]:
+def run_in_threadpool(
+    funcs: List[Callable],
+    args_list: Optional[List[tuple]] = None,
+    max_workers: Optional[int] = None,
+) -> List[Any]:
     """
     在线程池中运行多个函数
 
@@ -372,8 +417,12 @@ def run_in_threadpool(funcs: List[Callable], args_list: Optional[List[tuple]] = 
     return ThreadUtils.run_in_threadpool(funcs, args_list, max_workers)
 
 
-def run_with_timeout(func: Callable, args: tuple = (), kwargs: Optional[dict] = None, 
-                    timeout: float = 5.0) -> Any:
+def run_with_timeout(
+    func: Callable,
+    args: tuple = (),
+    kwargs: Optional[dict] = None,
+    timeout: float = 5.0,
+) -> Any:
     """
     带超时的函数执行
 

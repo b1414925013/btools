@@ -3,11 +3,12 @@
 IO工具类模块
 提供IO流的读写、复制、转换等功能
 """
+
 import io
-import sys
-from typing import Union, Optional, IO, BinaryIO, TextIO, Any
-import shutil
 import os
+import shutil
+import sys
+from typing import IO, Any, BinaryIO, Optional, TextIO, Union
 
 
 class IOUtils:
@@ -30,21 +31,23 @@ class IOUtils:
         if isinstance(input_stream, bytes):
             return input_stream
         elif isinstance(input_stream, str):
-            with open(input_stream, 'rb') as f:
+            with open(input_stream, "rb") as f:
                 return f.read()
         else:
             # 保存当前位置
-            pos = input_stream.tell() if hasattr(input_stream, 'tell') else None
+            pos = input_stream.tell() if hasattr(input_stream, "tell") else None
             try:
                 # 尝试读取全部内容
                 return input_stream.read()
             finally:
                 # 恢复位置
-                if pos is not None and hasattr(input_stream, 'seek'):
+                if pos is not None and hasattr(input_stream, "seek"):
                     input_stream.seek(pos)
 
     @staticmethod
-    def read_text(input_stream: Union[TextIO, str, bytes], encoding: str = 'utf-8') -> str:
+    def read_text(
+        input_stream: Union[TextIO, str, bytes], encoding: str = "utf-8"
+    ) -> str:
         """
         读取文本流
 
@@ -57,7 +60,7 @@ class IOUtils:
         """
         if isinstance(input_stream, str):
             if os.path.exists(input_stream):
-                with open(input_stream, 'r', encoding=encoding) as f:
+                with open(input_stream, "r", encoding=encoding) as f:
                     return f.read()
             else:
                 return input_stream
@@ -65,13 +68,13 @@ class IOUtils:
             return input_stream.decode(encoding)
         else:
             # 保存当前位置
-            pos = input_stream.tell() if hasattr(input_stream, 'tell') else None
+            pos = input_stream.tell() if hasattr(input_stream, "tell") else None
             try:
                 # 尝试读取全部内容
                 return input_stream.read()
             finally:
                 # 恢复位置
-                if pos is not None and hasattr(input_stream, 'seek'):
+                if pos is not None and hasattr(input_stream, "seek"):
                     input_stream.seek(pos)
 
     @staticmethod
@@ -84,13 +87,15 @@ class IOUtils:
             data: 要写入的字节数据
         """
         if isinstance(output_stream, str):
-            with open(output_stream, 'wb') as f:
+            with open(output_stream, "wb") as f:
                 f.write(data)
         else:
             output_stream.write(data)
 
     @staticmethod
-    def write_text(output_stream: Union[TextIO, str], data: str, encoding: str = 'utf-8') -> None:
+    def write_text(
+        output_stream: Union[TextIO, str], data: str, encoding: str = "utf-8"
+    ) -> None:
         """
         写入文本流
 
@@ -100,13 +105,17 @@ class IOUtils:
             encoding: 编码方式
         """
         if isinstance(output_stream, str):
-            with open(output_stream, 'w', encoding=encoding) as f:
+            with open(output_stream, "w", encoding=encoding) as f:
                 f.write(data)
         else:
             output_stream.write(data)
 
     @staticmethod
-    def copy(input_stream: Union[IO, str], output_stream: Union[IO, str], buffer_size: int = 8192) -> int:
+    def copy(
+        input_stream: Union[IO, str],
+        output_stream: Union[IO, str],
+        buffer_size: int = 8192,
+    ) -> int:
         """
         复制流
 
@@ -120,12 +129,12 @@ class IOUtils:
         """
         # 处理文件路径
         if isinstance(input_stream, str):
-            with open(input_stream, 'rb') as f:
+            with open(input_stream, "rb") as f:
                 return IOUtils.copy(f, output_stream, buffer_size)
         elif isinstance(output_stream, str):
-            with open(output_stream, 'wb') as f:
+            with open(output_stream, "wb") as f:
                 return IOUtils.copy(input_stream, f, buffer_size)
-        
+
         # 复制流
         count = 0
         while True:
@@ -148,12 +157,12 @@ class IOUtils:
             io.BytesIO: BytesIO对象
         """
         if isinstance(data, str):
-            return io.BytesIO(data.encode('utf-8'))
+            return io.BytesIO(data.encode("utf-8"))
         else:
             return io.BytesIO(data)
 
     @staticmethod
-    def to_string_io(data: Union[str, bytes], encoding: str = 'utf-8') -> io.StringIO:
+    def to_string_io(data: Union[str, bytes], encoding: str = "utf-8") -> io.StringIO:
         """
         转换为StringIO对象
 
@@ -177,7 +186,7 @@ class IOUtils:
         Args:
             io_obj: IO对象
         """
-        if io_obj and hasattr(io_obj, 'close'):
+        if io_obj and hasattr(io_obj, "close"):
             try:
                 io_obj.close()
             except Exception:
@@ -194,20 +203,20 @@ class IOUtils:
         Returns:
             int: 可用字节数
         """
-        if hasattr(input_stream, 'size'):
+        if hasattr(input_stream, "size"):
             return input_stream.size
-        elif hasattr(input_stream, 'getbuffer'):
+        elif hasattr(input_stream, "getbuffer"):
             return len(input_stream.getbuffer())
         else:
             # 对于其他流，尝试读取并重置位置
-            pos = input_stream.tell() if hasattr(input_stream, 'tell') else None
+            pos = input_stream.tell() if hasattr(input_stream, "tell") else None
             try:
                 # 读取所有内容
                 data = input_stream.read()
                 return len(data)
             finally:
                 # 恢复位置
-                if pos is not None and hasattr(input_stream, 'seek'):
+                if pos is not None and hasattr(input_stream, "seek"):
                     input_stream.seek(pos)
 
     @staticmethod
@@ -222,14 +231,14 @@ class IOUtils:
         Returns:
             int: 实际跳过的字节数
         """
-        if hasattr(input_stream, 'seek'):
+        if hasattr(input_stream, "seek"):
             try:
                 pos = input_stream.tell()
                 input_stream.seek(pos + n)
                 return n
             except Exception:
                 pass
-        
+
         # 如果无法seek，则读取并丢弃
         count = 0
         while count < n:
@@ -240,7 +249,7 @@ class IOUtils:
         return count
 
     @staticmethod
-    def read_lines(input_stream: Union[TextIO, str], encoding: str = 'utf-8') -> list:
+    def read_lines(input_stream: Union[TextIO, str], encoding: str = "utf-8") -> list:
         """
         读取所有行
 
@@ -252,13 +261,15 @@ class IOUtils:
             list: 行列表
         """
         if isinstance(input_stream, str):
-            with open(input_stream, 'r', encoding=encoding) as f:
+            with open(input_stream, "r", encoding=encoding) as f:
                 return f.readlines()
         else:
             return input_stream.readlines()
 
     @staticmethod
-    def write_lines(output_stream: Union[TextIO, str], lines: list, encoding: str = 'utf-8') -> None:
+    def write_lines(
+        output_stream: Union[TextIO, str], lines: list, encoding: str = "utf-8"
+    ) -> None:
         """
         写入多行
 
@@ -268,7 +279,7 @@ class IOUtils:
             encoding: 编码方式
         """
         if isinstance(output_stream, str):
-            with open(output_stream, 'w', encoding=encoding) as f:
+            with open(output_stream, "w", encoding=encoding) as f:
                 f.writelines(lines)
         else:
             output_stream.writelines(lines)
@@ -284,12 +295,13 @@ class IOUtils:
         Returns:
             bool: 是否已关闭
         """
-        if hasattr(io_obj, 'closed'):
+        if hasattr(io_obj, "closed"):
             return io_obj.closed
         return False
 
 
 # 便捷函数
+
 
 def read_bytes(input_stream: Union[BinaryIO, str, bytes]) -> bytes:
     """
@@ -304,7 +316,7 @@ def read_bytes(input_stream: Union[BinaryIO, str, bytes]) -> bytes:
     return IOUtils.read_bytes(input_stream)
 
 
-def read_text(input_stream: Union[TextIO, str, bytes], encoding: str = 'utf-8') -> str:
+def read_text(input_stream: Union[TextIO, str, bytes], encoding: str = "utf-8") -> str:
     """
     读取文本流
 
@@ -329,7 +341,9 @@ def write_bytes(output_stream: Union[BinaryIO, str], data: bytes) -> None:
     IOUtils.write_bytes(output_stream, data)
 
 
-def write_text(output_stream: Union[TextIO, str], data: str, encoding: str = 'utf-8') -> None:
+def write_text(
+    output_stream: Union[TextIO, str], data: str, encoding: str = "utf-8"
+) -> None:
     """
     写入文本流
 
@@ -341,7 +355,9 @@ def write_text(output_stream: Union[TextIO, str], data: str, encoding: str = 'ut
     IOUtils.write_text(output_stream, data, encoding)
 
 
-def copy(input_stream: Union[IO, str], output_stream: Union[IO, str], buffer_size: int = 8192) -> int:
+def copy(
+    input_stream: Union[IO, str], output_stream: Union[IO, str], buffer_size: int = 8192
+) -> int:
     """
     复制流
 
@@ -369,7 +385,7 @@ def to_bytes_io(data: Union[str, bytes]) -> io.BytesIO:
     return IOUtils.to_bytes_io(data)
 
 
-def to_string_io(data: Union[str, bytes], encoding: str = 'utf-8') -> io.StringIO:
+def to_string_io(data: Union[str, bytes], encoding: str = "utf-8") -> io.StringIO:
     """
     转换为StringIO对象
 
@@ -420,7 +436,7 @@ def skip(input_stream: IO, n: int) -> int:
     return IOUtils.skip(input_stream, n)
 
 
-def read_lines(input_stream: Union[TextIO, str], encoding: str = 'utf-8') -> list:
+def read_lines(input_stream: Union[TextIO, str], encoding: str = "utf-8") -> list:
     """
     读取所有行
 
@@ -434,7 +450,9 @@ def read_lines(input_stream: Union[TextIO, str], encoding: str = 'utf-8') -> lis
     return IOUtils.read_lines(input_stream, encoding)
 
 
-def write_lines(output_stream: Union[TextIO, str], lines: list, encoding: str = 'utf-8') -> None:
+def write_lines(
+    output_stream: Union[TextIO, str], lines: list, encoding: str = "utf-8"
+) -> None:
     """
     写入多行
 

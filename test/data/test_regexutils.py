@@ -1,5 +1,7 @@
 """测试RegexUtils类"""
+
 import unittest
+
 from btools.core.data.regexutils import RegexUtils
 
 

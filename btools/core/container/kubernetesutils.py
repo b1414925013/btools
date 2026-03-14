@@ -5,9 +5,10 @@ Kubernetes 操作工具类
 
 提供 K8s 资源管理，部署、扩缩容操作等功能
 """
-import subprocess
+
 import json
-from typing import List, Dict, Optional, Any, Tuple
+import subprocess
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class KubernetesUtils:
@@ -27,17 +28,13 @@ class KubernetesUtils:
             (返回码, 标准输出, 标准错误)
         """
         try:
-            result = subprocess.run(
-                ['kubectl'] + cmd,
-                capture_output=True,
-                text=True
-            )
+            result = subprocess.run(["kubectl"] + cmd, capture_output=True, text=True)
             return result.returncode, result.stdout.strip(), result.stderr.strip()
         except Exception as e:
-            return 1, '', str(e)
+            return 1, "", str(e)
 
     @staticmethod
-    def get_pods(namespace: str = 'default') -> List[Dict[str, Any]]:
+    def get_pods(namespace: str = "default") -> List[Dict[str, Any]]:
         """
         获取 Pod 列表
 
@@ -47,18 +44,16 @@ class KubernetesUtils:
         Returns:
             Pod 列表
         """
-        code, stdout, _ = KubernetesUtils.run_kubectl_command([
-            'get', 'pods',
-            '--namespace', namespace,
-            '--output', 'json'
-        ])
+        code, stdout, _ = KubernetesUtils.run_kubectl_command(
+            ["get", "pods", "--namespace", namespace, "--output", "json"]
+        )
         if code == 0:
             data = json.loads(stdout)
-            return data.get('items', [])
+            return data.get("items", [])
         return []
 
     @staticmethod
-    def get_deployments(namespace: str = 'default') -> List[Dict[str, Any]]:
+    def get_deployments(namespace: str = "default") -> List[Dict[str, Any]]:
         """
         获取 Deployment 列表
 
@@ -68,18 +63,16 @@ class KubernetesUtils:
         Returns:
             Deployment 列表
         """
-        code, stdout, _ = KubernetesUtils.run_kubectl_command([
-            'get', 'deployments',
-            '--namespace', namespace,
-            '--output', 'json'
-        ])
+        code, stdout, _ = KubernetesUtils.run_kubectl_command(
+            ["get", "deployments", "--namespace", namespace, "--output", "json"]
+        )
         if code == 0:
             data = json.loads(stdout)
-            return data.get('items', [])
+            return data.get("items", [])
         return []
 
     @staticmethod
-    def get_services(namespace: str = 'default') -> List[Dict[str, Any]]:
+    def get_services(namespace: str = "default") -> List[Dict[str, Any]]:
         """
         获取 Service 列表
 
@@ -89,14 +82,12 @@ class KubernetesUtils:
         Returns:
             Service 列表
         """
-        code, stdout, _ = KubernetesUtils.run_kubectl_command([
-            'get', 'services',
-            '--namespace', namespace,
-            '--output', 'json'
-        ])
+        code, stdout, _ = KubernetesUtils.run_kubectl_command(
+            ["get", "services", "--namespace", namespace, "--output", "json"]
+        )
         if code == 0:
             data = json.loads(stdout)
-            return data.get('items', [])
+            return data.get("items", [])
         return []
 
     @staticmethod
@@ -107,13 +98,12 @@ class KubernetesUtils:
         Returns:
             命名空间列表
         """
-        code, stdout, _ = KubernetesUtils.run_kubectl_command([
-            'get', 'namespaces',
-            '--output', 'json'
-        ])
+        code, stdout, _ = KubernetesUtils.run_kubectl_command(
+            ["get", "namespaces", "--output", "json"]
+        )
         if code == 0:
             data = json.loads(stdout)
-            return data.get('items', [])
+            return data.get("items", [])
         return []
 
     @staticmethod
@@ -127,9 +117,7 @@ class KubernetesUtils:
         Returns:
             是否成功
         """
-        code, _, _ = KubernetesUtils.run_kubectl_command([
-            'create', 'namespace', name
-        ])
+        code, _, _ = KubernetesUtils.run_kubectl_command(["create", "namespace", name])
         return code == 0
 
     @staticmethod
@@ -143,13 +131,11 @@ class KubernetesUtils:
         Returns:
             是否成功
         """
-        code, _, _ = KubernetesUtils.run_kubectl_command([
-            'delete', 'namespace', name
-        ])
+        code, _, _ = KubernetesUtils.run_kubectl_command(["delete", "namespace", name])
         return code == 0
 
     @staticmethod
-    def apply_manifest(manifest_path: str, namespace: str = 'default') -> bool:
+    def apply_manifest(manifest_path: str, namespace: str = "default") -> bool:
         """
         应用 Kubernetes 清单
 
@@ -160,14 +146,13 @@ class KubernetesUtils:
         Returns:
             是否成功
         """
-        code, _, _ = KubernetesUtils.run_kubectl_command([
-            'apply', '-f', manifest_path,
-            '--namespace', namespace
-        ])
+        code, _, _ = KubernetesUtils.run_kubectl_command(
+            ["apply", "-f", manifest_path, "--namespace", namespace]
+        )
         return code == 0
 
     @staticmethod
-    def delete_manifest(manifest_path: str, namespace: str = 'default') -> bool:
+    def delete_manifest(manifest_path: str, namespace: str = "default") -> bool:
         """
         删除 Kubernetes 清单
 
@@ -178,14 +163,13 @@ class KubernetesUtils:
         Returns:
             是否成功
         """
-        code, _, _ = KubernetesUtils.run_kubectl_command([
-            'delete', '-f', manifest_path,
-            '--namespace', namespace
-        ])
+        code, _, _ = KubernetesUtils.run_kubectl_command(
+            ["delete", "-f", manifest_path, "--namespace", namespace]
+        )
         return code == 0
 
     @staticmethod
-    def scale_deployment(name: str, replicas: int, namespace: str = 'default') -> bool:
+    def scale_deployment(name: str, replicas: int, namespace: str = "default") -> bool:
         """
         扩缩容 Deployment
 
@@ -197,15 +181,21 @@ class KubernetesUtils:
         Returns:
             是否成功
         """
-        code, _, _ = KubernetesUtils.run_kubectl_command([
-            'scale', 'deployment', name,
-            '--replicas', str(replicas),
-            '--namespace', namespace
-        ])
+        code, _, _ = KubernetesUtils.run_kubectl_command(
+            [
+                "scale",
+                "deployment",
+                name,
+                "--replicas",
+                str(replicas),
+                "--namespace",
+                namespace,
+            ]
+        )
         return code == 0
 
     @staticmethod
-    def rollout_restart_deployment(name: str, namespace: str = 'default') -> bool:
+    def rollout_restart_deployment(name: str, namespace: str = "default") -> bool:
         """
         重启 Deployment
 
@@ -216,14 +206,13 @@ class KubernetesUtils:
         Returns:
             是否成功
         """
-        code, _, _ = KubernetesUtils.run_kubectl_command([
-            'rollout', 'restart', 'deployment', name,
-            '--namespace', namespace
-        ])
+        code, _, _ = KubernetesUtils.run_kubectl_command(
+            ["rollout", "restart", "deployment", name, "--namespace", namespace]
+        )
         return code == 0
 
     @staticmethod
-    def get_pod_logs(pod_name: str, namespace: str = 'default', tail: int = 100) -> str:
+    def get_pod_logs(pod_name: str, namespace: str = "default", tail: int = 100) -> str:
         """
         获取 Pod 日志
 
@@ -235,17 +224,17 @@ class KubernetesUtils:
         Returns:
             日志内容
         """
-        code, stdout, _ = KubernetesUtils.run_kubectl_command([
-            'logs', pod_name,
-            '--namespace', namespace,
-            '--tail', str(tail)
-        ])
+        code, stdout, _ = KubernetesUtils.run_kubectl_command(
+            ["logs", pod_name, "--namespace", namespace, "--tail", str(tail)]
+        )
         if code == 0:
             return stdout
-        return ''
+        return ""
 
     @staticmethod
-    def exec_in_pod(pod_name: str, command: List[str], namespace: str = 'default') -> Optional[str]:
+    def exec_in_pod(
+        pod_name: str, command: List[str], namespace: str = "default"
+    ) -> Optional[str]:
         """
         在 Pod 中执行命令
 
@@ -257,11 +246,7 @@ class KubernetesUtils:
         Returns:
             命令输出
         """
-        cmd = [
-            'exec', pod_name,
-            '--namespace', namespace,
-            '--'
-        ]
+        cmd = ["exec", pod_name, "--namespace", namespace, "--"]
         cmd.extend(command)
         code, stdout, _ = KubernetesUtils.run_kubectl_command(cmd)
         if code == 0:
@@ -269,7 +254,9 @@ class KubernetesUtils:
         return None
 
     @staticmethod
-    def port_forward(pod_name: str, local_port: int, remote_port: int, namespace: str = 'default') -> bool:
+    def port_forward(
+        pod_name: str, local_port: int, remote_port: int, namespace: str = "default"
+    ) -> bool:
         """
         端口转发
 
@@ -283,15 +270,21 @@ class KubernetesUtils:
             是否成功
         """
         # 注意：这是一个阻塞命令，实际使用中需要在后台运行
-        code, _, _ = KubernetesUtils.run_kubectl_command([
-            'port-forward', pod_name,
-            f'{local_port}:{remote_port}',
-            '--namespace', namespace
-        ])
+        code, _, _ = KubernetesUtils.run_kubectl_command(
+            [
+                "port-forward",
+                pod_name,
+                f"{local_port}:{remote_port}",
+                "--namespace",
+                namespace,
+            ]
+        )
         return code == 0
 
     @staticmethod
-    def describe_resource(resource_type: str, resource_name: str, namespace: str = 'default') -> str:
+    def describe_resource(
+        resource_type: str, resource_name: str, namespace: str = "default"
+    ) -> str:
         """
         查看资源详细信息
 
@@ -303,16 +296,17 @@ class KubernetesUtils:
         Returns:
             资源详细信息
         """
-        code, stdout, _ = KubernetesUtils.run_kubectl_command([
-            'describe', resource_type, resource_name,
-            '--namespace', namespace
-        ])
+        code, stdout, _ = KubernetesUtils.run_kubectl_command(
+            ["describe", resource_type, resource_name, "--namespace", namespace]
+        )
         if code == 0:
             return stdout
-        return ''
+        return ""
 
     @staticmethod
-    def get_resource(resource_type: str, resource_name: str, namespace: str = 'default') -> Optional[Dict[str, Any]]:
+    def get_resource(
+        resource_type: str, resource_name: str, namespace: str = "default"
+    ) -> Optional[Dict[str, Any]]:
         """
         获取资源详细信息（JSON 格式）
 
@@ -324,11 +318,17 @@ class KubernetesUtils:
         Returns:
             资源详细信息
         """
-        code, stdout, _ = KubernetesUtils.run_kubectl_command([
-            'get', resource_type, resource_name,
-            '--namespace', namespace,
-            '--output', 'json'
-        ])
+        code, stdout, _ = KubernetesUtils.run_kubectl_command(
+            [
+                "get",
+                resource_type,
+                resource_name,
+                "--namespace",
+                namespace,
+                "--output",
+                "json",
+            ]
+        )
         if code == 0:
             return json.loads(stdout)
         return None
@@ -341,13 +341,12 @@ class KubernetesUtils:
         Returns:
             上下文列表
         """
-        code, stdout, _ = KubernetesUtils.run_kubectl_command([
-            'config', 'get-contexts',
-            '--output', 'json'
-        ])
+        code, stdout, _ = KubernetesUtils.run_kubectl_command(
+            ["config", "get-contexts", "--output", "json"]
+        )
         if code == 0:
             data = json.loads(stdout)
-            return data.get('contexts', [])
+            return data.get("contexts", [])
         return []
 
     @staticmethod
@@ -361,7 +360,7 @@ class KubernetesUtils:
         Returns:
             是否成功
         """
-        code, _, _ = KubernetesUtils.run_kubectl_command([
-            'config', 'use-context', context_name
-        ])
+        code, _, _ = KubernetesUtils.run_kubectl_command(
+            ["config", "use-context", context_name]
+        )
         return code == 0

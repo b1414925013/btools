@@ -1,4 +1,5 @@
 """数学工具类"""
+
 import math
 import random
 from typing import Any, List, Optional, Tuple, Union
@@ -10,17 +11,17 @@ class MathUtils:
     # 常量
     PI = math.pi
     E = math.e
-    INF = float('inf')
-    NAN = float('nan')
+    INF = float("inf")
+    NAN = float("nan")
 
     @staticmethod
     def abs(x: Union[int, float]) -> Union[int, float]:
         """
         获取绝对值
-        
+
         Args:
             x: 数值
-            
+
         Returns:
             Union[int, float]: 绝对值
         """
@@ -30,10 +31,10 @@ class MathUtils:
     def sqrt(x: Union[int, float]) -> float:
         """
         计算平方根
-        
+
         Args:
             x: 数值
-            
+
         Returns:
             float: 平方根
         """
@@ -43,11 +44,11 @@ class MathUtils:
     def pow(x: Union[int, float], y: Union[int, float]) -> float:
         """
         计算幂
-        
+
         Args:
             x: 底数
             y: 指数
-            
+
         Returns:
             float: 幂结果
         """
@@ -57,10 +58,10 @@ class MathUtils:
     def exp(x: Union[int, float]) -> float:
         """
         计算自然指数
-        
+
         Args:
             x: 数值
-            
+
         Returns:
             float: 自然指数结果
         """
@@ -70,11 +71,11 @@ class MathUtils:
     def log(x: Union[int, float], base: Optional[Union[int, float]] = None) -> float:
         """
         计算对数
-        
+
         Args:
             x: 数值
             base: 底数，默认为自然对数
-            
+
         Returns:
             float: 对数结果
         """
@@ -86,10 +87,10 @@ class MathUtils:
     def log10(x: Union[int, float]) -> float:
         """
         计算以10为底的对数
-        
+
         Args:
             x: 数值
-            
+
         Returns:
             float: 以10为底的对数结果
         """
@@ -99,10 +100,10 @@ class MathUtils:
     def sin(x: Union[int, float]) -> float:
         """
         计算正弦值
-        
+
         Args:
             x: 角度（弧度）
-            
+
         Returns:
             float: 正弦值
         """
@@ -112,10 +113,10 @@ class MathUtils:
     def cos(x: Union[int, float]) -> float:
         """
         计算余弦值
-        
+
         Args:
             x: 角度（弧度）
-            
+
         Returns:
             float: 余弦值
         """
@@ -125,10 +126,10 @@ class MathUtils:
     def tan(x: Union[int, float]) -> float:
         """
         计算正切值
-        
+
         Args:
             x: 角度（弧度）
-            
+
         Returns:
             float: 正切值
         """
@@ -138,10 +139,10 @@ class MathUtils:
     def asin(x: Union[int, float]) -> float:
         """
         计算反正弦值
-        
+
         Args:
             x: 数值
-            
+
         Returns:
             float: 反正弦值（弧度）
         """
@@ -151,10 +152,10 @@ class MathUtils:
     def acos(x: Union[int, float]) -> float:
         """
         计算反余弦值
-        
+
         Args:
             x: 数值
-            
+
         Returns:
             float: 反余弦值（弧度）
         """
@@ -164,10 +165,10 @@ class MathUtils:
     def atan(x: Union[int, float]) -> float:
         """
         计算反正切值
-        
+
         Args:
             x: 数值
-            
+
         Returns:
             float: 反正切值（弧度）
         """
@@ -177,11 +178,11 @@ class MathUtils:
     def atan2(y: Union[int, float], x: Union[int, float]) -> float:
         """
         计算坐标的反正切值
-        
+
         Args:
             y: y坐标
             x: x坐标
-            
+
         Returns:
             float: 反正切值（弧度）
         """
@@ -191,10 +192,10 @@ class MathUtils:
     def radians(degrees: Union[int, float]) -> float:
         """
         角度转弧度
-        
+
         Args:
             degrees: 角度
-            
+
         Returns:
             float: 弧度
         """
@@ -204,10 +205,10 @@ class MathUtils:
     def degrees(radians: Union[int, float]) -> float:
         """
         弧度转角度
-        
+
         Args:
             radians: 弧度
-            
+
         Returns:
             float: 角度
         """
@@ -217,10 +218,10 @@ class MathUtils:
     def ceil(x: Union[int, float]) -> int:
         """
         向上取整
-        
+
         Args:
             x: 数值
-            
+
         Returns:
             int: 向上取整结果
         """
@@ -230,10 +231,10 @@ class MathUtils:
     def floor(x: Union[int, float]) -> int:
         """
         向下取整
-        
+
         Args:
             x: 数值
-            
+
         Returns:
             int: 向下取整结果
         """
@@ -243,11 +244,11 @@ class MathUtils:
     def round(x: Union[int, float], ndigits: Optional[int] = None) -> Union[int, float]:
         """
         四舍五入
-        
+
         Args:
             x: 数值
             ndigits: 小数位数
-            
+
         Returns:
             Union[int, float]: 四舍五入结果
         """
@@ -257,10 +258,10 @@ class MathUtils:
     def trunc(x: Union[int, float]) -> int:
         """
         截断小数部分
-        
+
         Args:
             x: 数值
-            
+
         Returns:
             int: 截断结果
         """
@@ -270,10 +271,10 @@ class MathUtils:
     def sign(x: Union[int, float]) -> int:
         """
         获取符号
-        
+
         Args:
             x: 数值
-            
+
         Returns:
             int: 符号（-1, 0, 1）
         """
@@ -288,10 +289,10 @@ class MathUtils:
     def max(*args: Union[int, float]) -> Union[int, float]:
         """
         获取最大值
-        
+
         Args:
             *args: 数值
-            
+
         Returns:
             Union[int, float]: 最大值
         """
@@ -301,10 +302,10 @@ class MathUtils:
     def min(*args: Union[int, float]) -> Union[int, float]:
         """
         获取最小值
-        
+
         Args:
             *args: 数值
-            
+
         Returns:
             Union[int, float]: 最小值
         """
@@ -314,10 +315,10 @@ class MathUtils:
     def sum(*args: Union[int, float]) -> Union[int, float]:
         """
         计算和
-        
+
         Args:
             *args: 数值
-            
+
         Returns:
             Union[int, float]: 和
         """
@@ -327,10 +328,10 @@ class MathUtils:
     def average(*args: Union[int, float]) -> float:
         """
         计算平均值
-        
+
         Args:
             *args: 数值
-            
+
         Returns:
             float: 平均值
         """
@@ -342,10 +343,10 @@ class MathUtils:
     def median(*args: Union[int, float]) -> float:
         """
         计算中位数
-        
+
         Args:
             *args: 数值
-            
+
         Returns:
             float: 中位数
         """
@@ -354,19 +355,19 @@ class MathUtils:
         sorted_args = sorted(args)
         n = len(sorted_args)
         if n % 2 == 0:
-            return (sorted_args[n//2 - 1] + sorted_args[n//2]) / 2
+            return (sorted_args[n // 2 - 1] + sorted_args[n // 2]) / 2
         else:
-            return sorted_args[n//2]
+            return sorted_args[n // 2]
 
     @staticmethod
     def gcd(a: int, b: int) -> int:
         """
         计算最大公约数
-        
+
         Args:
             a: 整数
             b: 整数
-            
+
         Returns:
             int: 最大公约数
         """
@@ -376,11 +377,11 @@ class MathUtils:
     def lcm(a: int, b: int) -> int:
         """
         计算最小公倍数
-        
+
         Args:
             a: 整数
             b: 整数
-            
+
         Returns:
             int: 最小公倍数
         """
@@ -392,10 +393,10 @@ class MathUtils:
     def is_integer(x: Union[int, float]) -> bool:
         """
         判断是否为整数
-        
+
         Args:
             x: 数值
-            
+
         Returns:
             bool: 如果是整数则返回True，否则返回False
         """
@@ -405,10 +406,10 @@ class MathUtils:
     def is_even(x: int) -> bool:
         """
         判断是否为偶数
-        
+
         Args:
             x: 整数
-            
+
         Returns:
             bool: 如果是偶数则返回True，否则返回False
         """
@@ -418,10 +419,10 @@ class MathUtils:
     def is_odd(x: int) -> bool:
         """
         判断是否为奇数
-        
+
         Args:
             x: 整数
-            
+
         Returns:
             bool: 如果是奇数则返回True，否则返回False
         """
@@ -431,10 +432,10 @@ class MathUtils:
     def is_prime(x: int) -> bool:
         """
         判断是否为质数
-        
+
         Args:
             x: 整数
-            
+
         Returns:
             bool: 如果是质数则返回True，否则返回False
         """
@@ -455,11 +456,11 @@ class MathUtils:
     def generate_random_integer(min_value: int, max_value: int) -> int:
         """
         生成随机整数
-        
+
         Args:
             min_value: 最小值
             max_value: 最大值
-            
+
         Returns:
             int: 随机整数
         """
@@ -469,11 +470,11 @@ class MathUtils:
     def generate_random_float(min_value: float = 0.0, max_value: float = 1.0) -> float:
         """
         生成随机浮点数
-        
+
         Args:
             min_value: 最小值
             max_value: 最大值
-            
+
         Returns:
             float: 随机浮点数
         """
@@ -483,10 +484,10 @@ class MathUtils:
     def generate_random_choice(sequence: List[Any]) -> Any:
         """
         从序列中随机选择一个元素
-        
+
         Args:
             sequence: 序列
-            
+
         Returns:
             Any: 随机选择的元素
         """
@@ -496,11 +497,11 @@ class MathUtils:
     def generate_random_sample(sequence: List[Any], k: int) -> List[Any]:
         """
         从序列中随机选择k个不重复元素
-        
+
         Args:
             sequence: 序列
             k: 选择的元素数量
-            
+
         Returns:
             List[Any]: 随机选择的元素列表
         """
@@ -510,7 +511,7 @@ class MathUtils:
     def shuffle(sequence: List[Any]) -> None:
         """
         打乱序列
-        
+
         Args:
             sequence: 序列
         """
@@ -520,7 +521,7 @@ class MathUtils:
     def set_random_seed(seed: int) -> None:
         """
         设置随机种子
-        
+
         Args:
             seed: 种子值
         """
@@ -530,43 +531,49 @@ class MathUtils:
     def distance(x1: float, y1: float, x2: float, y2: float) -> float:
         """
         计算两点之间的距离
-        
+
         Args:
             x1: 第一个点的x坐标
             y1: 第一个点的y坐标
             x2: 第二个点的x坐标
             y2: 第二个点的y坐标
-            
+
         Returns:
             float: 距离
         """
         return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
     @staticmethod
-    def clamp(value: Union[int, float], min_value: Union[int, float], max_value: Union[int, float]) -> Union[int, float]:
+    def clamp(
+        value: Union[int, float],
+        min_value: Union[int, float],
+        max_value: Union[int, float],
+    ) -> Union[int, float]:
         """
         限制值在指定范围内
-        
+
         Args:
             value: 数值
             min_value: 最小值
             max_value: 最大值
-            
+
         Returns:
             Union[int, float]: 限制后的值
         """
         return max(min(value, max_value), min_value)
 
     @staticmethod
-    def lerp(start: Union[int, float], end: Union[int, float], t: float) -> Union[int, float]:
+    def lerp(
+        start: Union[int, float], end: Union[int, float], t: float
+    ) -> Union[int, float]:
         """
         线性插值
-        
+
         Args:
             start: 起始值
             end: 结束值
             t: 插值参数（0-1）
-            
+
         Returns:
             Union[int, float]: 插值结果
         """
@@ -576,10 +583,10 @@ class MathUtils:
     def factorial(n: int) -> int:
         """
         计算阶乘
-        
+
         Args:
             n: 整数
-            
+
         Returns:
             int: 阶乘结果
         """
@@ -591,11 +598,11 @@ class MathUtils:
     def combinations(n: int, k: int) -> int:
         """
         计算组合数
-        
+
         Args:
             n: 总数
             k: 选择数
-            
+
         Returns:
             int: 组合数
         """
@@ -607,11 +614,11 @@ class MathUtils:
     def permutations(n: int, k: int) -> int:
         """
         计算排列数
-        
+
         Args:
             n: 总数
             k: 选择数
-            
+
         Returns:
             int: 排列数
         """

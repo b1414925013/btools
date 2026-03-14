@@ -2,10 +2,11 @@
 """
 定时任务工具模块
 """
+
 import sched
 import threading
 import time
-from typing import Callable, Optional, Any
+from typing import Any, Callable, Optional
 
 
 class ScheduleUtils:
@@ -55,7 +56,9 @@ class ScheduleUtils:
                 self._scheduler.run(blocking=False)
             time.sleep(0.1)
 
-    def schedule_once(self, delay: float, func: Callable, *args: Any, **kwargs: Any) -> int:
+    def schedule_once(
+        self, delay: float, func: Callable, *args: Any, **kwargs: Any
+    ) -> int:
         """
         安排一次性任务
 
@@ -70,11 +73,15 @@ class ScheduleUtils:
         """
         with self._lock:
             task_id = id(func)
-            event = self._scheduler.enter(delay, 1, self._wrap_task, (task_id, func, args, kwargs))
+            event = self._scheduler.enter(
+                delay, 1, self._wrap_task, (task_id, func, args, kwargs)
+            )
             self._tasks[task_id] = event
             return task_id
 
-    def schedule_interval(self, interval: float, func: Callable, *args: Any, **kwargs: Any) -> int:
+    def schedule_interval(
+        self, interval: float, func: Callable, *args: Any, **kwargs: Any
+    ) -> int:
         """
         安排周期性任务
 
@@ -89,19 +96,23 @@ class ScheduleUtils:
         """
         with self._lock:
             task_id = id(func)
-            
+
             def interval_task():
                 try:
                     func(*args, **kwargs)
                 finally:
                     if self._running and task_id in self._tasks:
-                        self._tasks[task_id] = self._scheduler.enter(interval, 1, interval_task)
+                        self._tasks[task_id] = self._scheduler.enter(
+                            interval, 1, interval_task
+                        )
 
             event = self._scheduler.enter(interval, 1, interval_task)
             self._tasks[task_id] = event
             return task_id
 
-    def schedule_at_fixed_rate(self, interval: float, func: Callable, *args: Any, **kwargs: Any) -> int:
+    def schedule_at_fixed_rate(
+        self, interval: float, func: Callable, *args: Any, **kwargs: Any
+    ) -> int:
         """
         按固定速率安排任务（不考虑任务执行时间）
 
@@ -116,7 +127,9 @@ class ScheduleUtils:
         """
         return self.schedule_interval(interval, func, *args, **kwargs)
 
-    def schedule_with_fixed_delay(self, delay: float, func: Callable, *args: Any, **kwargs: Any) -> int:
+    def schedule_with_fixed_delay(
+        self, delay: float, func: Callable, *args: Any, **kwargs: Any
+    ) -> int:
         """
         按固定延迟安排任务（考虑任务执行时间）
 
@@ -131,7 +144,7 @@ class ScheduleUtils:
         """
         with self._lock:
             task_id = id(func)
-            
+
             def delay_task():
                 start_time = time.time()
                 try:
@@ -140,7 +153,9 @@ class ScheduleUtils:
                     if self._running and task_id in self._tasks:
                         execution_time = time.time() - start_time
                         next_delay = max(0, delay - execution_time)
-                        self._tasks[task_id] = self._scheduler.enter(next_delay, 1, delay_task)
+                        self._tasks[task_id] = self._scheduler.enter(
+                            next_delay, 1, delay_task
+                        )
 
             event = self._scheduler.enter(delay, 1, delay_task)
             self._tasks[task_id] = event
@@ -227,7 +242,9 @@ def schedule_once(delay: float, func: Callable, *args: Any, **kwargs: Any) -> in
     return global_scheduler.schedule_once(delay, func, *args, **kwargs)
 
 
-def schedule_interval(interval: float, func: Callable, *args: Any, **kwargs: Any) -> int:
+def schedule_interval(
+    interval: float, func: Callable, *args: Any, **kwargs: Any
+) -> int:
     """
     安排周期性任务（使用全局调度器）
 
@@ -244,7 +261,9 @@ def schedule_interval(interval: float, func: Callable, *args: Any, **kwargs: Any
     return global_scheduler.schedule_interval(interval, func, *args, **kwargs)
 
 
-def schedule_at_fixed_rate(interval: float, func: Callable, *args: Any, **kwargs: Any) -> int:
+def schedule_at_fixed_rate(
+    interval: float, func: Callable, *args: Any, **kwargs: Any
+) -> int:
     """
     按固定速率安排任务（使用全局调度器）
 
@@ -261,7 +280,9 @@ def schedule_at_fixed_rate(interval: float, func: Callable, *args: Any, **kwargs
     return global_scheduler.schedule_at_fixed_rate(interval, func, *args, **kwargs)
 
 
-def schedule_with_fixed_delay(delay: float, func: Callable, *args: Any, **kwargs: Any) -> int:
+def schedule_with_fixed_delay(
+    delay: float, func: Callable, *args: Any, **kwargs: Any
+) -> int:
     """
     按固定延迟安排任务（使用全局调度器）
 

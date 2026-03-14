@@ -1,5 +1,7 @@
 """测试ReleaseUtils类"""
+
 import unittest
+
 from btools.core.release.releaseutils import ReleaseUtils
 
 

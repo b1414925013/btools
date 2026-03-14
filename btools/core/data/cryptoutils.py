@@ -2,14 +2,16 @@
 """
 增强的加密工具模块
 """
+
+import base64
 import hashlib
 import hmac
-import base64
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.backends import default_backend
 from typing import Any, Dict, Optional, Tuple, Union
+
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding, rsa
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 
 class CryptoUtils:
@@ -30,7 +32,7 @@ class CryptoUtils:
             MD5加密后的十六进制字符串
         """
         if isinstance(text, str):
-            text = text.encode('utf-8')
+            text = text.encode("utf-8")
         return hashlib.md5(text).hexdigest()
 
     @staticmethod
@@ -45,7 +47,7 @@ class CryptoUtils:
             SHA1加密后的十六进制字符串
         """
         if isinstance(text, str):
-            text = text.encode('utf-8')
+            text = text.encode("utf-8")
         return hashlib.sha1(text).hexdigest()
 
     @staticmethod
@@ -60,7 +62,7 @@ class CryptoUtils:
             SHA256加密后的十六进制字符串
         """
         if isinstance(text, str):
-            text = text.encode('utf-8')
+            text = text.encode("utf-8")
         return hashlib.sha256(text).hexdigest()
 
     @staticmethod
@@ -75,7 +77,7 @@ class CryptoUtils:
             SHA512加密后的十六进制字符串
         """
         if isinstance(text, str):
-            text = text.encode('utf-8')
+            text = text.encode("utf-8")
         return hashlib.sha512(text).hexdigest()
 
     @staticmethod
@@ -91,9 +93,9 @@ class CryptoUtils:
             HMAC-MD5加密后的十六进制字符串
         """
         if isinstance(key, str):
-            key = key.encode('utf-8')
+            key = key.encode("utf-8")
         if isinstance(text, str):
-            text = text.encode('utf-8')
+            text = text.encode("utf-8")
         return hmac.new(key, text, hashlib.md5).hexdigest()
 
     @staticmethod
@@ -109,9 +111,9 @@ class CryptoUtils:
             HMAC-SHA256加密后的十六进制字符串
         """
         if isinstance(key, str):
-            key = key.encode('utf-8')
+            key = key.encode("utf-8")
         if isinstance(text, str):
-            text = text.encode('utf-8')
+            text = text.encode("utf-8")
         return hmac.new(key, text, hashlib.sha256).hexdigest()
 
     @staticmethod
@@ -126,8 +128,8 @@ class CryptoUtils:
             Base64编码后的字符串
         """
         if isinstance(text, str):
-            text = text.encode('utf-8')
-        return base64.b64encode(text).decode('utf-8')
+            text = text.encode("utf-8")
+        return base64.b64encode(text).decode("utf-8")
 
     @staticmethod
     def base64_decode(text: str) -> bytes:
@@ -140,7 +142,7 @@ class CryptoUtils:
         Returns:
             解码后的字节
         """
-        return base64.b64decode(text.encode('utf-8'))
+        return base64.b64decode(text.encode("utf-8"))
 
     @staticmethod
     def generate_rsa_keys(bits: int = 2048) -> Tuple[str, str]:
@@ -154,25 +156,23 @@ class CryptoUtils:
             (私钥, 公钥) 元组
         """
         private_key = rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=bits,
-            backend=default_backend()
+            public_exponent=65537, key_size=bits, backend=default_backend()
         )
-        
+
         # 生成私钥PEM
         private_pem = private_key.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption()
-        ).decode('utf-8')
-        
+            encryption_algorithm=serialization.NoEncryption(),
+        ).decode("utf-8")
+
         # 生成公钥PEM
         public_key = private_key.public_key()
         public_pem = public_key.public_bytes(
             encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo
-        ).decode('utf-8')
-        
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        ).decode("utf-8")
+
         return private_pem, public_pem
 
     @staticmethod
@@ -188,24 +188,23 @@ class CryptoUtils:
             加密后的Base64字符串
         """
         if isinstance(text, str):
-            text = text.encode('utf-8')
-        
+            text = text.encode("utf-8")
+
         # 加载公钥
         public_key = serialization.load_pem_public_key(
-            public_key_pem.encode('utf-8'),
-            backend=default_backend()
+            public_key_pem.encode("utf-8"), backend=default_backend()
         )
-        
+
         # 加密
         encrypted = public_key.encrypt(
             text,
             padding.OAEP(
                 mgf=padding.MGF1(algorithm=hashes.SHA256()),
                 algorithm=hashes.SHA256(),
-                label=None
-            )
+                label=None,
+            ),
         )
-        
+
         return CryptoUtils.base64_encode(encrypted)
 
     @staticmethod
@@ -222,11 +221,9 @@ class CryptoUtils:
         """
         # 加载私钥
         private_key = serialization.load_pem_private_key(
-            private_key_pem.encode('utf-8'),
-            password=None,
-            backend=default_backend()
+            private_key_pem.encode("utf-8"), password=None, backend=default_backend()
         )
-        
+
         # 解码并解密
         encrypted_data = CryptoUtils.base64_decode(encrypted_text)
         decrypted = private_key.decrypt(
@@ -234,11 +231,11 @@ class CryptoUtils:
             padding.OAEP(
                 mgf=padding.MGF1(algorithm=hashes.SHA256()),
                 algorithm=hashes.SHA256(),
-                label=None
-            )
+                label=None,
+            ),
         )
-        
-        return decrypted.decode('utf-8')
+
+        return decrypted.decode("utf-8")
 
     @staticmethod
     def generate_aes_key(key_size: int = 256) -> str:
@@ -252,12 +249,14 @@ class CryptoUtils:
             Base64编码的AES密钥
         """
         import os
+
         key = os.urandom(key_size // 8)
         return CryptoUtils.base64_encode(key)
 
     @staticmethod
-    def aes_encrypt(key: Union[str, bytes], text: Union[str, bytes], 
-                   mode: str = 'CBC') -> Dict[str, str]:
+    def aes_encrypt(
+        key: Union[str, bytes], text: Union[str, bytes], mode: str = "CBC"
+    ) -> Dict[str, str]:
         """
         AES加密
 
@@ -270,53 +269,53 @@ class CryptoUtils:
             包含密文和IV的字典
         """
         import os
+
         if isinstance(key, str):
             if len(key) % 4 == 0:
                 # 假设是Base64编码的密钥
                 key = CryptoUtils.base64_decode(key)
             else:
                 # 直接使用字符串作为密钥
-                key = key.encode('utf-8')
-        
+                key = key.encode("utf-8")
+
         if isinstance(text, str):
-            text = text.encode('utf-8')
-        
+            text = text.encode("utf-8")
+
         # 生成IV
         iv = os.urandom(16)
-        
+
         # 选择加密模式
-        if mode == 'CBC':
+        if mode == "CBC":
             cipher = Cipher(
-                algorithms.AES(key),
-                modes.CBC(iv),
-                backend=default_backend()
+                algorithms.AES(key), modes.CBC(iv), backend=default_backend()
             )
-        elif mode == 'ECB':
-            cipher = Cipher(
-                algorithms.AES(key),
-                modes.ECB(),
-                backend=default_backend()
-            )
+        elif mode == "ECB":
+            cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
         else:
             raise ValueError(f"Unsupported mode: {mode}")
-        
+
         # 加密
         encryptor = cipher.encryptor()
-        
+
         # 填充
         padding_length = 16 - (len(text) % 16)
         text += bytes([padding_length]) * padding_length
-        
+
         ciphertext = encryptor.update(text) + encryptor.finalize()
-        
+
         return {
-            'ciphertext': CryptoUtils.base64_encode(ciphertext),
-            'iv': CryptoUtils.base64_encode(iv)
+            "ciphertext": CryptoUtils.base64_encode(ciphertext),
+            "iv": CryptoUtils.base64_encode(iv),
         }
 
     @staticmethod
-    def aes_decrypt(key: Union[str, bytes], ciphertext: str, iv: str, 
-                   mode: str = 'CBC', return_bytes: bool = False) -> Union[str, bytes]:
+    def aes_decrypt(
+        key: Union[str, bytes],
+        ciphertext: str,
+        iv: str,
+        mode: str = "CBC",
+        return_bytes: bool = False,
+    ) -> Union[str, bytes]:
         """
         AES解密
 
@@ -336,40 +335,34 @@ class CryptoUtils:
                 key = CryptoUtils.base64_decode(key)
             else:
                 # 直接使用字符串作为密钥
-                key = key.encode('utf-8')
-        
+                key = key.encode("utf-8")
+
         # 解码
         ciphertext = CryptoUtils.base64_decode(ciphertext)
         iv = CryptoUtils.base64_decode(iv)
-        
+
         # 选择加密模式
-        if mode == 'CBC':
+        if mode == "CBC":
             cipher = Cipher(
-                algorithms.AES(key),
-                modes.CBC(iv),
-                backend=default_backend()
+                algorithms.AES(key), modes.CBC(iv), backend=default_backend()
             )
-        elif mode == 'ECB':
-            cipher = Cipher(
-                algorithms.AES(key),
-                modes.ECB(),
-                backend=default_backend()
-            )
+        elif mode == "ECB":
+            cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
         else:
             raise ValueError(f"Unsupported mode: {mode}")
-        
+
         # 解密
         decryptor = cipher.decryptor()
         plaintext = decryptor.update(ciphertext) + decryptor.finalize()
-        
+
         # 去除填充
         padding_length = plaintext[-1]
         plaintext = plaintext[:-padding_length]
-        
+
         if return_bytes:
             return plaintext
         try:
-            return plaintext.decode('utf-8')
+            return plaintext.decode("utf-8")
         except UnicodeDecodeError:
             return plaintext
 
@@ -386,17 +379,15 @@ class CryptoUtils:
             哈希后的密码
         """
         import os
+
         if salt is None:
             salt = os.urandom(16).hex()
-        
+
         # 使用pbkdf2_hmac
         key = hashlib.pbkdf2_hmac(
-            'sha256',
-            password.encode('utf-8'),
-            salt.encode('utf-8'),
-            100000
+            "sha256", password.encode("utf-8"), salt.encode("utf-8"), 100000
         )
-        
+
         return f"{salt}${key.hex()}"
 
     @staticmethod
@@ -412,7 +403,7 @@ class CryptoUtils:
             是否验证通过
         """
         try:
-            salt, hashed = hashed_password.split('$')
+            salt, hashed = hashed_password.split("$")
             new_hash = CryptoUtils.password_hash(password, salt)
             return new_hash == hashed_password
         except:
@@ -429,9 +420,10 @@ class CryptoUtils:
         Returns:
             随机令牌
         """
-        import os
         import binascii
-        return binascii.hexlify(os.urandom(length // 2)).decode('utf-8')
+        import os
+
+        return binascii.hexlify(os.urandom(length // 2)).decode("utf-8")
 
     @staticmethod
     def encrypt_file(input_file: str, output_file: str, key: Union[str, bytes]):
@@ -444,23 +436,24 @@ class CryptoUtils:
             key: 密钥
         """
         import os
-        
+
         if isinstance(key, str):
             if len(key) % 4 == 0:
                 key = CryptoUtils.base64_decode(key)
             else:
-                key = key.encode('utf-8')
-        
+                key = key.encode("utf-8")
+
         # 读取文件
-        with open(input_file, 'rb') as f:
+        with open(input_file, "rb") as f:
             data = f.read()
-        
+
         # 加密
         result = CryptoUtils.aes_encrypt(key, data)
-        
+
         # 写入文件
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             import json
+
             json.dump(result, f)
 
     @staticmethod
@@ -474,19 +467,23 @@ class CryptoUtils:
             key: 密钥
         """
         # 读取文件
-        with open(input_file, 'r', encoding='utf-8') as f:
+        with open(input_file, "r", encoding="utf-8") as f:
             import json
+
             data = json.load(f)
-        
+
         # 解密，返回字节
-        plaintext = CryptoUtils.aes_decrypt(key, data['ciphertext'], data['iv'], return_bytes=True)
-        
+        plaintext = CryptoUtils.aes_decrypt(
+            key, data["ciphertext"], data["iv"], return_bytes=True
+        )
+
         # 写入文件
-        with open(output_file, 'wb') as f:
+        with open(output_file, "wb") as f:
             f.write(plaintext)
 
 
 # 便捷函数
+
 
 def md5(text: Union[str, bytes]) -> str:
     """
@@ -648,8 +645,9 @@ def generate_aes_key(key_size: int = 256) -> str:
     return CryptoUtils.generate_aes_key(key_size)
 
 
-def aes_encrypt(key: Union[str, bytes], text: Union[str, bytes], 
-               mode: str = 'CBC') -> Dict[str, str]:
+def aes_encrypt(
+    key: Union[str, bytes], text: Union[str, bytes], mode: str = "CBC"
+) -> Dict[str, str]:
     """
     AES加密
 
@@ -664,8 +662,9 @@ def aes_encrypt(key: Union[str, bytes], text: Union[str, bytes],
     return CryptoUtils.aes_encrypt(key, text, mode)
 
 
-def aes_decrypt(key: Union[str, bytes], ciphertext: str, iv: str, 
-               mode: str = 'CBC') -> str:
+def aes_decrypt(
+    key: Union[str, bytes], ciphertext: str, iv: str, mode: str = "CBC"
+) -> str:
     """
     AES解密
 

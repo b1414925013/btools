@@ -1,5 +1,7 @@
 """测试CollectionUtils类"""
+
 import unittest
+
 from btools.core.basic.collectionutils import CollectionUtils
 
 

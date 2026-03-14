@@ -5,8 +5,9 @@
 
 提供注解相关的操作功能，包括获取类、方法、属性上的注解，检查是否存在某个注解等
 """
+
 import inspect
-from typing import Any, Dict, List, Optional, Type, Union, Set
+from typing import Any, Dict, List, Optional, Set, Type, Union
 
 
 class AnnotationUtil:
@@ -38,7 +39,9 @@ class AnnotationUtil:
         Returns:
             Dict[str, Any]: 注解名称到注解值的映射
         """
-        return dict(method.__annotations__) if hasattr(method, "__annotations__") else {}
+        return (
+            dict(method.__annotations__) if hasattr(method, "__annotations__") else {}
+        )
 
     @staticmethod
     def get_param_annotations(method: Any) -> Dict[str, Any]:
@@ -83,19 +86,19 @@ class AnnotationUtil:
             Dict[str, Dict[str, Any]]: 属性名到注解的映射
         """
         fields = {}
-        
+
         # 遍历类的所有成员
         for name, member in inspect.getmembers(cls):
             # 跳过特殊成员
             if name.startswith("__") and name.endswith("__"):
                 continue
-            
+
             # 检查是否为属性
             if hasattr(member, "__annotations__"):
                 fields[name] = dict(member.__annotations__)
             elif hasattr(cls, "__annotations__") and name in cls.__annotations__:
                 fields[name] = cls.__annotations__[name]
-        
+
         return fields
 
     @staticmethod
@@ -110,10 +113,14 @@ class AnnotationUtil:
         Returns:
             bool: 是否有指定注解
         """
-        return hasattr(obj, "__annotations__") and annotation_name in obj.__annotations__
+        return (
+            hasattr(obj, "__annotations__") and annotation_name in obj.__annotations__
+        )
 
     @staticmethod
-    def get_annotation(obj: Any, annotation_name: str, default: Optional[Any] = None) -> Optional[Any]:
+    def get_annotation(
+        obj: Any, annotation_name: str, default: Optional[Any] = None
+    ) -> Optional[Any]:
         """
         获取对象上指定名称的注解
 
@@ -188,18 +195,18 @@ class AnnotationUtil:
             List[str]: 方法名列表
         """
         annotated_methods = []
-        
+
         # 遍历类的所有成员
         for name, member in inspect.getmembers(cls):
             # 跳过特殊成员
             if name.startswith("__") and name.endswith("__"):
                 continue
-            
+
             # 检查是否为方法且带有指定注解
             if inspect.ismethod(member) or inspect.isfunction(member):
                 if AnnotationUtil.has_annotation(member, annotation_name):
                     annotated_methods.append(name)
-        
+
         return annotated_methods
 
     @staticmethod
@@ -216,14 +223,14 @@ class AnnotationUtil:
         """
         annotated_fields = []
         field_annotations = AnnotationUtil.get_field_annotations(cls)
-        
+
         for field_name, annotations in field_annotations.items():
             if isinstance(annotations, dict):
                 if annotation_name in annotations:
                     annotated_fields.append(field_name)
             elif annotations == annotation_name:
                 annotated_fields.append(field_name)
-        
+
         return annotated_fields
 
     @staticmethod
@@ -239,10 +246,10 @@ class AnnotationUtil:
         """
         sig = inspect.signature(method)
         params = []
-        
+
         # 获取参数注解
         param_annotations = AnnotationUtil.get_param_annotations(method)
-        
+
         for name, param in sig.parameters.items():
             if name in param_annotations:
                 param_str = f"{name}: {param_annotations[name]}"
@@ -253,15 +260,15 @@ class AnnotationUtil:
                 if param.default is not inspect.Parameter.empty:
                     param_str += f" = {param.default}"
             params.append(param_str)
-        
+
         # 获取返回值注解
         return_annotation = AnnotationUtil.get_return_annotation(method)
         return_str = f" -> {return_annotation}" if return_annotation else ""
-        
+
         # 构建方法签名
         method_name = method.__name__
         signature = f"{method_name}({', '.join(params)}){return_str}"
-        
+
         return signature
 
     @staticmethod
@@ -276,10 +283,10 @@ class AnnotationUtil:
         source_annotations = AnnotationUtil.get_all_annotations(source)
         if not source_annotations:
             return
-        
+
         if not hasattr(target, "__annotations__"):
             target.__annotations__ = {}
-        
+
         target.__annotations__.update(source_annotations)
 
     @staticmethod
@@ -296,5 +303,5 @@ class AnnotationUtil:
             if hasattr(target, "__annotations__"):
                 delattr(target, "__annotations__")
             return
-        
+
         target.__annotations__ = source_annotations.copy()

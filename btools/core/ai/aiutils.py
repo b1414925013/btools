@@ -1,6 +1,8 @@
 """AI工具模块"""
-from typing import Any, Dict, Optional, List
+
 import json
+from typing import Any, Dict, List, Optional
+
 import requests
 
 
@@ -13,7 +15,7 @@ class AIUtils:
         def __init__(self, api_key: str, base_url: Optional[str] = None):
             """
             初始化AI客户端
-            
+
             Args:
                 api_key: API密钥
                 base_url: 基础URL
@@ -24,11 +26,11 @@ class AIUtils:
         def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
             """
             聊天完成
-            
+
             Args:
                 messages: 消息列表
                 **kwargs: 其他参数
-                
+
             Returns:
                 str: 聊天响应
             """
@@ -37,11 +39,11 @@ class AIUtils:
         def generate(self, prompt: str, **kwargs) -> str:
             """
             文本生成
-            
+
             Args:
                 prompt: 提示词
                 **kwargs: 其他参数
-                
+
             Returns:
                 str: 生成的文本
             """
@@ -53,35 +55,33 @@ class AIUtils:
         def __init__(self, api_key: str, base_url: str = "https://api.openai.com/v1"):
             """
             初始化OpenAI客户端
-            
+
             Args:
                 api_key: API密钥
                 base_url: 基础URL
             """
             super().__init__(api_key, base_url)
 
-        def chat(self, messages: List[Dict[str, str]], model: str = "gpt-3.5-turbo", **kwargs) -> str:
+        def chat(
+            self, messages: List[Dict[str, str]], model: str = "gpt-3.5-turbo", **kwargs
+        ) -> str:
             """
             聊天完成
-            
+
             Args:
                 messages: 消息列表
                 model: 模型名称
                 **kwargs: 其他参数
-                
+
             Returns:
                 str: 聊天响应
             """
             url = f"{self.base_url}/chat/completions"
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             }
-            data = {
-                "model": model,
-                "messages": messages,
-                **kwargs
-            }
+            data = {"model": model, "messages": messages, **kwargs}
             response = requests.post(url, headers=headers, json=data)
             response.raise_for_status()
             return response.json()["choices"][0]["message"]["content"]
@@ -89,12 +89,12 @@ class AIUtils:
         def generate(self, prompt: str, model: str = "gpt-3.5-turbo", **kwargs) -> str:
             """
             文本生成
-            
+
             Args:
                 prompt: 提示词
                 model: 模型名称
                 **kwargs: 其他参数
-                
+
             Returns:
                 str: 生成的文本
             """
@@ -107,35 +107,33 @@ class AIUtils:
         def __init__(self, api_key: str, base_url: str = "https://api.deepseek.com/v1"):
             """
             初始化DeepSeek客户端
-            
+
             Args:
                 api_key: API密钥
                 base_url: 基础URL
             """
             super().__init__(api_key, base_url)
 
-        def chat(self, messages: List[Dict[str, str]], model: str = "deepseek-chat", **kwargs) -> str:
+        def chat(
+            self, messages: List[Dict[str, str]], model: str = "deepseek-chat", **kwargs
+        ) -> str:
             """
             聊天完成
-            
+
             Args:
                 messages: 消息列表
                 model: 模型名称
                 **kwargs: 其他参数
-                
+
             Returns:
                 str: 聊天响应
             """
             url = f"{self.base_url}/chat/completions"
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             }
-            data = {
-                "model": model,
-                "messages": messages,
-                **kwargs
-            }
+            data = {"model": model, "messages": messages, **kwargs}
             response = requests.post(url, headers=headers, json=data)
             response.raise_for_status()
             return response.json()["choices"][0]["message"]["content"]
@@ -143,12 +141,12 @@ class AIUtils:
         def generate(self, prompt: str, model: str = "deepseek-chat", **kwargs) -> str:
             """
             文本生成
-            
+
             Args:
                 prompt: 提示词
                 model: 模型名称
                 **kwargs: 其他参数
-                
+
             Returns:
                 str: 生成的文本
             """
@@ -158,51 +156,58 @@ class AIUtils:
     class DoubaoClient(AIClient):
         """豆包客户端"""
 
-        def __init__(self, api_key: str, base_url: str = "https://ark.cn-beijing.volces.com/api/v3"):
+        def __init__(
+            self,
+            api_key: str,
+            base_url: str = "https://ark.cn-beijing.volces.com/api/v3",
+        ):
             """
             初始化豆包客户端
-            
+
             Args:
                 api_key: API密钥
                 base_url: 基础URL
             """
             super().__init__(api_key, base_url)
 
-        def chat(self, messages: List[Dict[str, str]], model: str = "ep-20240216172343-6l96v", **kwargs) -> str:
+        def chat(
+            self,
+            messages: List[Dict[str, str]],
+            model: str = "ep-20240216172343-6l96v",
+            **kwargs,
+        ) -> str:
             """
             聊天完成
-            
+
             Args:
                 messages: 消息列表
                 model: 模型名称
                 **kwargs: 其他参数
-                
+
             Returns:
                 str: 聊天响应
             """
             url = f"{self.base_url}/chat/completions"
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             }
-            data = {
-                "model": model,
-                "messages": messages,
-                **kwargs
-            }
+            data = {"model": model, "messages": messages, **kwargs}
             response = requests.post(url, headers=headers, json=data)
             response.raise_for_status()
             return response.json()["choices"][0]["message"]["content"]
 
-        def generate(self, prompt: str, model: str = "ep-20240216172343-6l96v", **kwargs) -> str:
+        def generate(
+            self, prompt: str, model: str = "ep-20240216172343-6l96v", **kwargs
+        ) -> str:
             """
             文本生成
-            
+
             Args:
                 prompt: 提示词
                 model: 模型名称
                 **kwargs: 其他参数
-                
+
             Returns:
                 str: 生成的文本
             """
@@ -210,42 +215,48 @@ class AIUtils:
             return self.chat(messages, model, **kwargs)
 
     @staticmethod
-    def create_openai_client(api_key: str, base_url: Optional[str] = None) -> OpenAIClient:
+    def create_openai_client(
+        api_key: str, base_url: Optional[str] = None
+    ) -> OpenAIClient:
         """
         创建OpenAI客户端
-        
+
         Args:
             api_key: API密钥
             base_url: 基础URL
-            
+
         Returns:
             OpenAIClient: OpenAI客户端实例
         """
         return AIUtils.OpenAIClient(api_key, base_url)
 
     @staticmethod
-    def create_deepseek_client(api_key: str, base_url: Optional[str] = None) -> DeepSeekClient:
+    def create_deepseek_client(
+        api_key: str, base_url: Optional[str] = None
+    ) -> DeepSeekClient:
         """
         创建DeepSeek客户端
-        
+
         Args:
             api_key: API密钥
             base_url: 基础URL
-            
+
         Returns:
             DeepSeekClient: DeepSeek客户端实例
         """
         return AIUtils.DeepSeekClient(api_key, base_url)
 
     @staticmethod
-    def create_doubao_client(api_key: str, base_url: Optional[str] = None) -> DoubaoClient:
+    def create_doubao_client(
+        api_key: str, base_url: Optional[str] = None
+    ) -> DoubaoClient:
         """
         创建豆包客户端
-        
+
         Args:
             api_key: API密钥
             base_url: 基础URL
-            
+
         Returns:
             DoubaoClient: 豆包客户端实例
         """
@@ -255,13 +266,13 @@ class AIUtils:
     def chat(api_key: str, model: str, messages: List[Dict[str, str]], **kwargs) -> str:
         """
         一行代码调用聊天
-        
+
         Args:
             api_key: API密钥
             model: 模型名称
             messages: 消息列表
             **kwargs: 其他参数
-            
+
         Returns:
             str: 聊天响应
         """
@@ -279,13 +290,13 @@ class AIUtils:
     def generate(api_key: str, model: str, prompt: str, **kwargs) -> str:
         """
         一行代码调用文本生成
-        
+
         Args:
             api_key: API密钥
             model: 模型名称
             prompt: 提示词
             **kwargs: 其他参数
-            
+
         Returns:
             str: 生成的文本
         """

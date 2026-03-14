@@ -1,7 +1,9 @@
 """测试CompressUtils类"""
-import unittest
+
 import os
 import tempfile
+import unittest
+
 from btools.core.media.compressutils import CompressUtils
 
 
@@ -25,6 +27,7 @@ class TestCompressUtils(unittest.TestCase):
         # 删除临时目录及其内容
         if os.path.exists(self.temp_dir):
             import shutil
+
             shutil.rmtree(self.temp_dir)
 
     def test_compress_file(self):

@@ -5,10 +5,11 @@
 
 提供负载测试工具，模拟并发请求等功能
 """
+
 import concurrent.futures
-import time
 import threading
-from typing import Callable, List, Dict, Any, Optional
+import time
+from typing import Any, Callable, Dict, List, Optional
 
 
 class LoadTestUtils:
@@ -17,7 +18,9 @@ class LoadTestUtils:
     """
 
     @staticmethod
-    def concurrent_execution(func: Callable, concurrency: int, iterations: int = 1, *args, **kwargs) -> Dict[str, Any]:
+    def concurrent_execution(
+        func: Callable, concurrency: int, iterations: int = 1, *args, **kwargs
+    ) -> Dict[str, Any]:
         """
         并发执行函数
 
@@ -57,21 +60,25 @@ class LoadTestUtils:
         error_requests = len(errors)
 
         return {
-            'concurrency': concurrency,
-            'iterations': iterations,
-            'total_requests': total_requests,
-            'success_requests': success_requests,
-            'error_requests': error_requests,
-            'execution_times': execution_times,
-            'avg_response_time': sum(execution_times) / len(execution_times) if execution_times else 0,
-            'min_response_time': min(execution_times) if execution_times else 0,
-            'max_response_time': max(execution_times) if execution_times else 0,
-            'results': results,
-            'errors': errors
+            "concurrency": concurrency,
+            "iterations": iterations,
+            "total_requests": total_requests,
+            "success_requests": success_requests,
+            "error_requests": error_requests,
+            "execution_times": execution_times,
+            "avg_response_time": (
+                sum(execution_times) / len(execution_times) if execution_times else 0
+            ),
+            "min_response_time": min(execution_times) if execution_times else 0,
+            "max_response_time": max(execution_times) if execution_times else 0,
+            "results": results,
+            "errors": errors,
         }
 
     @staticmethod
-    def load_test(func: Callable, concurrency: int, duration: int = 10, *args, **kwargs) -> Dict[str, Any]:
+    def load_test(
+        func: Callable, concurrency: int, duration: int = 10, *args, **kwargs
+    ) -> Dict[str, Any]:
         """
         负载测试
 
@@ -124,23 +131,33 @@ class LoadTestUtils:
         rps = total_requests / actual_duration if actual_duration > 0 else 0
 
         return {
-            'concurrency': concurrency,
-            'duration': duration,
-            'actual_duration': actual_duration,
-            'total_requests': total_requests,
-            'requests_per_second': rps,
-            'success_requests': len(results),
-            'error_requests': len(errors),
-            'execution_times': execution_times,
-            'avg_response_time': sum(execution_times) / len(execution_times) if execution_times else 0,
-            'min_response_time': min(execution_times) if execution_times else 0,
-            'max_response_time': max(execution_times) if execution_times else 0,
-            'results': results,
-            'errors': errors
+            "concurrency": concurrency,
+            "duration": duration,
+            "actual_duration": actual_duration,
+            "total_requests": total_requests,
+            "requests_per_second": rps,
+            "success_requests": len(results),
+            "error_requests": len(errors),
+            "execution_times": execution_times,
+            "avg_response_time": (
+                sum(execution_times) / len(execution_times) if execution_times else 0
+            ),
+            "min_response_time": min(execution_times) if execution_times else 0,
+            "max_response_time": max(execution_times) if execution_times else 0,
+            "results": results,
+            "errors": errors,
         }
 
     @staticmethod
-    def step_load_test(func: Callable, start_concurrency: int, max_concurrency: int, step: int, duration_per_step: int = 5, *args, **kwargs) -> List[Dict[str, Any]]:
+    def step_load_test(
+        func: Callable,
+        start_concurrency: int,
+        max_concurrency: int,
+        step: int,
+        duration_per_step: int = 5,
+        *args,
+        **kwargs,
+    ) -> List[Dict[str, Any]]:
         """
         阶梯负载测试
 
@@ -168,7 +185,15 @@ class LoadTestUtils:
         return results
 
     @staticmethod
-    def stress_test(func: Callable, initial_concurrency: int = 10, increment: int = 10, duration_per_level: int = 10, max_errors: int = 5, *args, **kwargs) -> Dict[str, Any]:
+    def stress_test(
+        func: Callable,
+        initial_concurrency: int = 10,
+        increment: int = 10,
+        duration_per_level: int = 10,
+        max_errors: int = 5,
+        *args,
+        **kwargs,
+    ) -> Dict[str, Any]:
         """
         压力测试
 
@@ -195,25 +220,33 @@ class LoadTestUtils:
             )
             test_results.append(test_result)
 
-            total_errors += test_result['error_requests']
+            total_errors += test_result["error_requests"]
             if total_errors >= max_errors:
                 break
 
             concurrency += increment
 
         # 找出最大处理能力
-        max_throughput_result = max(test_results, key=lambda x: x['requests_per_second'])
+        max_throughput_result = max(
+            test_results, key=lambda x: x["requests_per_second"]
+        )
 
         return {
-            'test_results': test_results,
-            'max_concurrency_reached': concurrency,
-            'max_throughput': max_throughput_result['requests_per_second'],
-            'max_throughput_concurrency': max_throughput_result['concurrency'],
-            'total_errors': total_errors
+            "test_results": test_results,
+            "max_concurrency_reached": concurrency,
+            "max_throughput": max_throughput_result["requests_per_second"],
+            "max_throughput_concurrency": max_throughput_result["concurrency"],
+            "total_errors": total_errors,
         }
 
     @staticmethod
-    def benchmark_throughput(func: Callable, concurrency_levels: List[int], iterations: int = 100, *args, **kwargs) -> List[Dict[str, Any]]:
+    def benchmark_throughput(
+        func: Callable,
+        concurrency_levels: List[int],
+        iterations: int = 100,
+        *args,
+        **kwargs,
+    ) -> List[Dict[str, Any]]:
         """
         基准测试吞吐量
 
@@ -231,7 +264,7 @@ class LoadTestUtils:
 
         for concurrency in concurrency_levels:
             print(f"Benchmarking throughput with concurrency: {concurrency}")
-            
+
             start_time = time.time()
             test_result = LoadTestUtils.concurrent_execution(
                 func, concurrency, iterations // concurrency, *args, **kwargs
@@ -239,17 +272,26 @@ class LoadTestUtils:
             end_time = time.time()
 
             total_time = end_time - start_time
-            throughput = test_result['total_requests'] / total_time if total_time > 0 else 0
+            throughput = (
+                test_result["total_requests"] / total_time if total_time > 0 else 0
+            )
 
             result = test_result.copy()
-            result['throughput'] = throughput
-            result['total_time'] = total_time
+            result["throughput"] = throughput
+            result["total_time"] = total_time
             results.append(result)
 
         return results
 
     @staticmethod
-    def simulate_api_load(url: str, concurrency: int, duration: int, method: str = 'GET', headers: Dict = None, data: Dict = None) -> Dict[str, Any]:
+    def simulate_api_load(
+        url: str,
+        concurrency: int,
+        duration: int,
+        method: str = "GET",
+        headers: Dict = None,
+        data: Dict = None,
+    ) -> Dict[str, Any]:
         """
         模拟 API 负载
 
@@ -267,13 +309,13 @@ class LoadTestUtils:
         import requests
 
         def make_request():
-            if method.upper() == 'GET':
+            if method.upper() == "GET":
                 response = requests.get(url, headers=headers, timeout=30)
-            elif method.upper() == 'POST':
+            elif method.upper() == "POST":
                 response = requests.post(url, json=data, headers=headers, timeout=30)
-            elif method.upper() == 'PUT':
+            elif method.upper() == "PUT":
                 response = requests.put(url, json=data, headers=headers, timeout=30)
-            elif method.upper() == 'DELETE':
+            elif method.upper() == "DELETE":
                 response = requests.delete(url, headers=headers, timeout=30)
             else:
                 raise ValueError(f"Unsupported method: {method}")
@@ -283,7 +325,14 @@ class LoadTestUtils:
         return LoadTestUtils.load_test(make_request, concurrency, duration)
 
     @staticmethod
-    def distributed_load_test(func: Callable, workers: List[str], concurrency_per_worker: int, duration: int, *args, **kwargs) -> Dict[str, Any]:
+    def distributed_load_test(
+        func: Callable,
+        workers: List[str],
+        concurrency_per_worker: int,
+        duration: int,
+        *args,
+        **kwargs,
+    ) -> Dict[str, Any]:
         """
         分布式负载测试
 
@@ -310,31 +359,37 @@ class LoadTestUtils:
             worker_result = LoadTestUtils.load_test(
                 func, concurrency_per_worker, duration, *args, **kwargs
             )
-            worker_result['worker'] = worker
+            worker_result["worker"] = worker
             results.append(worker_result)
 
         # 汇总结果
-        total_requests = sum(r['total_requests'] for r in results)
-        total_success = sum(r['success_requests'] for r in results)
-        total_errors = sum(r['error_requests'] for r in results)
-        all_execution_times = [t for r in results for t in r['execution_times']]
+        total_requests = sum(r["total_requests"] for r in results)
+        total_success = sum(r["success_requests"] for r in results)
+        total_errors = sum(r["error_requests"] for r in results)
+        all_execution_times = [t for r in results for t in r["execution_times"]]
 
         return {
-            'workers': workers,
-            'concurrency_per_worker': concurrency_per_worker,
-            'duration': duration,
-            'total_requests': total_requests,
-            'total_success': total_success,
-            'total_errors': total_errors,
-            'avg_response_time': sum(all_execution_times) / len(all_execution_times) if all_execution_times else 0,
-            'min_response_time': min(all_execution_times) if all_execution_times else 0,
-            'max_response_time': max(all_execution_times) if all_execution_times else 0,
-            'requests_per_second': total_requests / duration if duration > 0 else 0,
-            'worker_results': results
+            "workers": workers,
+            "concurrency_per_worker": concurrency_per_worker,
+            "duration": duration,
+            "total_requests": total_requests,
+            "total_success": total_success,
+            "total_errors": total_errors,
+            "avg_response_time": (
+                sum(all_execution_times) / len(all_execution_times)
+                if all_execution_times
+                else 0
+            ),
+            "min_response_time": min(all_execution_times) if all_execution_times else 0,
+            "max_response_time": max(all_execution_times) if all_execution_times else 0,
+            "requests_per_second": total_requests / duration if duration > 0 else 0,
+            "worker_results": results,
         }
 
     @staticmethod
-    def calculate_percentiles(times: List[float], percentiles: List[float]) -> Dict[str, float]:
+    def calculate_percentiles(
+        times: List[float], percentiles: List[float]
+    ) -> Dict[str, float]:
         """
         计算响应时间百分位
 
@@ -355,6 +410,6 @@ class LoadTestUtils:
             index = int(len(sorted_times) * p / 100)
             if index >= len(sorted_times):
                 index = len(sorted_times) - 1
-            results[f'p{p}'] = sorted_times[index]
+            results[f"p{p}"] = sorted_times[index]
 
         return results

@@ -1,6 +1,8 @@
 """断言工具类测试"""
+
 import unittest
 from unittest.mock import Mock
+
 from btools.core.basic import AssertUtil
 
 
@@ -151,20 +153,21 @@ class TestAssertUtil(unittest.TestCase):
 
     def test_matches(self):
         """测试 matches 方法"""
-        AssertUtil.matches(r'^\d+$', '12345')
-        AssertUtil.matches(r'^[a-zA-Z]+$', 'hello')
+        AssertUtil.matches(r"^\d+$", "12345")
+        AssertUtil.matches(r"^[a-zA-Z]+$", "hello")
         with self.assertRaises(AssertionError):
-            AssertUtil.matches(r'^\d+$', 'abc123')
+            AssertUtil.matches(r"^\d+$", "abc123")
 
     def test_not_matches(self):
         """测试 not_matches 方法"""
-        AssertUtil.not_matches(r'^\d+$', 'abc123')
-        AssertUtil.not_matches(r'^[a-zA-Z]+$', '123')
+        AssertUtil.not_matches(r"^\d+$", "abc123")
+        AssertUtil.not_matches(r"^[a-zA-Z]+$", "123")
         with self.assertRaises(AssertionError):
-            AssertUtil.not_matches(r'^\d+$', '12345')
+            AssertUtil.not_matches(r"^\d+$", "12345")
 
     def test_raises(self):
         """测试 raises 方法"""
+
         def raise_value_error():
             raise ValueError("test error")
 
@@ -177,6 +180,7 @@ class TestAssertUtil(unittest.TestCase):
 
     def test_does_not_raise(self):
         """测试 does_not_raise 方法"""
+
         def no_error():
             return 123
 
@@ -288,12 +292,12 @@ class TestAssertUtil(unittest.TestCase):
         actual = {"name": "John", "age": 30}
         expected = {"name": "John", "age": 30}
         AssertUtil.assert_json_equals(actual, expected)
-        
+
         # 测试JSON字符串比较
         actual_str = '{"name": "John", "age": 30}'
         expected_str = '{"name": "John", "age": 30}'
         AssertUtil.assert_json_equals(actual_str, expected_str)
-        
+
         # 测试失败的情况
         actual = {"name": "John", "age": 30}
         expected = {"name": "John", "age": 25}
@@ -306,10 +310,10 @@ class TestAssertUtil(unittest.TestCase):
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.text = "Success"
-        
+
         # 测试成功的情况
         AssertUtil.assert_response_status(mock_response, 200)
-        
+
         # 测试失败的情况
         with self.assertRaises(AssertionError):
             AssertUtil.assert_response_status(mock_response, 404)
@@ -318,12 +322,15 @@ class TestAssertUtil(unittest.TestCase):
         """测试 assert_response_json 方法"""
         # 创建模拟响应对象
         mock_response = Mock()
-        mock_response.json.return_value = {"status": "success", "data": {"name": "John"}}
-        
+        mock_response.json.return_value = {
+            "status": "success",
+            "data": {"name": "John"},
+        }
+
         # 测试成功的情况
         expected = {"status": "success", "data": {"name": "John"}}
         AssertUtil.assert_response_json(mock_response, expected)
-        
+
         # 测试部分匹配
         expected_partial = {"status": "success"}
         AssertUtil.assert_response_json(mock_response, expected_partial)

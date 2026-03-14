@@ -1,6 +1,8 @@
 """测试PackagingUtils类"""
-import unittest
+
 import os
+import unittest
+
 from btools.core.release.packagingutils import PackagingUtils
 
 
@@ -15,6 +17,7 @@ class TestPackagingUtils(unittest.TestCase):
     def test_validate_version(self):
         """测试验证版本号"""
         from btools.core.release.releaseutils import ReleaseUtils
+
         self.assertTrue(ReleaseUtils.validate_version("1.0.0"))
         self.assertTrue(ReleaseUtils.validate_version("1.0.0-beta.1"))
         self.assertFalse(ReleaseUtils.validate_version("invalid"))
@@ -22,6 +25,7 @@ class TestPackagingUtils(unittest.TestCase):
     def test_compare_versions(self):
         """测试比较版本号"""
         from btools.core.release.releaseutils import ReleaseUtils
+
         self.assertEqual(ReleaseUtils.compare_versions("1.0.0", "1.0.0"), 0)
         self.assertEqual(ReleaseUtils.compare_versions("1.1.0", "1.0.0"), 1)
         self.assertEqual(ReleaseUtils.compare_versions("1.0.0", "1.1.0"), -1)

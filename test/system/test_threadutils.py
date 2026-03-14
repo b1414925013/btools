@@ -2,13 +2,23 @@
 """
 线程工具测试
 """
-import unittest
-import time
+
 import threading
+import time
+import unittest
+
 from btools.core.system.threadutils import (
-    ThreadUtils, ThreadPool, ThreadLocal, create_thread, start_thread,
-    wait_for_threads, run_in_threadpool, run_with_timeout,
-    get_current_thread_name, get_current_thread_id, sleep
+    ThreadLocal,
+    ThreadPool,
+    ThreadUtils,
+    create_thread,
+    get_current_thread_id,
+    get_current_thread_name,
+    run_in_threadpool,
+    run_with_timeout,
+    sleep,
+    start_thread,
+    wait_for_threads,
 )
 
 
@@ -28,6 +38,7 @@ class TestThreadUtils(unittest.TestCase):
         """
         测试创建线程
         """
+
         def test_func():
             with self.lock:
                 self.counter += 1
@@ -45,6 +56,7 @@ class TestThreadUtils(unittest.TestCase):
         """
         测试创建并启动线程
         """
+
         def test_func():
             with self.lock:
                 self.counter += 1
@@ -59,6 +71,7 @@ class TestThreadUtils(unittest.TestCase):
         """
         测试等待多个线程完成
         """
+
         def test_func():
             time.sleep(0.1)
             with self.lock:
@@ -79,6 +92,7 @@ class TestThreadUtils(unittest.TestCase):
         """
         测试在线程池中运行多个函数
         """
+
         def test_func(x):
             time.sleep(0.1)
             return x * 2
@@ -96,6 +110,7 @@ class TestThreadUtils(unittest.TestCase):
         """
         测试带超时的函数执行
         """
+
         def test_func():
             time.sleep(0.1)
             return "success"
@@ -137,27 +152,28 @@ class TestThreadUtils(unittest.TestCase):
         """
         测试线程池
         """
+
         def test_func(x):
             time.sleep(0.1)
             return x * 2
 
         # 测试线程池
         pool = ThreadPool(max_workers=2)
-        
+
         # 测试提交任务
         future1 = pool.submit(test_func, 1)
         future2 = pool.submit(test_func, 2)
-        
+
         # 测试获取结果
         result1 = future1.result()
         result2 = future2.result()
         self.assertEqual(result1, 2)
         self.assertEqual(result2, 4)
-        
+
         # 测试map方法
         results = pool.map(test_func, [3, 4])
         self.assertEqual(results, [6, 8])
-        
+
         # 测试关闭线程池
         pool.shutdown()
 
@@ -194,6 +210,7 @@ class TestThreadUtils(unittest.TestCase):
         """
         测试便捷函数
         """
+
         def test_func():
             with self.lock:
                 self.counter += 1
@@ -222,5 +239,5 @@ class TestThreadUtils(unittest.TestCase):
         self.assertGreaterEqual(end_time - start_time, 0.1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

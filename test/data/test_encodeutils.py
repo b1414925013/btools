@@ -1,5 +1,7 @@
 """测试EncodeUtils类"""
+
 import unittest
+
 from btools.core.data.encodeutils import EncodeUtils
 
 

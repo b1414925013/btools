@@ -1,7 +1,9 @@
 """测试ExcelHandler类"""
-import unittest
+
 import os
 import tempfile
+import unittest
+
 from btools.core.data.excelutils import ExcelHandler
 
 
@@ -22,23 +24,23 @@ class TestExcelHandler(unittest.TestCase):
 
     def test_write_excel(self):
         """测试写入Excel文件"""
-        data = [
-            ["John", "30", "New York"],
-            ["Alice", "25", "London"]
-        ]
+        data = [["John", "30", "New York"], ["Alice", "25", "London"]]
         header = ["Name", "Age", "City"]
-        ExcelHandler.write_excel(self.test_file, data, sheet_name="Sheet1", header=header)
+        ExcelHandler.write_excel(
+            self.test_file, data, sheet_name="Sheet1", header=header
+        )
         self.assertTrue(os.path.exists(self.test_file))
 
     def test_read_excel(self):
         """测试读取Excel文件"""
-        data = [
-            ["John", "30", "New York"],
-            ["Alice", "25", "London"]
-        ]
+        data = [["John", "30", "New York"], ["Alice", "25", "London"]]
         header = ["Name", "Age", "City"]
-        ExcelHandler.write_excel(self.test_file, data, sheet_name="Sheet1", header=header)
-        read_data = ExcelHandler.read_excel(self.test_file, sheet_name="Sheet1", skip_header=True)
+        ExcelHandler.write_excel(
+            self.test_file, data, sheet_name="Sheet1", header=header
+        )
+        read_data = ExcelHandler.read_excel(
+            self.test_file, sheet_name="Sheet1", skip_header=True
+        )
         self.assertEqual(len(read_data), 2)
 
 

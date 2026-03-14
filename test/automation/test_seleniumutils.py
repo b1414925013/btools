@@ -1,5 +1,7 @@
 """测试SeleniumUtils类"""
+
 import unittest
+
 from btools.core.automation.seleniumutils import SeleniumUtils
 
 

@@ -1,5 +1,7 @@
 """测试Validator类"""
+
 import unittest
+
 from btools.core.basic.validatorutils import Validator
 
 

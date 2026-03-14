@@ -2,13 +2,15 @@
 """
 FastAPI工具类模块
 """
-from typing import Any, Dict, List, Optional, Union, Callable
-from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, Depends
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, PlainTextResponse, HTMLResponse
-from fastapi.dependencies.utils import get_dependant
-from pydantic import BaseModel, Field
+
+from typing import Any, Callable, Dict, List, Optional, Union
+
 import uvicorn
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, Response
+from fastapi.dependencies.utils import get_dependant
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse
+from pydantic import BaseModel, Field
 
 
 class FastAPIUtils:
@@ -25,7 +27,7 @@ class FastAPIUtils:
         docs_url: Optional[str] = "/docs",
         redoc_url: Optional[str] = "/redoc",
         openapi_url: Optional[str] = "/openapi.json",
-        debug: bool = False
+        debug: bool = False,
     ) -> FastAPI:
         """
         创建FastAPI应用实例
@@ -49,7 +51,7 @@ class FastAPIUtils:
             docs_url=docs_url,
             redoc_url=redoc_url,
             openapi_url=openapi_url,
-            debug=debug
+            debug=debug,
         )
         return app
 
@@ -57,7 +59,7 @@ class FastAPIUtils:
     def create_router(
         prefix: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        dependencies: Optional[List[Any]] = None
+        dependencies: Optional[List[Any]] = None,
     ) -> APIRouter:
         """
         创建API路由器
@@ -70,11 +72,7 @@ class FastAPIUtils:
         Returns:
             APIRouter实例
         """
-        router = APIRouter(
-            prefix=prefix,
-            tags=tags,
-            dependencies=dependencies
-        )
+        router = APIRouter(prefix=prefix, tags=tags, dependencies=dependencies)
         return router
 
     @staticmethod
@@ -83,7 +81,7 @@ class FastAPIUtils:
         origins: List[str] = ["*"],
         methods: List[str] = ["*"],
         headers: List[str] = ["*"],
-        allow_credentials: bool = True
+        allow_credentials: bool = True,
     ) -> FastAPI:
         """
         添加CORS中间件
@@ -108,11 +106,7 @@ class FastAPIUtils:
         return app
 
     @staticmethod
-    def add_middleware(
-        app: FastAPI,
-        middleware_class: Any,
-        **options: Any
-    ) -> FastAPI:
+    def add_middleware(app: FastAPI, middleware_class: Any, **options: Any) -> FastAPI:
         """
         添加中间件
 
@@ -129,9 +123,7 @@ class FastAPIUtils:
 
     @staticmethod
     def add_exception_handler(
-        app: FastAPI,
-        exc_type: Any,
-        handler: Callable[[Request, Any], Response]
+        app: FastAPI, exc_type: Any, handler: Callable[[Request, Any], Response]
     ) -> FastAPI:
         """
         添加异常处理器
@@ -158,19 +150,17 @@ class FastAPIUtils:
         Returns:
             FastAPI应用实例
         """
-        
+
         @app.exception_handler(HTTPException)
         async def http_exception_handler(request: Request, exc: HTTPException):
             return JSONResponse(
-                status_code=exc.status_code,
-                content={"detail": exc.detail}
+                status_code=exc.status_code, content={"detail": exc.detail}
             )
 
         @app.exception_handler(Exception)
         async def general_exception_handler(request: Request, exc: Exception):
             return JSONResponse(
-                status_code=500,
-                content={"detail": "Internal Server Error"}
+                status_code=500, content={"detail": "Internal Server Error"}
             )
 
         return app
@@ -200,7 +190,7 @@ class FastAPIUtils:
         data: Any = None,
         message: str = "success",
         code: int = 200,
-        headers: Optional[Dict[str, str]] = None
+        headers: Optional[Dict[str, str]] = None,
     ) -> JSONResponse:
         """
         创建统一格式的响应
@@ -214,22 +204,12 @@ class FastAPIUtils:
         Returns:
             JSONResponse实例
         """
-        response_data = {
-            "code": code,
-            "message": message,
-            "data": data
-        }
-        return JSONResponse(
-            content=response_data,
-            status_code=code,
-            headers=headers
-        )
+        response_data = {"code": code, "message": message, "data": data}
+        return JSONResponse(content=response_data, status_code=code, headers=headers)
 
     @staticmethod
     def create_error_response(
-        message: str = "error",
-        code: int = 400,
-        details: Optional[Any] = None
+        message: str = "error", code: int = 400, details: Optional[Any] = None
     ) -> JSONResponse:
         """
         创建错误响应
@@ -242,15 +222,8 @@ class FastAPIUtils:
         Returns:
             JSONResponse实例
         """
-        response_data = {
-            "code": code,
-            "message": message,
-            "details": details
-        }
-        return JSONResponse(
-            content=response_data,
-            status_code=code
-        )
+        response_data = {"code": code, "message": message, "details": details}
+        return JSONResponse(content=response_data, status_code=code)
 
 
 # 统一响应模型
@@ -258,6 +231,7 @@ class APIResponse(BaseModel):
     """
     API统一响应模型
     """
+
     code: int = Field(200, description="状态码")
     message: str = Field("success", description="响应消息")
     data: Optional[Any] = Field(None, description="响应数据")
@@ -267,12 +241,14 @@ class APIErrorResponse(BaseModel):
     """
     API错误响应模型
     """
+
     code: int = Field(400, description="状态码")
     message: str = Field("error", description="错误消息")
     details: Optional[Any] = Field(None, description="错误详情")
 
 
 # 便捷函数
+
 
 def create_app(
     title: str = "FastAPI Application",
@@ -281,7 +257,7 @@ def create_app(
     docs_url: Optional[str] = "/docs",
     redoc_url: Optional[str] = "/redoc",
     openapi_url: Optional[str] = "/openapi.json",
-    debug: bool = False
+    debug: bool = False,
 ) -> FastAPI:
     """
     创建FastAPI应用实例
@@ -305,14 +281,14 @@ def create_app(
         docs_url=docs_url,
         redoc_url=redoc_url,
         openapi_url=openapi_url,
-        debug=debug
+        debug=debug,
     )
 
 
 def create_router(
     prefix: Optional[str] = None,
     tags: Optional[List[str]] = None,
-    dependencies: Optional[List[Any]] = None
+    dependencies: Optional[List[Any]] = None,
 ) -> APIRouter:
     """
     创建API路由器
@@ -326,9 +302,7 @@ def create_router(
         APIRouter实例
     """
     return FastAPIUtils.create_router(
-        prefix=prefix,
-        tags=tags,
-        dependencies=dependencies
+        prefix=prefix, tags=tags, dependencies=dependencies
     )
 
 
@@ -337,7 +311,7 @@ def add_cors(
     origins: List[str] = ["*"],
     methods: List[str] = ["*"],
     headers: List[str] = ["*"],
-    allow_credentials: bool = True
+    allow_credentials: bool = True,
 ) -> FastAPI:
     """
     添加CORS中间件
@@ -357,15 +331,11 @@ def add_cors(
         origins=origins,
         methods=methods,
         headers=headers,
-        allow_credentials=allow_credentials
+        allow_credentials=allow_credentials,
     )
 
 
-def add_middleware(
-    app: FastAPI,
-    middleware_class: Any,
-    **options: Any
-) -> FastAPI:
+def add_middleware(app: FastAPI, middleware_class: Any, **options: Any) -> FastAPI:
     """
     添加中间件
 
@@ -377,13 +347,13 @@ def add_middleware(
     Returns:
         FastAPI应用实例
     """
-    return FastAPIUtils.add_middleware(app=app, middleware_class=middleware_class, **options)
+    return FastAPIUtils.add_middleware(
+        app=app, middleware_class=middleware_class, **options
+    )
 
 
 def add_exception_handler(
-    app: FastAPI,
-    exc_type: Any,
-    handler: Callable[[Request, Any], Response]
+    app: FastAPI, exc_type: Any, handler: Callable[[Request, Any], Response]
 ) -> FastAPI:
     """
     添加异常处理器
@@ -397,9 +367,7 @@ def add_exception_handler(
         FastAPI应用实例
     """
     return FastAPIUtils.add_exception_handler(
-        app=app,
-        exc_type=exc_type,
-        handler=handler
+        app=app, exc_type=exc_type, handler=handler
     )
 
 
@@ -433,20 +401,14 @@ def run_app(
         reload: 是否启用热重载
         **kwargs: 其他uvicorn选项
     """
-    FastAPIUtils.run_app(
-        app=app,
-        host=host,
-        port=port,
-        reload=reload,
-        **kwargs
-    )
+    FastAPIUtils.run_app(app=app, host=host, port=port, reload=reload, **kwargs)
 
 
 def create_response(
     data: Any = None,
     message: str = "success",
     code: int = 200,
-    headers: Optional[Dict[str, str]] = None
+    headers: Optional[Dict[str, str]] = None,
 ) -> JSONResponse:
     """
     创建统一格式的响应
@@ -461,17 +423,12 @@ def create_response(
         JSONResponse实例
     """
     return FastAPIUtils.create_response(
-        data=data,
-        message=message,
-        code=code,
-        headers=headers
+        data=data, message=message, code=code, headers=headers
     )
 
 
 def create_error_response(
-    message: str = "error",
-    code: int = 400,
-    details: Optional[Any] = None
+    message: str = "error", code: int = 400, details: Optional[Any] = None
 ) -> JSONResponse:
     """
     创建错误响应
@@ -485,7 +442,5 @@ def create_error_response(
         JSONResponse实例
     """
     return FastAPIUtils.create_error_response(
-        message=message,
-        code=code,
-        details=details
+        message=message, code=code, details=details
     )

@@ -5,9 +5,10 @@
 
 提供跨平台路径处理，统一路径格式等功能
 """
+
 import os
 import sys
-from typing import Optional, List, Tuple
+from typing import List, Optional, Tuple
 
 
 class PathUtils:
@@ -275,8 +276,8 @@ class PathUtils:
         Returns:
             更改扩展名后的路径
         """
-        if not new_extension.startswith('.'):
-            new_extension = '.' + new_extension
+        if not new_extension.startswith("."):
+            new_extension = "." + new_extension
         return os.path.splitext(path)[0] + new_extension
 
     @staticmethod
@@ -312,6 +313,7 @@ class PathUtils:
                 os.remove(path)
             elif os.path.isdir(path):
                 import shutil
+
                 shutil.rmtree(path)
             return True
         except Exception as e:
@@ -331,6 +333,7 @@ class PathUtils:
         """
         try:
             import shutil
+
             if os.path.isfile(src):
                 shutil.copy2(src, dst)
             elif os.path.isdir(src):
@@ -353,6 +356,7 @@ class PathUtils:
         """
         try:
             import shutil
+
             shutil.move(src, dst)
             return True
         except Exception as e:
@@ -438,7 +442,7 @@ class PathUtils:
         Returns:
             创建时间（时间戳）
         """
-        if sys.platform == 'win32':
+        if sys.platform == "win32":
             return os.path.getctime(path)
         else:
             # 在 Unix 系统上，getctime 返回的是元数据更改时间
@@ -467,7 +471,7 @@ class PathUtils:
         return files
 
     @staticmethod
-    def find_files(directory: str, pattern: str = '*') -> List[str]:
+    def find_files(directory: str, pattern: str = "*") -> List[str]:
         """
         查找文件
 
@@ -479,6 +483,7 @@ class PathUtils:
             文件路径列表
         """
         import glob
+
         search_path = os.path.join(directory, pattern)
         return glob.glob(search_path, recursive=True)
 
@@ -494,12 +499,14 @@ class PathUtils:
         Returns:
             文件路径列表
         """
-        if not extension.startswith('.'):
-            extension = '.' + extension
-        return PathUtils.find_files(directory, f'**/*{extension}')
+        if not extension.startswith("."):
+            extension = "." + extension
+        return PathUtils.find_files(directory, f"**/*{extension}")
 
     @staticmethod
-    def get_temp_file(suffix: str = '', prefix: str = 'tmp', dir: Optional[str] = None) -> str:
+    def get_temp_file(
+        suffix: str = "", prefix: str = "tmp", dir: Optional[str] = None
+    ) -> str:
         """
         获取临时文件路径
 
@@ -512,12 +519,15 @@ class PathUtils:
             临时文件路径
         """
         import tempfile
+
         fd, path = tempfile.mkstemp(suffix=suffix, prefix=prefix, dir=dir)
         os.close(fd)
         return path
 
     @staticmethod
-    def get_temp_directory(suffix: str = '', prefix: str = 'tmp', dir: Optional[str] = None) -> str:
+    def get_temp_directory(
+        suffix: str = "", prefix: str = "tmp", dir: Optional[str] = None
+    ) -> str:
         """
         获取临时目录路径
 
@@ -530,6 +540,7 @@ class PathUtils:
             临时目录路径
         """
         import tempfile
+
         return tempfile.mkdtemp(suffix=suffix, prefix=prefix, dir=dir)
 
     @staticmethod
@@ -540,7 +551,7 @@ class PathUtils:
         Returns:
             用户主目录
         """
-        return os.path.expanduser('~')
+        return os.path.expanduser("~")
 
     @staticmethod
     def get_current_working_directory() -> str:
@@ -633,7 +644,7 @@ class PathUtils:
         Returns:
             Unix 风格路径
         """
-        return path.replace('\\', '/')
+        return path.replace("\\", "/")
 
     @staticmethod
     def to_windows_path(path: str) -> str:
@@ -646,7 +657,7 @@ class PathUtils:
         Returns:
             Windows 风格路径
         """
-        return path.replace('/', '\\')
+        return path.replace("/", "\\")
 
     @staticmethod
     def get_path_without_drive(path: str) -> str:
@@ -659,8 +670,8 @@ class PathUtils:
         Returns:
             不含驱动器的路径
         """
-        if os.name == 'nt':  # Windows
-            if len(path) > 2 and path[1] == ':':
+        if os.name == "nt":  # Windows
+            if len(path) > 2 and path[1] == ":":
                 return path[2:]
         return path
 
@@ -675,10 +686,10 @@ class PathUtils:
         Returns:
             驱动器
         """
-        if os.name == 'nt':  # Windows
-            if len(path) > 2 and path[1] == ':':
+        if os.name == "nt":  # Windows
+            if len(path) > 2 and path[1] == ":":
                 return path[:2]
-        return ''
+        return ""
 
     @staticmethod
     def is_path_safe(path: str) -> bool:
@@ -695,7 +706,7 @@ class PathUtils:
             # 规范化路径
             normalized = os.path.normpath(path)
             # 检查是否包含相对路径组件
-            if '..' in normalized.split(os.path.sep):
+            if ".." in normalized.split(os.path.sep):
                 return False
             # 检查是否为绝对路径（可选）
             # if not os.path.isabs(normalized):
@@ -746,7 +757,7 @@ class PathUtils:
             共同目录
         """
         if not paths:
-            return ''
+            return ""
         # 确保所有路径都是绝对路径
         absolute_paths = [os.path.abspath(path) for path in paths]
         # 获取共同路径
@@ -810,7 +821,7 @@ class PathUtils:
         Returns:
             临时路径
         """
-        return os.path.abspath(os.environ.get('TEMP', os.environ.get('TMP', '/tmp')))
+        return os.path.abspath(os.environ.get("TEMP", os.environ.get("TMP", "/tmp")))
 
     @staticmethod
     def get_home_path() -> str:
@@ -831,15 +842,15 @@ class PathUtils:
             桌面路径
         """
         home = PathUtils.get_user_home()
-        if os.name == 'nt':  # Windows
-            return os.path.join(home, 'Desktop')
-        elif os.name == 'posix':  # Unix-like
-            if os.environ.get('XDG_DESKTOP_DIR'):
-                return os.environ['XDG_DESKTOP_DIR']
-            elif os.name == 'darwin':  # macOS
-                return os.path.join(home, 'Desktop')
+        if os.name == "nt":  # Windows
+            return os.path.join(home, "Desktop")
+        elif os.name == "posix":  # Unix-like
+            if os.environ.get("XDG_DESKTOP_DIR"):
+                return os.environ["XDG_DESKTOP_DIR"]
+            elif os.name == "darwin":  # macOS
+                return os.path.join(home, "Desktop")
             else:  # Linux
-                return os.path.join(home, 'Desktop')
+                return os.path.join(home, "Desktop")
         return home
 
     @staticmethod
@@ -851,15 +862,15 @@ class PathUtils:
             文档路径
         """
         home = PathUtils.get_user_home()
-        if os.name == 'nt':  # Windows
-            return os.path.join(home, 'Documents')
-        elif os.name == 'posix':  # Unix-like
-            if os.environ.get('XDG_DOCUMENTS_DIR'):
-                return os.environ['XDG_DOCUMENTS_DIR']
-            elif os.name == 'darwin':  # macOS
-                return os.path.join(home, 'Documents')
+        if os.name == "nt":  # Windows
+            return os.path.join(home, "Documents")
+        elif os.name == "posix":  # Unix-like
+            if os.environ.get("XDG_DOCUMENTS_DIR"):
+                return os.environ["XDG_DOCUMENTS_DIR"]
+            elif os.name == "darwin":  # macOS
+                return os.path.join(home, "Documents")
             else:  # Linux
-                return os.path.join(home, 'Documents')
+                return os.path.join(home, "Documents")
         return home
 
     @staticmethod
@@ -871,13 +882,13 @@ class PathUtils:
             下载路径
         """
         home = PathUtils.get_user_home()
-        if os.name == 'nt':  # Windows
-            return os.path.join(home, 'Downloads')
-        elif os.name == 'posix':  # Unix-like
-            if os.environ.get('XDG_DOWNLOAD_DIR'):
-                return os.environ['XDG_DOWNLOAD_DIR']
-            elif os.name == 'darwin':  # macOS
-                return os.path.join(home, 'Downloads')
+        if os.name == "nt":  # Windows
+            return os.path.join(home, "Downloads")
+        elif os.name == "posix":  # Unix-like
+            if os.environ.get("XDG_DOWNLOAD_DIR"):
+                return os.environ["XDG_DOWNLOAD_DIR"]
+            elif os.name == "darwin":  # macOS
+                return os.path.join(home, "Downloads")
             else:  # Linux
-                return os.path.join(home, 'Downloads')
+                return os.path.join(home, "Downloads")
         return home

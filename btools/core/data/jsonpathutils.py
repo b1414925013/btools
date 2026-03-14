@@ -2,9 +2,11 @@
 """
 JSONPath工具类模块
 """
+
+from typing import Any, Dict, List, Optional, Union
+
 from jsonpath_ng import parse as jsonpath_parse
 from jsonpath_ng.ext import parse as jsonpath_ext_parse
-from typing import Any, Dict, List, Optional, Union
 
 
 class JSONPathUtils:
@@ -45,7 +47,7 @@ class JSONPathUtils:
             jsonpath_obj = JSONPathUtils.parse(jsonpath)
         else:
             jsonpath_obj = jsonpath
-        
+
         matches = jsonpath_obj.find(data)
         return [match.value for match in matches]
 
@@ -80,7 +82,9 @@ class JSONPathUtils:
         return len(results) > 0
 
     @staticmethod
-    def update(data: Dict[str, Any], jsonpath: Union[str, Any], value: Any) -> Dict[str, Any]:
+    def update(
+        data: Dict[str, Any], jsonpath: Union[str, Any], value: Any
+    ) -> Dict[str, Any]:
         """
         根据JSONPath更新数据
 
@@ -96,10 +100,10 @@ class JSONPathUtils:
             jsonpath_obj = JSONPathUtils.parse(jsonpath)
         else:
             jsonpath_obj = jsonpath
-        
+
         # 对于简单的JSONPath，直接更新
         if isinstance(data, dict):
-            keys = jsonpath.strip('$').strip('.').split('.')
+            keys = jsonpath.strip("$").strip(".").split(".")
             current = data
             for i, key in enumerate(keys[:-1]):
                 if key not in current:
@@ -124,10 +128,10 @@ class JSONPathUtils:
             jsonpath_obj = JSONPathUtils.parse(jsonpath)
         else:
             jsonpath_obj = jsonpath
-        
+
         # 对于简单的JSONPath，直接删除
         if isinstance(data, dict):
-            keys = jsonpath.strip('$').strip('.').split('.')
+            keys = jsonpath.strip("$").strip(".").split(".")
             current = data
             for i, key in enumerate(keys[:-1]):
                 if key not in current:
@@ -172,10 +176,10 @@ class JSONPathUtils:
             jsonpath_obj = JSONPathUtils.parse(jsonpath)
         else:
             jsonpath_obj = jsonpath
-        
+
         # 对于简单的JSONPath，直接应用函数
         if isinstance(data, dict):
-            keys = jsonpath.strip('$').strip('.').split('.')
+            keys = jsonpath.strip("$").strip(".").split(".")
             current = data
             for i, key in enumerate(keys[:-1]):
                 if key not in current:
@@ -187,6 +191,7 @@ class JSONPathUtils:
 
 
 # 便捷函数
+
 
 def parse(jsonpath: str, extended: bool = False) -> Any:
     """
@@ -244,7 +249,9 @@ def exists(data: Any, jsonpath: Union[str, Any]) -> bool:
     return JSONPathUtils.exists(data, jsonpath)
 
 
-def update(data: Dict[str, Any], jsonpath: Union[str, Any], value: Any) -> Dict[str, Any]:
+def update(
+    data: Dict[str, Any], jsonpath: Union[str, Any], value: Any
+) -> Dict[str, Any]:
     """
     根据JSONPath更新数据
 

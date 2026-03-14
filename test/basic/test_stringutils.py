@@ -1,5 +1,7 @@
 """测试StringUtils类"""
+
 import unittest
+
 from btools.core.basic.stringutils import StringUtils
 
 

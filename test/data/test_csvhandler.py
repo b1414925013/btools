@@ -1,7 +1,9 @@
 """测试CSVHandler类"""
-import unittest
+
 import os
 import tempfile
+import unittest
+
 from btools.core.data.csvutils import CSVHandler
 
 
@@ -25,7 +27,7 @@ class TestCSVHandler(unittest.TestCase):
         data = [
             ["Name", "Age", "City"],
             ["John", "30", "New York"],
-            ["Alice", "25", "London"]
+            ["Alice", "25", "London"],
         ]
         CSVHandler.write_csv(self.test_file, data)
         self.assertTrue(os.path.exists(self.test_file))
@@ -35,7 +37,7 @@ class TestCSVHandler(unittest.TestCase):
         data = [
             ["Name", "Age", "City"],
             ["John", "30", "New York"],
-            ["Alice", "25", "London"]
+            ["Alice", "25", "London"],
         ]
         CSVHandler.write_csv(self.test_file, data)
         read_data = CSVHandler.read_csv(self.test_file)

@@ -1,7 +1,9 @@
 """测试ProjectUtils类"""
-import unittest
+
 import os
 import tempfile
+import unittest
+
 from btools.core.project.projectutils import ProjectUtils
 
 
@@ -15,6 +17,7 @@ class TestProjectUtils(unittest.TestCase):
     def tearDown(self):
         """清理测试环境"""
         import shutil
+
         if os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
 
@@ -22,15 +25,15 @@ class TestProjectUtils(unittest.TestCase):
         """测试获取项目结构"""
         structure = ProjectUtils.get_project_structure(".")
         self.assertIsInstance(structure, dict)
-        self.assertIn('__files__', structure)
+        self.assertIn("__files__", structure)
 
     def test_analyze_dependencies(self):
         """测试分析依赖"""
         deps = ProjectUtils.analyze_dependencies(".")
         self.assertIsInstance(deps, dict)
-        self.assertIn('requirements', deps)
-        self.assertIn('setup', deps)
-        self.assertIn('pip', deps)
+        self.assertIn("requirements", deps)
+        self.assertIn("setup", deps)
+        self.assertIn("pip", deps)
 
     def test_is_python_project(self):
         """测试检查是否为Python项目"""

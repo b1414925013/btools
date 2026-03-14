@@ -5,11 +5,12 @@
 
 提供发布工具，自动化版本号管理、CHANGELOG 生成等功能
 """
+
+import json
 import os
 import re
-import json
 from datetime import datetime
-from typing import List, Dict, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 
 class ReleaseUtils:
@@ -18,7 +19,7 @@ class ReleaseUtils:
     """
 
     @staticmethod
-    def get_current_version(setup_py_path: str = 'setup.py') -> Optional[str]:
+    def get_current_version(setup_py_path: str = "setup.py") -> Optional[str]:
         """
         获取当前版本号
 
@@ -31,7 +32,7 @@ class ReleaseUtils:
         if not os.path.exists(setup_py_path):
             return None
 
-        with open(setup_py_path, 'r', encoding='utf-8') as f:
+        with open(setup_py_path, "r", encoding="utf-8") as f:
             content = f.read()
             match = re.search(r"version\s*=\s*['\"]([^'\"]+)['\"]", content)
             if match:
@@ -39,7 +40,7 @@ class ReleaseUtils:
         return None
 
     @staticmethod
-    def bump_version(current_version: str, bump_type: str = 'patch') -> str:
+    def bump_version(current_version: str, bump_type: str = "patch") -> str:
         """
         升级版本号
 
@@ -50,26 +51,30 @@ class ReleaseUtils:
         Returns:
             新版本号
         """
-        parts = current_version.split('.')
+        parts = current_version.split(".")
         while len(parts) < 3:
-            parts.append('0')
+            parts.append("0")
 
         major, minor, patch = map(int, parts[:3])
 
-        if bump_type == 'major':
+        if bump_type == "major":
             major += 1
             minor = 0
             patch = 0
-        elif bump_type == 'minor':
+        elif bump_type == "minor":
             minor += 1
             patch = 0
-        elif bump_type == 'patch':
+        elif bump_type == "patch":
             patch += 1
 
         return f"{major}.{minor}.{patch}"
 
     @staticmethod
-    def update_version(setup_py_path: str = 'setup.py', new_version: str = None, bump_type: str = 'patch') -> bool:
+    def update_version(
+        setup_py_path: str = "setup.py",
+        new_version: str = None,
+        bump_type: str = "patch",
+    ) -> bool:
         """
         更新版本号
 
@@ -84,7 +89,7 @@ class ReleaseUtils:
         if not os.path.exists(setup_py_path):
             return False
 
-        with open(setup_py_path, 'r', encoding='utf-8') as f:
+        with open(setup_py_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         current_version = ReleaseUtils.get_current_version(setup_py_path)
@@ -96,18 +101,18 @@ class ReleaseUtils:
 
         # 更新 setup.py 中的版本号
         new_content = re.sub(
-            r"version\s*=\s*['\"]([^'\"]+)['\"]",
-            f"version=\"{new_version}\"",
-            content
+            r"version\s*=\s*['\"]([^'\"]+)['\"]", f'version="{new_version}"', content
         )
 
-        with open(setup_py_path, 'w', encoding='utf-8') as f:
+        with open(setup_py_path, "w", encoding="utf-8") as f:
             f.write(new_content)
 
         return True
 
     @staticmethod
-    def generate_changelog(git_repo_path: str = '.', output_file: str = 'CHANGELOG.md') -> bool:
+    def generate_changelog(
+        git_repo_path: str = ".", output_file: str = "CHANGELOG.md"
+    ) -> bool:
         """
         生成 CHANGELOG
 
@@ -122,22 +127,19 @@ class ReleaseUtils:
             import subprocess
 
             # 获取所有标签
-            tags_cmd = ['git', 'tag', '--sort=-v:refname']
+            tags_cmd = ["git", "tag", "--sort=-v:refname"]
             tags_result = subprocess.run(
-                tags_cmd,
-                cwd=git_repo_path,
-                capture_output=True,
-                text=True
+                tags_cmd, cwd=git_repo_path, capture_output=True, text=True
             )
 
             if tags_result.returncode != 0:
                 return False
 
-            tags = tags_result.stdout.strip().split('\n')
+            tags = tags_result.stdout.strip().split("\n")
             if not tags:
                 return False
 
-            changelog = '# CHANGELOG\n\n'
+            changelog = "# CHANGELOG\n\n"
 
             # 为每个标签生成变更记录
             for i, tag in enumerate(tags):
@@ -145,45 +147,46 @@ class ReleaseUtils:
                     continue
 
                 # 获取标签日期
-                date_cmd = ['git', 'log', '-1', '--format=%ai', tag]
+                date_cmd = ["git", "log", "-1", "--format=%ai", tag]
                 date_result = subprocess.run(
-                    date_cmd,
-                    cwd=git_repo_path,
-                    capture_output=True,
-                    text=True
+                    date_cmd, cwd=git_repo_path, capture_output=True, text=True
                 )
 
                 if date_result.returncode == 0:
-                    date_str = date_result.stdout.strip().split(' ')[0]
+                    date_str = date_result.stdout.strip().split(" ")[0]
                 else:
-                    date_str = datetime.now().strftime('%Y-%m-%d')
+                    date_str = datetime.now().strftime("%Y-%m-%d")
 
-                changelog += f'## {tag} ({date_str})\n\n'
+                changelog += f"## {tag} ({date_str})\n\n"
 
                 # 获取该标签与前一个标签之间的提交
                 if i < len(tags) - 1:
                     prev_tag = tags[i + 1]
-                    log_cmd = ['git', 'log', f'{prev_tag}..{tag}', '--pretty=format:  * %s']
+                    log_cmd = [
+                        "git",
+                        "log",
+                        f"{prev_tag}..{tag}",
+                        "--pretty=format:  * %s",
+                    ]
                 else:
                     # 第一个标签，获取所有提交
-                    log_cmd = ['git', 'log', tag, '--pretty=format:  * %s']
+                    log_cmd = ["git", "log", tag, "--pretty=format:  * %s"]
 
                 log_result = subprocess.run(
-                    log_cmd,
-                    cwd=git_repo_path,
-                    capture_output=True,
-                    text=True
+                    log_cmd, cwd=git_repo_path, capture_output=True, text=True
                 )
 
                 if log_result.returncode == 0:
                     commits = log_result.stdout.strip()
                     if commits:
-                        changelog += commits + '\n\n'
+                        changelog += commits + "\n\n"
                     else:
-                        changelog += '  * No changes\n\n'
+                        changelog += "  * No changes\n\n"
 
             # 写入 CHANGELOG 文件
-            with open(os.path.join(git_repo_path, output_file), 'w', encoding='utf-8') as f:
+            with open(
+                os.path.join(git_repo_path, output_file), "w", encoding="utf-8"
+            ) as f:
                 f.write(changelog)
 
             return True
@@ -191,7 +194,7 @@ class ReleaseUtils:
             return False
 
     @staticmethod
-    def check_release_ready(path: str = '.') -> List[str]:
+    def check_release_ready(path: str = ".") -> List[str]:
         """
         检查是否准备好发布
 
@@ -204,25 +207,23 @@ class ReleaseUtils:
         issues = []
 
         # 检查必要文件
-        required_files = ['setup.py', 'README.md', 'CHANGELOG.md']
+        required_files = ["setup.py", "README.md", "CHANGELOG.md"]
         for file in required_files:
             if not os.path.exists(os.path.join(path, file)):
                 issues.append(f"缺少文件: {file}")
 
         # 检查版本号
-        version = ReleaseUtils.get_current_version(os.path.join(path, 'setup.py'))
+        version = ReleaseUtils.get_current_version(os.path.join(path, "setup.py"))
         if not version:
             issues.append("无法获取版本号")
 
         # 检查 Git 状态
         try:
             import subprocess
-            status_cmd = ['git', 'status', '--porcelain']
+
+            status_cmd = ["git", "status", "--porcelain"]
             status_result = subprocess.run(
-                status_cmd,
-                cwd=path,
-                capture_output=True,
-                text=True
+                status_cmd, cwd=path, capture_output=True, text=True
             )
 
             if status_result.returncode == 0:
@@ -234,7 +235,9 @@ class ReleaseUtils:
         return issues
 
     @staticmethod
-    def create_release_tag(version: str, message: str = None, git_repo_path: str = '.') -> bool:
+    def create_release_tag(
+        version: str, message: str = None, git_repo_path: str = "."
+    ) -> bool:
         """
         创建发布标签
 
@@ -249,17 +252,14 @@ class ReleaseUtils:
         try:
             import subprocess
 
-            tag_name = f'v{version}'
-            tag_cmd = ['git', 'tag', '-a', tag_name]
+            tag_name = f"v{version}"
+            tag_cmd = ["git", "tag", "-a", tag_name]
 
             if message:
-                tag_cmd.extend(['-m', message])
+                tag_cmd.extend(["-m", message])
 
             result = subprocess.run(
-                tag_cmd,
-                cwd=git_repo_path,
-                capture_output=True,
-                text=True
+                tag_cmd, cwd=git_repo_path, capture_output=True, text=True
             )
 
             return result.returncode == 0
@@ -267,7 +267,9 @@ class ReleaseUtils:
             return False
 
     @staticmethod
-    def push_release_tag(tag_name: str, remote: str = 'origin', git_repo_path: str = '.') -> bool:
+    def push_release_tag(
+        tag_name: str, remote: str = "origin", git_repo_path: str = "."
+    ) -> bool:
         """
         推送发布标签
 
@@ -282,12 +284,9 @@ class ReleaseUtils:
         try:
             import subprocess
 
-            push_cmd = ['git', 'push', remote, tag_name]
+            push_cmd = ["git", "push", remote, tag_name]
             result = subprocess.run(
-                push_cmd,
-                cwd=git_repo_path,
-                capture_output=True,
-                text=True
+                push_cmd, cwd=git_repo_path, capture_output=True, text=True
             )
 
             return result.returncode == 0

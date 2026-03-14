@@ -1,5 +1,7 @@
 """测试SystemUtils类"""
+
 import unittest
+
 from btools.core.system.systemutils import SystemUtils
 
 

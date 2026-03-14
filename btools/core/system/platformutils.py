@@ -5,10 +5,11 @@
 
 提供跨平台兼容工具，处理不同 OS 的差异等功能
 """
+
 import os
 import platform
 import sys
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 
 class PlatformUtils:
@@ -84,7 +85,7 @@ class PlatformUtils:
         Returns:
             是否为 Windows 系统
         """
-        return PlatformUtils.get_os() == 'Windows'
+        return PlatformUtils.get_os() == "Windows"
 
     @staticmethod
     def is_linux() -> bool:
@@ -94,7 +95,7 @@ class PlatformUtils:
         Returns:
             是否为 Linux 系统
         """
-        return PlatformUtils.get_os() == 'Linux'
+        return PlatformUtils.get_os() == "Linux"
 
     @staticmethod
     def is_macos() -> bool:
@@ -104,7 +105,7 @@ class PlatformUtils:
         Returns:
             是否为 macOS 系统
         """
-        return PlatformUtils.get_os() == 'Darwin'
+        return PlatformUtils.get_os() == "Darwin"
 
     @staticmethod
     def is_unix() -> bool:
@@ -115,7 +116,7 @@ class PlatformUtils:
             是否为 Unix 系统
         """
         os_name = PlatformUtils.get_os()
-        return os_name in ['Linux', 'Darwin', 'Unix']
+        return os_name in ["Linux", "Darwin", "Unix"]
 
     @staticmethod
     def get_python_version() -> str:
@@ -156,15 +157,15 @@ class PlatformUtils:
             系统信息字典
         """
         return {
-            'os': PlatformUtils.get_os(),
-            'os_version': PlatformUtils.get_os_version(),
-            'platform': PlatformUtils.get_platform(),
-            'architecture': PlatformUtils.get_architecture(),
-            'machine': PlatformUtils.get_machine(),
-            'processor': PlatformUtils.get_processor(),
-            'python_version': PlatformUtils.get_python_version(),
-            'python_implementation': PlatformUtils.get_python_implementation(),
-            'python_version_tuple': PlatformUtils.get_python_version_tuple()
+            "os": PlatformUtils.get_os(),
+            "os_version": PlatformUtils.get_os_version(),
+            "platform": PlatformUtils.get_platform(),
+            "architecture": PlatformUtils.get_architecture(),
+            "machine": PlatformUtils.get_machine(),
+            "processor": PlatformUtils.get_processor(),
+            "python_version": PlatformUtils.get_python_version(),
+            "python_implementation": PlatformUtils.get_python_implementation(),
+            "python_version_tuple": PlatformUtils.get_python_version_tuple(),
         }
 
     @staticmethod
@@ -176,9 +177,9 @@ class PlatformUtils:
             行结束符
         """
         if PlatformUtils.is_windows():
-            return '\r\n'
+            return "\r\n"
         else:
-            return '\n'
+            return "\n"
 
     @staticmethod
     def get_path_separator() -> str:
@@ -199,9 +200,9 @@ class PlatformUtils:
             环境变量分隔符
         """
         if PlatformUtils.is_windows():
-            return ';'
+            return ";"
         else:
-            return ':'
+            return ":"
 
     @staticmethod
     def get_user_home() -> str:
@@ -211,7 +212,7 @@ class PlatformUtils:
         Returns:
             用户主目录
         """
-        return os.path.expanduser('~')
+        return os.path.expanduser("~")
 
     @staticmethod
     def get_temp_dir() -> str:
@@ -221,7 +222,7 @@ class PlatformUtils:
         Returns:
             临时目录
         """
-        return os.path.abspath(os.environ.get('TEMP', os.environ.get('TMP', '/tmp')))
+        return os.path.abspath(os.environ.get("TEMP", os.environ.get("TMP", "/tmp")))
 
     @staticmethod
     def get_current_working_dir() -> str:
@@ -282,7 +283,7 @@ class PlatformUtils:
             是否为 64 位系统
         """
         arch = PlatformUtils.get_architecture()
-        return '64bit' in arch[0]
+        return "64bit" in arch[0]
 
     @staticmethod
     def is_32bit() -> bool:
@@ -293,7 +294,7 @@ class PlatformUtils:
             是否为 32 位系统
         """
         arch = PlatformUtils.get_architecture()
-        return '32bit' in arch[0]
+        return "32bit" in arch[0]
 
     @staticmethod
     def get_cpu_count() -> int:
@@ -316,32 +317,36 @@ class PlatformUtils:
         try:
             if PlatformUtils.is_windows():
                 import psutil
+
                 mem = psutil.virtual_memory()
                 return {
-                    'total': mem.total,
-                    'available': mem.available,
-                    'used': mem.used,
-                    'percent': mem.percent
+                    "total": mem.total,
+                    "available": mem.available,
+                    "used": mem.used,
+                    "percent": mem.percent,
                 }
             elif PlatformUtils.is_linux():
-                with open('/proc/meminfo', 'r') as f:
+                with open("/proc/meminfo", "r") as f:
                     meminfo = {}
                     for line in f:
-                        key, value = line.strip().split(':', 1)
+                        key, value = line.strip().split(":", 1)
                         meminfo[key] = value.strip()
                     return meminfo
             elif PlatformUtils.is_macos():
                 import subprocess
-                result = subprocess.run(['sysctl', 'hw.memsize'], capture_output=True, text=True)
-                total_memory = int(result.stdout.split(':')[1].strip())
-                return {'total': total_memory}
+
+                result = subprocess.run(
+                    ["sysctl", "hw.memsize"], capture_output=True, text=True
+                )
+                total_memory = int(result.stdout.split(":")[1].strip())
+                return {"total": total_memory}
             else:
                 return {}
         except Exception as e:
             return {}
 
     @staticmethod
-    def get_disk_info(path: str = '.') -> Dict[str, Any]:
+    def get_disk_info(path: str = ".") -> Dict[str, Any]:
         """
         获取磁盘信息
 
@@ -354,10 +359,10 @@ class PlatformUtils:
         try:
             stat = os.statvfs(path)
             return {
-                'total': stat.f_frsize * stat.f_blocks,
-                'free': stat.f_frsize * stat.f_bavail,
-                'used': stat.f_frsize * (stat.f_blocks - stat.f_bavail),
-                'percent': (stat.f_blocks - stat.f_bavail) / stat.f_blocks * 100
+                "total": stat.f_frsize * stat.f_blocks,
+                "free": stat.f_frsize * stat.f_bavail,
+                "used": stat.f_frsize * (stat.f_blocks - stat.f_bavail),
+                "percent": (stat.f_blocks - stat.f_bavail) / stat.f_blocks * 100,
             }
         except Exception as e:
             return {}
@@ -372,16 +377,14 @@ class PlatformUtils:
         """
         try:
             import socket
+
             hostname = socket.gethostname()
             ip_addresses = []
-            
+
             for addrinfo in socket.getaddrinfo(hostname, None):
                 ip_addresses.append(addrinfo[4][0])
-            
-            return {
-                'hostname': hostname,
-                'ip_addresses': ip_addresses
-            }
+
+            return {"hostname": hostname, "ip_addresses": ip_addresses}
         except Exception as e:
             return {}
 
@@ -396,31 +399,32 @@ class PlatformUtils:
         try:
             if PlatformUtils.is_windows():
                 import psutil
+
                 battery = psutil.sensors_battery()
                 if battery:
                     return {
-                        'percent': battery.percent,
-                        'secsleft': battery.secsleft,
-                        'power_plugged': battery.power_plugged
+                        "percent": battery.percent,
+                        "secsleft": battery.secsleft,
+                        "power_plugged": battery.power_plugged,
                     }
                 else:
                     return {}
             elif PlatformUtils.is_linux():
                 try:
-                    with open('/sys/class/power_supply/BAT0/capacity', 'r') as f:
+                    with open("/sys/class/power_supply/BAT0/capacity", "r") as f:
                         capacity = int(f.read().strip())
-                    with open('/sys/class/power_supply/BAT0/status', 'r') as f:
+                    with open("/sys/class/power_supply/BAT0/status", "r") as f:
                         status = f.read().strip()
-                    return {
-                        'percent': capacity,
-                        'status': status
-                    }
+                    return {"percent": capacity, "status": status}
                 except:
                     return {}
             elif PlatformUtils.is_macos():
                 import subprocess
-                result = subprocess.run(['pmset', '-g', 'batt'], capture_output=True, text=True)
-                return {'output': result.stdout}
+
+                result = subprocess.run(
+                    ["pmset", "-g", "batt"], capture_output=True, text=True
+                )
+                return {"output": result.stdout}
             else:
                 return {}
         except Exception as e:
@@ -440,16 +444,16 @@ class PlatformUtils:
         if PlatformUtils.is_windows():
             # Windows 平台命令映射
             command_map = {
-                'ls': 'dir',
-                'cat': 'type',
-                'grep': 'findstr',
-                'cp': 'copy',
-                'mv': 'move',
-                'rm': 'del',
-                'mkdir': 'mkdir',
-                'rmdir': 'rmdir',
-                'pwd': 'cd',
-                'clear': 'cls'
+                "ls": "dir",
+                "cat": "type",
+                "grep": "findstr",
+                "cp": "copy",
+                "mv": "move",
+                "rm": "del",
+                "mkdir": "mkdir",
+                "rmdir": "rmdir",
+                "pwd": "cd",
+                "clear": "cls",
             }
             return command_map.get(command, command)
         else:
@@ -468,25 +472,18 @@ class PlatformUtils:
             (返回码, 标准输出, 标准错误)
         """
         import subprocess
-        
+
         if PlatformUtils.is_windows():
             # Windows 平台使用 shell=True
             cmd = [PlatformUtils.get_platform_specific_command(command)] + list(args)
             result = subprocess.run(
-                ' '.join(cmd),
-                shell=True,
-                capture_output=True,
-                text=True
+                " ".join(cmd), shell=True, capture_output=True, text=True
             )
         else:
             # Unix 平台直接运行
             cmd = [PlatformUtils.get_platform_specific_command(command)] + list(args)
-            result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True
-            )
-        
+            result = subprocess.run(cmd, capture_output=True, text=True)
+
         return result.returncode, result.stdout, result.stderr
 
     @staticmethod
@@ -511,7 +508,9 @@ class PlatformUtils:
         os.environ[name] = value
 
     @staticmethod
-    def get_environment_variable(name: str, default: Optional[str] = None) -> Optional[str]:
+    def get_environment_variable(
+        name: str, default: Optional[str] = None
+    ) -> Optional[str]:
         """
         获取环境变量
 
@@ -546,17 +545,19 @@ class PlatformUtils:
         try:
             if PlatformUtils.is_windows():
                 import locale
+
                 return {
-                    'language': locale.getlocale()[0],
-                    'encoding': locale.getpreferredencoding()
+                    "language": locale.getlocale()[0],
+                    "encoding": locale.getpreferredencoding(),
                 }
             else:
                 import subprocess
-                result = subprocess.run(['locale'], capture_output=True, text=True)
+
+                result = subprocess.run(["locale"], capture_output=True, text=True)
                 locale_info = {}
-                for line in result.stdout.split('\n'):
-                    if '=' in line:
-                        key, value = line.split('=', 1)
+                for line in result.stdout.split("\n"):
+                    if "=" in line:
+                        key, value = line.split("=", 1)
                         locale_info[key.strip()] = value.strip()
                 return locale_info
         except Exception as e:
@@ -571,15 +572,15 @@ class PlatformUtils:
             平台特性字典
         """
         return {
-            'windows': PlatformUtils.is_windows(),
-            'linux': PlatformUtils.is_linux(),
-            'macos': PlatformUtils.is_macos(),
-            'unix': PlatformUtils.is_unix(),
-            '64bit': PlatformUtils.is_64bit(),
-            '32bit': PlatformUtils.is_32bit(),
-            'has_psutil': False,
-            'has_subprocess': True,
-            'has_socket': True
+            "windows": PlatformUtils.is_windows(),
+            "linux": PlatformUtils.is_linux(),
+            "macos": PlatformUtils.is_macos(),
+            "unix": PlatformUtils.is_unix(),
+            "64bit": PlatformUtils.is_64bit(),
+            "32bit": PlatformUtils.is_32bit(),
+            "has_psutil": False,
+            "has_subprocess": True,
+            "has_socket": True,
         }
 
     @staticmethod
@@ -595,22 +596,22 @@ class PlatformUtils:
         # 检查 Python 版本
         major, minor, _ = PlatformUtils.get_python_version_tuple()
         if major < 3:
-            issues.append('Python 2 已不再受支持')
+            issues.append("Python 2 已不再受支持")
         elif major == 3 and minor < 6:
-            issues.append('Python 3.6 以下版本可能存在兼容性问题')
+            issues.append("Python 3.6 以下版本可能存在兼容性问题")
 
         # 检查系统内存
         mem_info = PlatformUtils.get_memory_info()
-        if mem_info and 'total' in mem_info:
-            total_memory_gb = mem_info['total'] / (1024 ** 3)
+        if mem_info and "total" in mem_info:
+            total_memory_gb = mem_info["total"] / (1024**3)
             if total_memory_gb < 1:
-                issues.append('系统内存不足 1GB，可能会影响性能')
+                issues.append("系统内存不足 1GB，可能会影响性能")
 
         # 检查磁盘空间
         disk_info = PlatformUtils.get_disk_info()
-        if disk_info and 'free' in disk_info:
-            free_space_gb = disk_info['free'] / (1024 ** 3)
+        if disk_info and "free" in disk_info:
+            free_space_gb = disk_info["free"] / (1024**3)
             if free_space_gb < 1:
-                issues.append('磁盘空间不足 1GB，可能会影响操作')
+                issues.append("磁盘空间不足 1GB，可能会影响操作")
 
         return issues

@@ -1,7 +1,9 @@
 """测试FileUtils类"""
-import unittest
+
 import os
 import tempfile
+import unittest
+
 from btools.core.data.fileutils import FileUtils
 
 
@@ -31,20 +33,20 @@ class TestFileUtils(unittest.TestCase):
         content = "Hello, World!"
         FileUtils.write_file(self.test_file, content)
         self.assertTrue(os.path.exists(self.test_file))
-        with open(self.test_file, 'r', encoding='utf-8') as f:
+        with open(self.test_file, "r", encoding="utf-8") as f:
             self.assertEqual(f.read(), content)
 
     def test_read_file(self):
         """测试读取文件"""
         content = "Hello, World!"
-        with open(self.test_file, 'w', encoding='utf-8') as f:
+        with open(self.test_file, "w", encoding="utf-8") as f:
             f.write(content)
         self.assertEqual(FileUtils.read_file(self.test_file), content)
 
     def test_exists(self):
         """测试文件是否存在"""
         self.assertFalse(FileUtils.exists(self.test_file))
-        with open(self.test_file, 'w', encoding='utf-8') as f:
+        with open(self.test_file, "w", encoding="utf-8") as f:
             f.write("test")
         self.assertTrue(FileUtils.exists(self.test_file))
 
@@ -57,7 +59,7 @@ class TestFileUtils(unittest.TestCase):
 
     def test_delete_file(self):
         """测试删除文件"""
-        with open(self.test_file, 'w', encoding='utf-8') as f:
+        with open(self.test_file, "w", encoding="utf-8") as f:
             f.write("test")
         self.assertTrue(os.path.exists(self.test_file))
         FileUtils.delete_file(self.test_file)

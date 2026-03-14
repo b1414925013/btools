@@ -1,7 +1,9 @@
 """测试CacheUtils类"""
-import unittest
+
 import os
 import tempfile
+import unittest
+
 from btools.core.cache.cacheutils import CacheUtils
 
 
@@ -21,6 +23,7 @@ class TestCacheUtils(unittest.TestCase):
         # 删除临时目录
         if os.path.exists(self.temp_dir):
             import shutil
+
             shutil.rmtree(self.temp_dir)
 
     def test_memory_cache_set_and_get(self):

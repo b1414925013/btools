@@ -5,10 +5,11 @@
 
 提供命令行执行功能，包括执行命令、获取输出、判断执行结果等
 """
+
 import os
 import subprocess
 import sys
-from typing import Dict, Any, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 
 class RuntimeUtil:
@@ -17,7 +18,12 @@ class RuntimeUtil:
     """
 
     @staticmethod
-    def exec(cmd: str, cwd: Optional[str] = None, shell: bool = True, timeout: Optional[float] = None) -> Tuple[int, str, str]:
+    def exec(
+        cmd: str,
+        cwd: Optional[str] = None,
+        shell: bool = True,
+        timeout: Optional[float] = None,
+    ) -> Tuple[int, str, str]:
         """
         执行命令并返回执行结果
 
@@ -32,12 +38,12 @@ class RuntimeUtil:
         """
         try:
             result = subprocess.run(
-                cmd, 
-                cwd=cwd, 
-                shell=shell, 
-                capture_output=True, 
-                text=True, 
-                timeout=timeout
+                cmd,
+                cwd=cwd,
+                shell=shell,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
             )
             return result.returncode, result.stdout, result.stderr
         except subprocess.TimeoutExpired:
@@ -46,7 +52,12 @@ class RuntimeUtil:
             return -1, "", f"命令执行失败: {str(e)}"
 
     @staticmethod
-    def execForStr(cmd: str, cwd: Optional[str] = None, shell: bool = True, timeout: Optional[float] = None) -> str:
+    def execForStr(
+        cmd: str,
+        cwd: Optional[str] = None,
+        shell: bool = True,
+        timeout: Optional[float] = None,
+    ) -> str:
         """
         执行命令并返回标准输出
 
@@ -63,7 +74,12 @@ class RuntimeUtil:
         return stdout.strip()
 
     @staticmethod
-    def execForLines(cmd: str, cwd: Optional[str] = None, shell: bool = True, timeout: Optional[float] = None) -> list:
+    def execForLines(
+        cmd: str,
+        cwd: Optional[str] = None,
+        shell: bool = True,
+        timeout: Optional[float] = None,
+    ) -> list:
         """
         执行命令并返回标准输出的行列表
 
@@ -80,7 +96,12 @@ class RuntimeUtil:
         return stdout.splitlines() if stdout else []
 
     @staticmethod
-    def execWait(cmd: str, cwd: Optional[str] = None, shell: bool = True, timeout: Optional[float] = None) -> bool:
+    def execWait(
+        cmd: str,
+        cwd: Optional[str] = None,
+        shell: bool = True,
+        timeout: Optional[float] = None,
+    ) -> bool:
         """
         执行命令并等待完成，返回是否执行成功
 
@@ -97,7 +118,9 @@ class RuntimeUtil:
         return returncode == 0
 
     @staticmethod
-    def execAsync(cmd: str, cwd: Optional[str] = None, shell: bool = True) -> Optional[subprocess.Popen]:
+    def execAsync(
+        cmd: str, cwd: Optional[str] = None, shell: bool = True
+    ) -> Optional[subprocess.Popen]:
         """
         异步执行命令，返回进程对象
 
@@ -111,19 +134,21 @@ class RuntimeUtil:
         """
         try:
             process = subprocess.Popen(
-                cmd, 
-                cwd=cwd, 
-                shell=shell, 
-                stdout=subprocess.PIPE, 
+                cmd,
+                cwd=cwd,
+                shell=shell,
+                stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True
+                text=True,
             )
             return process
         except Exception:
             return None
 
     @staticmethod
-    def getProcessOutput(process: subprocess.Popen, timeout: Optional[float] = None) -> Tuple[str, str]:
+    def getProcessOutput(
+        process: subprocess.Popen, timeout: Optional[float] = None
+    ) -> Tuple[str, str]:
         """
         获取进程的输出
 
@@ -153,7 +178,7 @@ class RuntimeUtil:
             Dict[str, Any]: 系统信息字典
         """
         import platform
-        
+
         return {
             "system": platform.system(),
             "release": platform.release(),
@@ -163,7 +188,7 @@ class RuntimeUtil:
             "python_version": platform.python_version(),
             "python_implementation": platform.python_implementation(),
             "python_compiler": platform.python_compiler(),
-            "os_name": os.name
+            "os_name": os.name,
         }
 
     @staticmethod
@@ -182,7 +207,7 @@ class RuntimeUtil:
             "python_version": sys.version,
             "sys_platform": sys.platform,
             "argv": sys.argv,
-            "env": dict(os.environ)
+            "env": dict(os.environ),
         }
 
     @staticmethod
@@ -230,6 +255,7 @@ class RuntimeUtil:
             str: 操作系统名称
         """
         import platform
+
         return platform.system()
 
     @staticmethod
@@ -263,7 +289,9 @@ class RuntimeUtil:
         return os.name == "posix" and "darwin" in sys.platform.lower()
 
     @staticmethod
-    def runScript(script_path: str, *args: str, cwd: Optional[str] = None) -> Tuple[int, str, str]:
+    def runScript(
+        script_path: str, *args: str, cwd: Optional[str] = None
+    ) -> Tuple[int, str, str]:
         """
         运行脚本文件
 
@@ -280,7 +308,7 @@ class RuntimeUtil:
 
         # 根据文件扩展名确定执行方式
         ext = os.path.splitext(script_path)[1].lower()
-        
+
         if ext == ".py":
             # Python脚本
             cmd = [sys.executable, script_path] + list(args)
@@ -292,11 +320,7 @@ class RuntimeUtil:
 
         try:
             result = subprocess.run(
-                cmd, 
-                cwd=cwd, 
-                shell=shell, 
-                capture_output=True, 
-                text=True
+                cmd, cwd=cwd, shell=shell, capture_output=True, text=True
             )
             return result.returncode, result.stdout, result.stderr
         except Exception as e:
@@ -316,7 +340,9 @@ class RuntimeUtil:
         try:
             if RuntimeUtil.isWindows():
                 # Windows系统
-                subprocess.run(["taskkill", "/F", "/PID", str(pid)], capture_output=True)
+                subprocess.run(
+                    ["taskkill", "/F", "/PID", str(pid)], capture_output=True
+                )
             else:
                 # Linux/Mac系统
                 os.kill(pid, 9)  # SIGKILL
@@ -333,4 +359,5 @@ class RuntimeUtil:
             seconds: 休眠时间（秒）
         """
         import time
+
         time.sleep(seconds)

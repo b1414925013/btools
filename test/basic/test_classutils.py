@@ -1,5 +1,6 @@
-import unittest
 import abc
+import unittest
+
 from btools.core.basic.classutils import ClassUtils
 
 
@@ -12,6 +13,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试获取类的名称
         """
+
         class TestClass:
             pass
 
@@ -22,6 +24,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试获取类所在的包名称
         """
+
         class TestClass:
             pass
 
@@ -37,6 +40,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试获取类所在的模块名称
         """
+
         class TestClass:
             pass
 
@@ -52,6 +56,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试获取类的完整名称
         """
+
         class TestClass:
             pass
 
@@ -80,6 +85,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试检查类是否为抽象类
         """
+
         class AbstractClass(metaclass=abc.ABCMeta):
             @abc.abstractmethod
             def method(self):
@@ -96,6 +102,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试检查类是否为具体类
         """
+
         class AbstractClass(metaclass=abc.ABCMeta):
             @abc.abstractmethod
             def method(self):
@@ -112,6 +119,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试获取类的所有父类
         """
+
         class BaseClass:
             pass
 
@@ -130,6 +138,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试获取类的所有构造器
         """
+
         class TestClass:
             def __init__(self):
                 pass
@@ -141,6 +150,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试获取类的所有方法
         """
+
         class TestClass:
             def method1(self):
                 pass
@@ -155,6 +165,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试获取类的所有字段
         """
+
         class TestClass:
             field1 = "value1"
             field2 = "value2"
@@ -169,6 +180,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试获取类的所有成员
         """
+
         class TestClass:
             field = "value"
 
@@ -177,13 +189,14 @@ class TestClassUtils(unittest.TestCase):
 
         members = ClassUtils.get_all_members(TestClass)
         self.assertIsInstance(members, dict)
-        self.assertIn('field', members)
-        self.assertIn('method', members)
+        self.assertIn("field", members)
+        self.assertIn("method", members)
 
     def test_instantiate(self):
         """
         测试实例化类
         """
+
         class TestClass:
             def __init__(self, value):
                 self.value = value
@@ -201,6 +214,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试检查类是否为指定类的子类
         """
+
         class BaseClass:
             pass
 
@@ -215,6 +229,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试检查类是否实现了指定的接口
         """
+
         class Interface(metaclass=abc.ABCMeta):
             @abc.abstractmethod
             def method(self):
@@ -231,6 +246,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试获取类的路径
         """
+
         class TestClass:
             pass
 
@@ -246,6 +262,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试检查类是否为内部类
         """
+
         class OuterClass:
             class InnerClass:
                 pass
@@ -260,6 +277,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试获取内部类的外部类
         """
+
         class OuterClass:
             class InnerClass:
                 pass
@@ -275,19 +293,21 @@ class TestClassUtils(unittest.TestCase):
         """
         测试获取类的注解
         """
+
         class TestClass:
             field: int
             name: str
 
         annotations = ClassUtils.get_class_annotations(TestClass)
         self.assertIsInstance(annotations, dict)
-        self.assertIn('field', annotations)
-        self.assertIn('name', annotations)
+        self.assertIn("field", annotations)
+        self.assertIn("name", annotations)
 
     def test_get_method_annotations(self):
         """
         测试获取类方法的注解
         """
+
         class TestClass:
             def method(self, x: int, y: str) -> bool:
                 return True
@@ -299,18 +319,20 @@ class TestClassUtils(unittest.TestCase):
         """
         测试获取类字段的注解
         """
+
         class TestClass:
             field: int
             name: str
 
         annotations = ClassUtils.get_field_annotations(TestClass, "field")
         self.assertIsInstance(annotations, dict)
-        self.assertIn('field', annotations)
+        self.assertIn("field", annotations)
 
     def test_is_final(self):
         """
         测试检查类是否为最终类
         """
+
         class FinalClass:
             __final__ = True
 
@@ -324,9 +346,10 @@ class TestClassUtils(unittest.TestCase):
         """
         测试检查类成员是否为静态成员
         """
+
         class TestClass:
             static_field = "static"
-            
+
             def instance_method(self):
                 pass
 
@@ -341,6 +364,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试检查类成员是否为私有成员
         """
+
         class TestClass:
             __private_field = "private"
             _protected_field = "protected"
@@ -354,6 +378,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试检查类成员是否为保护成员
         """
+
         class TestClass:
             __private_field = "private"
             _protected_field = "protected"
@@ -367,6 +392,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试获取类的继承层次结构
         """
+
         class BaseClass:
             pass
 
@@ -384,6 +410,7 @@ class TestClassUtils(unittest.TestCase):
         """
         测试获取多个类的共同父类
         """
+
         class BaseClass:
             pass
 
@@ -406,5 +433,5 @@ class TestClassUtils(unittest.TestCase):
         self.assertIsNone(common)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

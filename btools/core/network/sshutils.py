@@ -1,19 +1,21 @@
-import paramiko
-import socket
 import os
-from typing import Optional, Dict, Any, Tuple
+import socket
+from typing import Any, Dict, Optional, Tuple
+
+import paramiko
+
 
 class SSHClient:
     """
     SSH客户端类，支持直接连接和通过跳板机连接
-    
+
     Attributes:
         client (paramiko.SSHClient): SSH客户端实例
         jump_client (paramiko.SSHClient): 跳板机SSH客户端实例
         is_connected (bool): 是否已连接
         transport (paramiko.Transport): SSH传输实例
     """
-    
+
     def __init__(self):
         """
         初始化SSHClient实例
@@ -25,14 +27,24 @@ class SSHClient:
         self.transport = None
         self.root_shell = None  # 保存root shell会话
         self.root_shell_active = False  # root shell是否激活
-    
-    def connect(self, hostname: str, port: int = 22, username: str = None, password: str = None, 
-                key_filename: str = None, timeout: int = 30, proxy_type: str = None, 
-                proxy_host: str = None, proxy_port: int = None, proxy_username: str = None, 
-                proxy_password: str = None):
+
+    def connect(
+        self,
+        hostname: str,
+        port: int = 22,
+        username: str = None,
+        password: str = None,
+        key_filename: str = None,
+        timeout: int = 30,
+        proxy_type: str = None,
+        proxy_host: str = None,
+        proxy_port: int = None,
+        proxy_username: str = None,
+        proxy_password: str = None,
+    ):
         """
         直接连接到SSH服务器
-        
+
         Args:
             hostname (str): 主机名或IP地址
             port (int): SSH端口，默认为22
@@ -45,7 +57,7 @@ class SSHClient:
             proxy_port (int): 代理端口
             proxy_username (str): 代理用户名
             proxy_password (str): 代理密码
-            
+
         Raises:
             paramiko.SSHException: SSH连接失败
             socket.timeout: 连接超时
@@ -57,20 +69,36 @@ class SSHClient:
                 proxy_type = proxy_type.lower()
                 if proxy_type == "socks4":
                     import socks
+
                     sock = socks.socksocket()
-                    sock.set_proxy(socks.SOCKS4, proxy_host, proxy_port, username=proxy_username)
+                    sock.set_proxy(
+                        socks.SOCKS4, proxy_host, proxy_port, username=proxy_username
+                    )
                     sock.settimeout(timeout)
                     sock.connect((hostname, port))
                 elif proxy_type == "socks5":
                     import socks
+
                     sock = socks.socksocket()
-                    sock.set_proxy(socks.SOCKS5, proxy_host, proxy_port, username=proxy_username, password=proxy_password)
+                    sock.set_proxy(
+                        socks.SOCKS5,
+                        proxy_host,
+                        proxy_port,
+                        username=proxy_username,
+                        password=proxy_password,
+                    )
                     sock.settimeout(timeout)
                     sock.connect((hostname, port))
                 elif proxy_type == "http":
-                    import httplib2
                     from urllib.parse import urlparse
-                    proxy_url = f"http://{proxy_username}:{proxy_password}@{proxy_host}:{proxy_port}" if proxy_username else f"http://{proxy_host}:{proxy_port}"
+
+                    import httplib2
+
+                    proxy_url = (
+                        f"http://{proxy_username}:{proxy_password}@{proxy_host}:{proxy_port}"
+                        if proxy_username
+                        else f"http://{proxy_host}:{proxy_port}"
+                    )
                     http = httplib2.Http(proxy_info=urlparse(proxy_url))
                     # 这里简化处理，实际实现可能需要更复杂的HTTP代理隧道
                     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -81,7 +109,7 @@ class SSHClient:
                     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     sock.settimeout(timeout)
                     sock.connect((hostname, port))
-            
+
             self.client.connect(
                 hostname=hostname,
                 port=port,
@@ -89,30 +117,47 @@ class SSHClient:
                 password=password,
                 key_filename=key_filename,
                 timeout=timeout,
-                sock=sock
+                sock=sock,
             )
-            
+
             # 获取传输实例，用于交互式shell
             self.transport = self.client.get_transport()
             self.is_connected = True
         except ImportError as e:
             if "socks" in str(e):
-                raise ImportError("Please install PySocks for SOCKS proxy support: pip install PySocks")
+                raise ImportError(
+                    "Please install PySocks for SOCKS proxy support: pip install PySocks"
+                )
             elif "httplib2" in str(e):
-                raise ImportError("Please install httplib2 for HTTP proxy support: pip install httplib2")
+                raise ImportError(
+                    "Please install httplib2 for HTTP proxy support: pip install httplib2"
+                )
             raise
         except Exception as e:
             raise
-    
-    def connect_via_jump(self, jump_host: str, target_host: str, jump_port: int = 22, jump_username: str = None, 
-                        jump_password: str = None, jump_key_filename: str = None,
-                        target_port: int = 22, target_username: str = None,
-                        target_password: str = None, target_key_filename: str = None, timeout: int = 30,
-                        proxy_type: str = None, proxy_host: str = None, proxy_port: int = None,
-                        proxy_username: str = None, proxy_password: str = None):
+
+    def connect_via_jump(
+        self,
+        jump_host: str,
+        target_host: str,
+        jump_port: int = 22,
+        jump_username: str = None,
+        jump_password: str = None,
+        jump_key_filename: str = None,
+        target_port: int = 22,
+        target_username: str = None,
+        target_password: str = None,
+        target_key_filename: str = None,
+        timeout: int = 30,
+        proxy_type: str = None,
+        proxy_host: str = None,
+        proxy_port: int = None,
+        proxy_username: str = None,
+        proxy_password: str = None,
+    ):
         """
         通过跳板机连接到目标SSH服务器
-        
+
         Args:
             jump_host (str): 跳板机主机名或IP地址
             target_host (str): 目标服务器主机名或IP地址
@@ -130,7 +175,7 @@ class SSHClient:
             proxy_port (int): 代理端口
             proxy_username (str): 代理用户名
             proxy_password (str): 代理密码
-            
+
         Raises:
             paramiko.SSHException: SSH连接失败
             socket.timeout: 连接超时
@@ -142,20 +187,36 @@ class SSHClient:
                 proxy_type = proxy_type.lower()
                 if proxy_type == "socks4":
                     import socks
+
                     jump_sock = socks.socksocket()
-                    jump_sock.set_proxy(socks.SOCKS4, proxy_host, proxy_port, username=proxy_username)
+                    jump_sock.set_proxy(
+                        socks.SOCKS4, proxy_host, proxy_port, username=proxy_username
+                    )
                     jump_sock.settimeout(timeout)
                     jump_sock.connect((jump_host, jump_port))
                 elif proxy_type == "socks5":
                     import socks
+
                     jump_sock = socks.socksocket()
-                    jump_sock.set_proxy(socks.SOCKS5, proxy_host, proxy_port, username=proxy_username, password=proxy_password)
+                    jump_sock.set_proxy(
+                        socks.SOCKS5,
+                        proxy_host,
+                        proxy_port,
+                        username=proxy_username,
+                        password=proxy_password,
+                    )
                     jump_sock.settimeout(timeout)
                     jump_sock.connect((jump_host, jump_port))
                 elif proxy_type == "http":
-                    import httplib2
                     from urllib.parse import urlparse
-                    proxy_url = f"http://{proxy_username}:{proxy_password}@{proxy_host}:{proxy_port}" if proxy_username else f"http://{proxy_host}:{proxy_port}"
+
+                    import httplib2
+
+                    proxy_url = (
+                        f"http://{proxy_username}:{proxy_password}@{proxy_host}:{proxy_port}"
+                        if proxy_username
+                        else f"http://{proxy_host}:{proxy_port}"
+                    )
                     http = httplib2.Http(proxy_info=urlparse(proxy_url))
                     # 这里简化处理，实际实现可能需要更复杂的HTTP代理隧道
                     jump_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -166,7 +227,7 @@ class SSHClient:
                     jump_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     jump_sock.settimeout(timeout)
                     jump_sock.connect((jump_host, jump_port))
-            
+
             # 连接跳板机
             self.jump_client = paramiko.SSHClient()
             self.jump_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -177,18 +238,20 @@ class SSHClient:
                 password=jump_password,
                 key_filename=jump_key_filename,
                 timeout=timeout,
-                sock=jump_sock
+                sock=jump_sock,
             )
-            
+
             # 创建到目标服务器的SSH隧道
             transport = self.jump_client.get_transport()
             if not transport:
                 raise paramiko.SSHException("Failed to get transport from jump server")
-            
+
             dest_addr = (target_host, target_port)
-            local_addr = ('127.0.0.1', 0)  # 随机本地端口
-            channel = transport.open_channel('direct-tcpip', dest_addr, local_addr, timeout=timeout)
-            
+            local_addr = ("127.0.0.1", 0)  # 随机本地端口
+            channel = transport.open_channel(
+                "direct-tcpip", dest_addr, local_addr, timeout=timeout
+            )
+
             # 通过隧道连接到目标服务器
             self.client.connect(
                 hostname=target_host,
@@ -197,9 +260,9 @@ class SSHClient:
                 password=target_password,
                 key_filename=target_key_filename,
                 sock=channel,
-                timeout=timeout
+                timeout=timeout,
             )
-            
+
             # 获取传输实例，用于交互式shell
             self.transport = self.client.get_transport()
             self.is_connected = True
@@ -212,119 +275,123 @@ class SSHClient:
                     pass
                 self.jump_client = None
             raise
-    
-    def execute(self, command: str, sudo: bool = False, sudo_password: str = None) -> Dict[str, Any]:
+
+    def execute(
+        self, command: str, sudo: bool = False, sudo_password: str = None
+    ) -> Dict[str, Any]:
         """
         执行SSH命令
-        
+
         Args:
             command (str): 要执行的命令
             sudo (bool): 是否使用sudo执行
             sudo_password (str): sudo密码
-            
+
         Returns:
             dict: 包含执行结果的字典，格式为 {'stdout': str, 'stderr': str, 'returncode': int}
-            
+
         Raises:
             Exception: 未连接到服务器
         """
         if not self.is_connected:
             raise Exception("Not connected to SSH server")
-        
+
         if sudo:
             if sudo_password:
                 command = f"echo '{sudo_password}' | sudo -S {command}"
             else:
                 command = f"sudo {command}"
-        
+
         stdin, stdout, stderr = self.client.exec_command(command)
-        stdout_content = stdout.read().decode('utf-8')
-        stderr_content = stderr.read().decode('utf-8')
+        stdout_content = stdout.read().decode("utf-8")
+        stderr_content = stderr.read().decode("utf-8")
         returncode = stdout.channel.recv_exit_status()
-        
+
         return {
-            'stdout': stdout_content,
-            'stderr': stderr_content,
-            'returncode': returncode
+            "stdout": stdout_content,
+            "stderr": stderr_content,
+            "returncode": returncode,
         }
-    
+
     def upload(self, local_path: str, remote_path: str):
         """
         上传文件到SSH服务器
-        
+
         Args:
             local_path (str): 本地文件路径
             remote_path (str): 远程文件路径
-            
+
         Raises:
             Exception: 未连接到服务器
         """
         if not self.is_connected:
             raise Exception("Not connected to SSH server")
-        
+
         sftp = self.client.open_sftp()
         try:
             sftp.put(local_path, remote_path)
         finally:
             sftp.close()
-    
+
     def download(self, remote_path: str, local_path: str):
         """
         从SSH服务器下载文件
-        
+
         Args:
             remote_path (str): 远程文件路径
             local_path (str): 本地文件路径
-            
+
         Raises:
             Exception: 未连接到服务器
         """
         if not self.is_connected:
             raise Exception("Not connected to SSH server")
-        
+
         sftp = self.client.open_sftp()
         try:
             sftp.get(remote_path, local_path)
         finally:
             sftp.close()
-    
-    def open_shell(self, term: str = 'xterm', width: int = 80, height: int = 24) -> paramiko.Channel:
+
+    def open_shell(
+        self, term: str = "xterm", width: int = 80, height: int = 24
+    ) -> paramiko.Channel:
         """
         打开交互式shell
-        
+
         Args:
             term (str): 终端类型，默认为'xterm'
             width (int): 终端宽度，默认为80
             height (int): 终端高度，默认为24
-            
+
         Returns:
             paramiko.Channel: shell通道实例
-            
+
         Raises:
             Exception: 未连接到服务器
         """
         if not self.is_connected:
             raise Exception("Not connected to SSH server")
-        
+
         if not self.transport:
             self.transport = self.client.get_transport()
-        
+
         channel = self.transport.open_session()
         channel.get_pty(term=term, width=width, height=height)
         channel.invoke_shell()
         return channel
-    
+
     def su_to_root(self, root_password: str, timeout: int = 10) -> Dict[str, Any]:
         """
         执行 su - root 命令并动态输入密码切换到 root 用户
-        
+
         该方法通过打开交互式 shell，执行 su - root 命令，
         然后动态输入密码完成用户切换。
-        
+
         Args:
             root_password (str): root 用户密码
             timeout (int): 等待超时时间（秒），默认为 10
-            
+
         Returns:
             dict: 包含执行结果的字典，格式为 {
                 'success': bool,      # 是否切换成功
@@ -332,10 +399,10 @@ class SSHClient:
                 'stderr': str,        # 标准错误内容
                 'current_user': str   # 当前用户（切换成功时为 root）
             }
-            
+
         Raises:
             Exception: 未连接到服务器或切换失败
-            
+
         Example:
             >>> ssh = SSHClient()
             >>> ssh.connect('192.168.1.1', username='user', password='user_pass')
@@ -349,139 +416,145 @@ class SSHClient:
         """
         if not self.is_connected:
             raise Exception("Not connected to SSH server")
-        
+
         import time
-        
+
         # 打开交互式 shell
         channel = self.open_shell()
-        
+
         try:
             # 等待 shell 准备就绪
             time.sleep(0.5)
-            
+
             # 清空缓冲区中的初始输出
             while channel.recv_ready():
                 channel.recv(1024)
-            
+
             # 执行 su - root 命令
             channel.send("su - root\n")
-            
+
             # 等待密码提示
             start_time = time.time()
             output_buffer = b""
             password_prompt_found = False
-            
+
             while time.time() - start_time < timeout:
                 if channel.recv_ready():
                     data = channel.recv(1024)
                     output_buffer += data
-                    
+
                     # 检查是否出现密码提示（支持中英文提示）
-                    output_str = output_buffer.decode('utf-8', errors='ignore')
-                    if 'Password:' in output_str or '密码：' in output_str or 'password:' in output_str.lower():
+                    output_str = output_buffer.decode("utf-8", errors="ignore")
+                    if (
+                        "Password:" in output_str
+                        or "密码：" in output_str
+                        or "password:" in output_str.lower()
+                    ):
                         password_prompt_found = True
                         break
-                
+
                 time.sleep(0.1)
-            
+
             if not password_prompt_found:
                 return {
-                    'success': False,
-                    'stdout': output_buffer.decode('utf-8', errors='ignore'),
-                    'stderr': 'Timeout waiting for password prompt',
-                    'current_user': None
+                    "success": False,
+                    "stdout": output_buffer.decode("utf-8", errors="ignore"),
+                    "stderr": "Timeout waiting for password prompt",
+                    "current_user": None,
                 }
-            
+
             # 输入密码
             channel.send(root_password + "\n")
-            
+
             # 等待命令执行结果
             time.sleep(1)
             start_time = time.time()
             output_buffer = b""
-            
+
             while time.time() - start_time < timeout:
                 if channel.recv_ready():
                     data = channel.recv(4096)
                     output_buffer += data
-                    
+
                     # 检查是否切换成功或失败
-                    output_str = output_buffer.decode('utf-8', errors='ignore')
-                    
+                    output_str = output_buffer.decode("utf-8", errors="ignore")
+
                     # 检查认证失败的情况
-                    if 'authentication failure' in output_str.lower() or \
-                       'incorrect password' in output_str.lower() or \
-                       'su: incorrect password' in output_str.lower() or \
-                       'sorry' in output_str.lower():
+                    if (
+                        "authentication failure" in output_str.lower()
+                        or "incorrect password" in output_str.lower()
+                        or "su: incorrect password" in output_str.lower()
+                        or "sorry" in output_str.lower()
+                    ):
                         return {
-                            'success': False,
-                            'stdout': output_str,
-                            'stderr': 'Authentication failed: incorrect password',
-                            'current_user': None
+                            "success": False,
+                            "stdout": output_str,
+                            "stderr": "Authentication failed: incorrect password",
+                            "current_user": None,
                         }
-                    
+
                     # 检查是否成功切换到 root（通过提示符判断）
-                    if output_str.strip().endswith('#') or 'root@' in output_str:
+                    if output_str.strip().endswith("#") or "root@" in output_str:
                         # 验证当前用户
                         channel.send("whoami\n")
                         time.sleep(0.5)
-                        
+
                         # 读取 whoami 输出
                         whoami_output = b""
                         while channel.recv_ready():
                             whoami_output += channel.recv(1024)
-                        
-                        whoami_str = whoami_output.decode('utf-8', errors='ignore')
-                        
+
+                        whoami_str = whoami_output.decode("utf-8", errors="ignore")
+
                         # 创建新的 root shell 会话
                         return {
-                            'success': True,
-                            'stdout': output_str + whoami_str,
-                            'stderr': '',
-                            'current_user': 'root'
+                            "success": True,
+                            "stdout": output_str + whoami_str,
+                            "stderr": "",
+                            "current_user": "root",
                         }
-                
+
                 time.sleep(0.1)
-            
+
             # 超时，返回当前结果
-            output_str = output_buffer.decode('utf-8', errors='ignore')
-            
+            output_str = output_buffer.decode("utf-8", errors="ignore")
+
             # 尝试判断是否已经切换成功
-            if output_str.strip().endswith('#'):
+            if output_str.strip().endswith("#"):
                 return {
-                    'success': True,
-                    'stdout': output_str,
-                    'stderr': '',
-                    'current_user': 'root'
+                    "success": True,
+                    "stdout": output_str,
+                    "stderr": "",
+                    "current_user": "root",
                 }
             else:
                 return {
-                    'success': False,
-                    'stdout': output_str,
-                    'stderr': 'Timeout waiting for su command to complete',
-                    'current_user': None
+                    "success": False,
+                    "stdout": output_str,
+                    "stderr": "Timeout waiting for su command to complete",
+                    "current_user": None,
                 }
-                
+
         finally:
             channel.close()
-    
+
     def start_root_shell(self, root_password: str, timeout: int = 10) -> Dict[str, Any]:
         """
         启动并保持root shell会话
-        
+
         该方法创建一个交互式shell，切换到root用户，并保持shell会话打开。
         之后可以使用execute_in_root_shell()方法在保持的root shell中执行多条命令，
         无需每次都输入密码。
-        
+
         适用场景：
         - 需要连续执行多条root命令
         - 命令执行频率较高
         - 需要共享root会话状态（如工作目录、环境变量等）
-        
+
         Args:
             root_password (str): root 用户密码
             timeout (int): 等待超时时间（秒），默认为 10
-            
+
         Returns:
             dict: 包含执行结果的字典，格式为 {
                 'success': bool,      # 是否启动成功
@@ -489,10 +562,10 @@ class SSHClient:
                 'stderr': str,        # 标准错误内容
                 'current_user': str   # 当前用户（成功时为 root）
             }
-            
+
         Raises:
             Exception: 未连接到服务器
-            
+
         Example:
             >>> ssh = SSHClient()
             >>> ssh.connect('192.168.1.1', username='user', password='user_pass')
@@ -507,163 +580,171 @@ class SSHClient:
         """
         if not self.is_connected:
             raise Exception("Not connected to SSH server")
-        
+
         import time
-        
+
         # 如果已经存在root shell，先关闭
         if self.root_shell and self.root_shell_active:
             self.close_root_shell()
-        
+
         # 打开交互式 shell
         self.root_shell = self.open_shell()
-        
+
         try:
             # 等待 shell 准备就绪
             time.sleep(0.5)
-            
+
             # 清空缓冲区中的初始输出
             while self.root_shell.recv_ready():
                 self.root_shell.recv(1024)
-            
+
             # 执行 su - root 命令
             self.root_shell.send("su - root\n")
-            
+
             # 等待密码提示
             start_time = time.time()
             output_buffer = b""
             password_prompt_found = False
-            
+
             while time.time() - start_time < timeout:
                 if self.root_shell.recv_ready():
                     data = self.root_shell.recv(1024)
                     output_buffer += data
-                    
+
                     # 检查是否出现密码提示（支持中英文提示）
-                    output_str = output_buffer.decode('utf-8', errors='ignore')
-                    if 'Password:' in output_str or '密码：' in output_str or 'password:' in output_str.lower():
+                    output_str = output_buffer.decode("utf-8", errors="ignore")
+                    if (
+                        "Password:" in output_str
+                        or "密码：" in output_str
+                        or "password:" in output_str.lower()
+                    ):
                         password_prompt_found = True
                         break
-                
+
                 time.sleep(0.1)
-            
+
             if not password_prompt_found:
                 self.root_shell.close()
                 self.root_shell = None
                 self.root_shell_active = False
                 return {
-                    'success': False,
-                    'stdout': output_buffer.decode('utf-8', errors='ignore'),
-                    'stderr': 'Timeout waiting for password prompt',
-                    'current_user': None
+                    "success": False,
+                    "stdout": output_buffer.decode("utf-8", errors="ignore"),
+                    "stderr": "Timeout waiting for password prompt",
+                    "current_user": None,
                 }
-            
+
             # 输入密码
             self.root_shell.send(root_password + "\n")
-            
+
             # 等待命令执行结果
             time.sleep(1)
             start_time = time.time()
             output_buffer = b""
-            
+
             while time.time() - start_time < timeout:
                 if self.root_shell.recv_ready():
                     data = self.root_shell.recv(4096)
                     output_buffer += data
-                    
+
                     # 检查是否切换成功或失败
-                    output_str = output_buffer.decode('utf-8', errors='ignore')
-                    
+                    output_str = output_buffer.decode("utf-8", errors="ignore")
+
                     # 检查认证失败的情况
-                    if 'authentication failure' in output_str.lower() or \
-                       'incorrect password' in output_str.lower() or \
-                       'su: incorrect password' in output_str.lower() or \
-                       'sorry' in output_str.lower():
+                    if (
+                        "authentication failure" in output_str.lower()
+                        or "incorrect password" in output_str.lower()
+                        or "su: incorrect password" in output_str.lower()
+                        or "sorry" in output_str.lower()
+                    ):
                         self.root_shell.close()
                         self.root_shell = None
                         self.root_shell_active = False
                         return {
-                            'success': False,
-                            'stdout': output_str,
-                            'stderr': 'Authentication failed: incorrect password',
-                            'current_user': None
+                            "success": False,
+                            "stdout": output_str,
+                            "stderr": "Authentication failed: incorrect password",
+                            "current_user": None,
                         }
-                    
+
                     # 检查是否成功切换到 root（通过提示符判断）
-                    if output_str.strip().endswith('#') or 'root@' in output_str:
+                    if output_str.strip().endswith("#") or "root@" in output_str:
                         # 验证当前用户
                         self.root_shell.send("whoami\n")
                         time.sleep(0.5)
-                        
+
                         # 读取 whoami 输出
                         whoami_output = b""
                         while self.root_shell.recv_ready():
                             whoami_output += self.root_shell.recv(1024)
-                        
-                        whoami_str = whoami_output.decode('utf-8', errors='ignore')
-                        
+
+                        whoami_str = whoami_output.decode("utf-8", errors="ignore")
+
                         # 标记root shell为激活状态
                         self.root_shell_active = True
-                        
+
                         return {
-                            'success': True,
-                            'stdout': output_str + whoami_str,
-                            'stderr': '',
-                            'current_user': 'root'
+                            "success": True,
+                            "stdout": output_str + whoami_str,
+                            "stderr": "",
+                            "current_user": "root",
                         }
-                
+
                 time.sleep(0.1)
-            
+
             # 超时，返回当前结果
-            output_str = output_buffer.decode('utf-8', errors='ignore')
-            
+            output_str = output_buffer.decode("utf-8", errors="ignore")
+
             # 尝试判断是否已经切换成功
-            if output_str.strip().endswith('#'):
+            if output_str.strip().endswith("#"):
                 self.root_shell_active = True
                 return {
-                    'success': True,
-                    'stdout': output_str,
-                    'stderr': '',
-                    'current_user': 'root'
+                    "success": True,
+                    "stdout": output_str,
+                    "stderr": "",
+                    "current_user": "root",
                 }
             else:
                 self.root_shell.close()
                 self.root_shell = None
                 self.root_shell_active = False
                 return {
-                    'success': False,
-                    'stdout': output_str,
-                    'stderr': 'Timeout waiting for su command to complete',
-                    'current_user': None
+                    "success": False,
+                    "stdout": output_str,
+                    "stderr": "Timeout waiting for su command to complete",
+                    "current_user": None,
                 }
-                
+
         except Exception as e:
             self.root_shell.close()
             self.root_shell = None
             self.root_shell_active = False
             raise
-    
-    def execute_in_root_shell(self, command: str, timeout: int = 30, expected_prompt: str = None) -> Dict[str, Any]:
+
+    def execute_in_root_shell(
+        self, command: str, timeout: int = 30, expected_prompt: str = None
+    ) -> Dict[str, Any]:
         """
         在保持的root shell中执行命令
-        
+
         使用start_root_shell()方法启动root shell后，可以使用此方法
         在保持的root shell中执行命令，无需每次都输入密码。
-        
+
         优点：
         - 无需每次输入密码
         - 保持shell会话状态（工作目录、环境变量等）
         - 执行速度更快
-        
+
         注意：
         - 必须先调用start_root_shell()启动root shell
         - 使用完毕后应调用close_root_shell()关闭root shell
         - root shell会占用服务器资源，长时间不使用应关闭
-        
+
         Args:
             command (str): 要执行的命令
             timeout (int): 命令执行超时时间（秒），默认为 30
             expected_prompt (str): 期望的提示符，默认为None（自动检测）
-            
+
         Returns:
             dict: 包含执行结果的字典，格式为 {
                 'stdout': str,        # 标准输出内容
@@ -671,68 +752,70 @@ class SSHClient:
                 'returncode': int,    # 返回码（0表示成功）
                 'success': bool       # 是否执行成功
             }
-            
+
         Raises:
             Exception: 未连接到服务器或root shell未启动
-            
+
         Example:
             >>> ssh = SSHClient()
             >>> ssh.connect('192.168.1.1', username='user', password='user_pass')
-            >>> 
+            >>>
             >>> # 启动root shell
             >>> result = ssh.start_root_shell('root_password')
             >>> if result['success']:
             ...     # 在保持的root shell中执行多条命令
             ...     result1 = ssh.execute_in_root_shell('whoami')
             ...     print(result1['stdout'])  # 输出: root
-            ...     
+            ...
             ...     # 切换到dbuser
             ...     result2 = ssh.execute_in_root_shell('su - dbuser', expected_prompt='$')
-            ...     
+            ...
             ...     # 使用docker进入容器
             ...     result3 = ssh.execute_in_root_shell('docker exec -it container_name bash', expected_prompt='#')
-            ...     
+            ...
             ...     # 执行数据库命令
             ...     result4 = ssh.execute_in_root_shell('mysql -u root -p', expected_prompt='Enter password:')
             ...     result5 = ssh.execute_in_root_shell('password123', expected_prompt='mysql>')
             ...     result6 = ssh.execute_in_root_shell('SELECT * FROM users;', expected_prompt='mysql>')
-            ...     
+            ...
             ...     # 关闭root shell
             ...     ssh.close_root_shell()
         """
         if not self.is_connected:
             raise Exception("Not connected to SSH server")
-        
+
         if not self.root_shell or not self.root_shell_active:
-            raise Exception("Root shell is not active. Please call start_root_shell() first.")
-        
+            raise Exception(
+                "Root shell is not active. Please call start_root_shell() first."
+            )
+
         import time
-        
+
         try:
             # 发送命令
             self.root_shell.send(command + "\n")
-            
+
             # 读取输出
             start_time = time.time()
             output_buffer = b""
             prompt_found = False
-            
+
             # 等待输出开始
             wait_start = time.time()
             while time.time() - wait_start < 0.2:  # 最多等待0.2秒
                 if self.root_shell.recv_ready():
                     break
                 time.sleep(0.05)
-            
+
             # 读取所有输出直到找到提示符
             while time.time() - start_time < timeout:
                 if self.root_shell.recv_ready():
                     data = self.root_shell.recv(4096)
                     output_buffer += data
-                    
+
                     # 检查是否出现命令提示符（表示命令执行完成）
-                    output_str = output_buffer.decode('utf-8', errors='ignore')
-                    
+                    output_str = output_buffer.decode("utf-8", errors="ignore")
+
                     # 检查是否出现期望的提示符或常见提示符
                     if expected_prompt:
                         # 如果指定了期望的提示符，检查是否出现
@@ -741,22 +824,24 @@ class SSHClient:
                             break
                     else:
                         # 自动检测常见提示符
-                        if output_str.strip().endswith('#') or \
-                           output_str.strip().endswith('$') or \
-                           '->' in output_str.strip() or \
-                           output_str.strip().endswith('>'):
+                        if (
+                            output_str.strip().endswith("#")
+                            or output_str.strip().endswith("$")
+                            or "->" in output_str.strip()
+                            or output_str.strip().endswith(">")
+                        ):
                             prompt_found = True
                             break
                 else:
                     # 如果没有更多数据，等待一小段时间
                     time.sleep(0.05)
-            
+
             # 解析输出
-            output_str = output_buffer.decode('utf-8', errors='ignore')
-            
+            output_str = output_buffer.decode("utf-8", errors="ignore")
+
             # 移除命令本身和提示符，只保留命令输出
-            lines = output_str.split('\n')
-            
+            lines = output_str.split("\n")
+
             # 找到命令行并移除
             command_found = False
             output_lines = []
@@ -767,71 +852,75 @@ class SSHClient:
                 # 跳过空行和提示符
                 line_stripped = line.strip()
                 if line_stripped and not (
-                    line_stripped.endswith('#') or 
-                    line_stripped.endswith('$') or 
-                    '->' in line_stripped or 
-                    line_stripped.endswith('>')
+                    line_stripped.endswith("#")
+                    or line_stripped.endswith("$")
+                    or "->" in line_stripped
+                    or line_stripped.endswith(">")
                 ):
                     output_lines.append(line)
-            
-            stdout = '\n'.join(output_lines)
-            
+
+            stdout = "\n".join(output_lines)
+
             # 判断执行是否成功
             # 如果输出中包含错误信息，认为执行失败
             stderr = ""
             returncode = 0
             success = True
-            
+
             # 检查常见的错误模式
             error_patterns = [
-                'error:', 'Error:', 'ERROR:',
-                'failed', 'Failed', 'FAILED',
-                'cannot', 'Cannot', 'CANNOT',
-                'permission denied', 'Permission denied',
-                'no such file', 'No such file',
-                'command not found', 'Command not found'
+                "error:",
+                "Error:",
+                "ERROR:",
+                "failed",
+                "Failed",
+                "FAILED",
+                "cannot",
+                "Cannot",
+                "CANNOT",
+                "permission denied",
+                "Permission denied",
+                "no such file",
+                "No such file",
+                "command not found",
+                "Command not found",
             ]
-            
+
             for pattern in error_patterns:
                 if pattern in stdout:
                     stderr = stdout
                     returncode = 1
                     success = False
                     break
-            
+
             return {
-                'stdout': stdout,
-                'stderr': stderr,
-                'returncode': returncode,
-                'success': success
+                "stdout": stdout,
+                "stderr": stderr,
+                "returncode": returncode,
+                "success": success,
             }
-            
+
         except Exception as e:
-            return {
-                'stdout': '',
-                'stderr': str(e),
-                'returncode': -1,
-                'success': False
-            }
-    
+            return {"stdout": "", "stderr": str(e), "returncode": -1, "success": False}
+
     def close_root_shell(self):
         """
         关闭保持的root shell会话
-        
+
         使用start_root_shell()启动root shell后，在完成所有root命令执行后，
         应调用此方法关闭root shell，释放服务器资源。
-        
+
         Example:
             >>> ssh = SSHClient()
             >>> ssh.connect('192.168.1.1', username='user', password='user_pass')
-            >>> 
+            >>>
             >>> # 启动root shell
             >>> ssh.start_root_shell('root_password')
-            >>> 
+            >>>
             >>> # 执行一些root命令
             >>> ssh.execute_in_root_shell('whoami')
             >>> ssh.execute_in_root_shell('systemctl status nginx')
-            >>> 
+            >>>
             >>> # 关闭root shell
             >>> ssh.close_root_shell()
         """
@@ -840,7 +929,7 @@ class SSHClient:
                 # 发送exit命令退出root shell
                 self.root_shell.send("exit\n")
                 time.sleep(0.5)
-                
+
                 # 关闭通道
                 self.root_shell.close()
             except:
@@ -849,86 +938,88 @@ class SSHClient:
                 self.root_shell = None
                 self.root_shell_active = False
 
-    def execute_as_root(self, command: str, root_password: str = None, timeout: int = 30) -> Dict[str, Any]:
+    def execute_as_root(
+        self, command: str, root_password: str = None, timeout: int = 30
+    ) -> Dict[str, Any]:
         """
         以 root 用户身份执行命令
-        
+
         无论是否已经通过 su_to_root 切换到 root，都使用 su -c 方式执行命令，
         确保命令始终以 root 权限执行。
-        
+
         Args:
             command (str): 要执行的命令
             root_password (str): root 用户密码
             timeout (int): 命令执行超时时间（秒），默认为 30
-            
+
         Returns:
             dict: 包含执行结果的字典，格式为 {'stdout': str, 'stderr': str, 'returncode': int}
-            
+
         Raises:
             Exception: 未连接到服务器或执行失败
-            
+
         Example:
             >>> ssh = SSHClient()
             >>> ssh.connect('192.168.1.1', username='user', password='user_pass')
             >>> # 直接执行 root 命令
             >>> result = ssh.execute_as_root('cat /etc/shadow', root_password='root_password')
-            >>> 
+            >>>
             >>> # 执行多条 root 命令
             >>> result1 = ssh.execute_as_root('systemctl status sshd', root_password='root_password')
             >>> result2 = ssh.execute_as_root('fdisk -l', root_password='root_password')
         """
         if not self.is_connected:
             raise Exception("Not connected to SSH server")
-        
+
         if not root_password:
             raise Exception("root_password is required for execute_as_root")
-        
+
         # 使用 su -c 方式执行命令，确保以 root 权限执行
         full_command = f"echo '{root_password}' | su - root -c '{command}'"
         return self.execute(full_command)
-    
 
-    
-    def file_operation(self, operation: str, source: str, destination: str = None) -> bool:
+    def file_operation(
+        self, operation: str, source: str, destination: str = None
+    ) -> bool:
         """
         执行文件操作（移动、复制、删除）
-        
+
         Args:
             operation (str): 操作类型，可选值：'mv', 'cp', 'rm', 'mkdir', 'rmdir'
             source (str): 源文件路径
             destination (str): 目标文件路径（对于mv和cp操作）
-            
+
         Returns:
             bool: 操作是否成功
-            
+
         Raises:
             Exception: 未连接到服务器或操作不支持
         """
         if not self.is_connected:
             raise Exception("Not connected to SSH server")
-        
+
         operation = operation.lower()
-        
-        if operation == 'mv':
+
+        if operation == "mv":
             if not destination:
                 raise Exception("Destination is required for mv operation")
             command = f"mv '{source}' '{destination}'"
-        elif operation == 'cp':
+        elif operation == "cp":
             if not destination:
                 raise Exception("Destination is required for cp operation")
             command = f"cp '{source}' '{destination}'"
-        elif operation == 'rm':
+        elif operation == "rm":
             command = f"rm '{source}'"
-        elif operation == 'mkdir':
+        elif operation == "mkdir":
             command = f"mkdir -p '{source}'"
-        elif operation == 'rmdir':
+        elif operation == "rmdir":
             command = f"rmdir '{source}'"
         else:
             raise Exception(f"Unsupported operation: {operation}")
-        
+
         result = self.execute(command)
-        return result['returncode'] == 0
-    
+        return result["returncode"] == 0
+
     def close(self):
         """
         关闭SSH连接
@@ -938,28 +1029,28 @@ class SSHClient:
             self.close_root_shell()
         except:
             pass
-        
+
         try:
             if self.client:
                 self.client.close()
         except:
             pass
-        
+
         try:
             if self.jump_client:
                 self.jump_client.close()
         except:
             pass
-        
+
         self.is_connected = False
         self.transport = None
-    
+
     def __enter__(self):
         """
         支持上下文管理器
         """
         return self
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         """
         退出上下文管理器时关闭连接

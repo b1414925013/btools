@@ -1,8 +1,10 @@
 """测试ProcessUtils类"""
-import unittest
+
 import os
 import sys
 import time
+import unittest
+
 from btools.core.system.processutils import ProcessUtils
 
 
@@ -24,11 +26,13 @@ class TestProcessUtils(unittest.TestCase):
     def test_run_process(self):
         """测试运行进程"""
         # 测试运行一个简单的命令
-        if sys.platform == 'win32':
-            result = ProcessUtils.run_process(['cmd', '/c', 'echo', 'test'], capture_output=True)
+        if sys.platform == "win32":
+            result = ProcessUtils.run_process(
+                ["cmd", "/c", "echo", "test"], capture_output=True
+            )
         else:
-            result = ProcessUtils.run_process(['echo', 'test'], capture_output=True)
-        
+            result = ProcessUtils.run_process(["echo", "test"], capture_output=True)
+
         self.assertEqual(result.returncode, 0)
 
     def test_list_processes(self):
@@ -41,6 +45,7 @@ class TestProcessUtils(unittest.TestCase):
         """测试按名称查找进程"""
         # 查找当前Python进程
         import psutil
+
         current_name = psutil.Process().name()
         processes = ProcessUtils.find_processes_by_name(current_name)
         self.assertIsInstance(processes, list)
@@ -50,8 +55,8 @@ class TestProcessUtils(unittest.TestCase):
         current_pid = ProcessUtils.get_current_pid()
         info = ProcessUtils.get_process_info(current_pid)
         self.assertIsInstance(info, dict)
-        self.assertIn('pid', info)
-        self.assertIn('name', info)
+        self.assertIn("pid", info)
+        self.assertIn("name", info)
 
     def test_get_resource_usage(self):
         """测试获取资源使用"""

@@ -1,7 +1,9 @@
 """测试WordUtils类"""
-import unittest
+
 import os
 import tempfile
+import unittest
+
 from btools.core.media.wordutils import WordUtils
 
 
@@ -35,11 +37,11 @@ class TestWordUtils(unittest.TestCase):
         doc = WordUtils.create_document()
         WordUtils.add_heading(doc, "测试文档", level=0)
         WordUtils.add_paragraph(doc, "这是一个测试文档")
-        
+
         # 保存文档
         WordUtils.save_document(doc, self.test_file)
         self.assertTrue(os.path.exists(self.test_file))
-        
+
         # 打开文档
         opened_doc = WordUtils.open_document(self.test_file)
         self.assertIsNotNone(opened_doc)
@@ -82,11 +84,7 @@ class TestWordUtils(unittest.TestCase):
     def test_create_table_from_data(self):
         """测试从数据创建表格"""
         doc = WordUtils.create_document()
-        data = [
-            ["1", "John", "30"],
-            ["2", "Jane", "25"],
-            ["3", "Bob", "35"]
-        ]
+        data = [["1", "John", "30"], ["2", "Jane", "25"], ["3", "Bob", "35"]]
         headers = ["ID", "Name", "Age"]
         table = WordUtils.create_table_from_data(doc, data, headers)
         self.assertIsNotNone(table)
@@ -101,18 +99,18 @@ class TestWordUtils(unittest.TestCase):
         headers = ["ID", "Name"]
         WordUtils.create_table_from_data(doc, data, headers)
         WordUtils.save_document(doc, self.test_file)
-        
+
         # 读取文档内容
         content = WordUtils.read_document(self.test_file)
         self.assertIsInstance(content, dict)
-        self.assertIn('headings', content)
-        self.assertIn('paragraphs', content)
-        self.assertIn('tables', content)
+        self.assertIn("headings", content)
+        self.assertIn("paragraphs", content)
+        self.assertIn("tables", content)
 
     def test_set_page_orientation(self):
         """测试设置页面方向"""
         doc = WordUtils.create_document()
-        WordUtils.set_page_orientation(doc, 'landscape')
+        WordUtils.set_page_orientation(doc, "landscape")
         # 保存并验证文档存在
         WordUtils.save_document(doc, self.test_file)
         self.assertTrue(os.path.exists(self.test_file))
@@ -129,33 +127,26 @@ class TestWordUtils(unittest.TestCase):
         """测试创建简单的Word报告"""
         # 准备报告内容
         content = {
-            'sections': [
+            "sections": [
                 {
-                    'title': '报告概述',
-                    'content': '这是一份测试报告，用于测试WordUtils的功能。'
+                    "title": "报告概述",
+                    "content": "这是一份测试报告，用于测试WordUtils的功能。",
                 },
+                {"title": "测试结果", "content": "所有测试都已通过。"},
+            ],
+            "tables": [
                 {
-                    'title': '测试结果',
-                    'content': '所有测试都已通过。'
+                    "title": "测试数据",
+                    "headers": ["测试项", "状态"],
+                    "data": [["功能1", "通过"], ["功能2", "通过"], ["功能3", "通过"]],
                 }
             ],
-            'tables': [
-                {
-                    'title': '测试数据',
-                    'headers': ['测试项', '状态'],
-                    'data': [
-                        ['功能1', '通过'],
-                        ['功能2', '通过'],
-                        ['功能3', '通过']
-                    ]
-                }
-            ]
         }
-        
+
         # 创建报告
         report_file = os.path.join(self.temp_dir, "report.docx")
         WordUtils.create_simple_report(report_file, "测试报告", content)
-        
+
         # 验证报告存在
         self.assertTrue(os.path.exists(report_file))
 

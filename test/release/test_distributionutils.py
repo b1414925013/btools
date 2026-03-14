@@ -1,5 +1,7 @@
 """测试DistributionUtils类"""
+
 import unittest
+
 from btools.core.release.distributionutils import DistributionUtils
 
 

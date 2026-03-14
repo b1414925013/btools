@@ -2,13 +2,27 @@
 """
 JSON工具测试
 """
-import unittest
-import tempfile
-import os
+
 import decimal
+import os
+import tempfile
+import unittest
+
 from btools.core.data.jsonutils import (
-    JSONUtils, to_json, from_json, from_file, to_file, pretty_print,
-    merge, get_value, set_value, remove_value, is_valid, size, flatten, unflatten
+    JSONUtils,
+    flatten,
+    from_file,
+    from_json,
+    get_value,
+    is_valid,
+    merge,
+    pretty_print,
+    remove_value,
+    set_value,
+    size,
+    to_file,
+    to_json,
+    unflatten,
 )
 
 
@@ -24,12 +38,9 @@ class TestJSONUtils(unittest.TestCase):
         self.test_data = {
             "name": "测试",
             "age": 25,
-            "address": {
-                "city": "北京",
-                "district": "朝阳区"
-            },
+            "address": {"city": "北京", "district": "朝阳区"},
             "hobbies": ["读书", "编程", "旅游"],
-            "is_student": False
+            "is_student": False,
         }
 
     def test_to_json(self):
@@ -63,7 +74,7 @@ class TestJSONUtils(unittest.TestCase):
         测试文件操作
         """
         # 创建临时文件
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             temp_file = f.name
 
         try:
@@ -74,7 +85,9 @@ class TestJSONUtils(unittest.TestCase):
             # 测试读取文件
             loaded_data = JSONUtils.from_file(temp_file)
             self.assertEqual(loaded_data["name"], self.test_data["name"])
-            self.assertEqual(loaded_data["address"]["city"], self.test_data["address"]["city"])
+            self.assertEqual(
+                loaded_data["address"]["city"], self.test_data["address"]["city"]
+            )
         finally:
             # 清理临时文件
             if os.path.exists(temp_file):
@@ -227,6 +240,7 @@ class TestJSONUtils(unittest.TestCase):
         """
         # 测试Decimal类型
         from decimal import Decimal
+
         data_with_decimal = {"price": Decimal("19.99")}
         json_str = JSONUtils.to_json(data_with_decimal)
         self.assertIn("19.99", json_str)
@@ -287,5 +301,5 @@ class TestJSONUtils(unittest.TestCase):
         self.assertEqual(nested["a"]["b"], 1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -5,6 +5,7 @@
 
 提供随机数生成功能，包括随机整数、浮点数、字符串、列表元素等
 """
+
 import random
 import string
 from typing import Any, List, Optional, Sequence, Tuple, Union
@@ -54,7 +55,9 @@ class RandomUtil:
         return random.choice([True, False])
 
     @staticmethod
-    def randomStr(length: int = 8, charset: str = string.ascii_letters + string.digits) -> str:
+    def randomStr(
+        length: int = 8, charset: str = string.ascii_letters + string.digits
+    ) -> str:
         """
         生成随机字符串
 
@@ -65,7 +68,7 @@ class RandomUtil:
         Returns:
             str: 随机字符串
         """
-        return ''.join(random.choices(charset, k=length))
+        return "".join(random.choices(charset, k=length))
 
     @staticmethod
     def randomLowerStr(length: int = 8) -> str:
@@ -146,7 +149,9 @@ class RandomUtil:
         return random.choice(sequence)
 
     @staticmethod
-    def randomChoices(sequence: Sequence[Any], k: int = 1, weights: Optional[Sequence[float]] = None) -> List[Any]:
+    def randomChoices(
+        sequence: Sequence[Any], k: int = 1, weights: Optional[Sequence[float]] = None
+    ) -> List[Any]:
         """
         从序列中随机选择多个元素（可重复）
 
@@ -206,6 +211,7 @@ class RandomUtil:
             str: 随机UUID
         """
         import uuid
+
         return str(uuid.uuid4())
 
     @staticmethod
@@ -222,12 +228,12 @@ class RandomUtil:
         r = RandomUtil.randomInt(0, 255)
         g = RandomUtil.randomInt(0, 255)
         b = RandomUtil.randomInt(0, 255)
-        
+
         if alpha:
             a = RandomUtil.randomInt(0, 255)
-            return f'#{r:02x}{g:02x}{b:02x}{a:02x}'
+            return f"#{r:02x}{g:02x}{b:02x}{a:02x}"
         else:
-            return f'#{r:02x}{g:02x}{b:02x}'
+            return f"#{r:02x}{g:02x}{b:02x}"
 
     @staticmethod
     def randomEmail(domain: str = "example.com") -> str:
@@ -273,27 +279,29 @@ class RandomUtil:
         lowercase = string.ascii_lowercase
         digits = string.digits
         special = string.punctuation
-        
+
         # 至少各取一个
         password = [
             random.choice(uppercase),
             random.choice(lowercase),
             random.choice(digits),
-            random.choice(special)
+            random.choice(special),
         ]
-        
+
         # 填充剩余长度
         if length > 4:
             all_chars = uppercase + lowercase + digits + special
-            password.extend(random.choices(all_chars, k=length-4))
-        
+            password.extend(random.choices(all_chars, k=length - 4))
+
         # 打乱顺序
         random.shuffle(password)
-        
-        return ''.join(password)
+
+        return "".join(password)
 
     @staticmethod
-    def randomDate(start_year: int = 1970, end_year: int = 2030) -> Tuple[int, int, int]:
+    def randomDate(
+        start_year: int = 1970, end_year: int = 2030
+    ) -> Tuple[int, int, int]:
         """
         生成随机日期
 
@@ -305,14 +313,14 @@ class RandomUtil:
             Tuple[int, int, int]: (年, 月, 日)
         """
         import calendar
-        
+
         year = RandomUtil.randomInt(start_year, end_year)
         month = RandomUtil.randomInt(1, 12)
-        
+
         # 获取当月天数
         _, last_day = calendar.monthrange(year, month)
         day = RandomUtil.randomInt(1, last_day)
-        
+
         return year, month, day
 
     @staticmethod
@@ -326,7 +334,7 @@ class RandomUtil:
         hour = RandomUtil.randomInt(0, 23)
         minute = RandomUtil.randomInt(0, 59)
         second = RandomUtil.randomInt(0, 59)
-        
+
         return hour, minute, second
 
     @staticmethod
@@ -364,7 +372,9 @@ class RandomUtil:
         return random.gauss(mu, sigma)
 
     @staticmethod
-    def randomTriangular(low: float = 0.0, high: float = 1.0, mode: Optional[float] = None) -> float:
+    def randomTriangular(
+        low: float = 0.0, high: float = 1.0, mode: Optional[float] = None
+    ) -> float:
         """
         生成三角形分布的随机数
 

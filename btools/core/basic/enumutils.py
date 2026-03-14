@@ -5,8 +5,9 @@
 
 提供枚举相关的操作功能，包括获取枚举值、根据名称获取枚举、枚举转列表等
 """
+
 import enum
-from typing import List, Dict, Any, Type, Optional, Union
+from typing import Any, Dict, List, Optional, Type, Union
 
 
 class EnumUtil:
@@ -67,7 +68,9 @@ class EnumUtil:
         return {member.name: member.value for member in enum_class}
 
     @staticmethod
-    def get_enum_by_name(enum_class: Type[enum.Enum], name: str, default: Optional[enum.Enum] = None) -> Optional[enum.Enum]:
+    def get_enum_by_name(
+        enum_class: Type[enum.Enum], name: str, default: Optional[enum.Enum] = None
+    ) -> Optional[enum.Enum]:
         """
         根据名称获取枚举
 
@@ -85,7 +88,9 @@ class EnumUtil:
             return default
 
     @staticmethod
-    def get_enum_by_value(enum_class: Type[enum.Enum], value: Any, default: Optional[enum.Enum] = None) -> Optional[enum.Enum]:
+    def get_enum_by_value(
+        enum_class: Type[enum.Enum], value: Any, default: Optional[enum.Enum] = None
+    ) -> Optional[enum.Enum]:
         """
         根据值获取枚举
 
@@ -154,13 +159,12 @@ class EnumUtil:
         Returns:
             Dict[str, Any]: 包含名称和值的字典
         """
-        return {
-            'name': enum_member.name,
-            'value': enum_member.value
-        }
+        return {"name": enum_member.name, "value": enum_member.value}
 
     @staticmethod
-    def from_dict(enum_class: Type[enum.Enum], data: Dict[str, Any]) -> Optional[enum.Enum]:
+    def from_dict(
+        enum_class: Type[enum.Enum], data: Dict[str, Any]
+    ) -> Optional[enum.Enum]:
         """
         从字典创建枚举对象
 
@@ -171,10 +175,10 @@ class EnumUtil:
         Returns:
             Optional[enum.Enum]: 枚举对象，创建失败返回None
         """
-        if 'name' in data:
-            return EnumUtil.get_enum_by_name(enum_class, data['name'])
-        elif 'value' in data:
-            return EnumUtil.get_enum_by_value(enum_class, data['value'])
+        if "name" in data:
+            return EnumUtil.get_enum_by_name(enum_class, data["name"])
+        elif "value" in data:
+            return EnumUtil.get_enum_by_value(enum_class, data["value"])
         return None
 
     @staticmethod
@@ -188,7 +192,9 @@ class EnumUtil:
         Returns:
             bool: 是否为枚举
         """
-        return isinstance(obj, enum.Enum) or (isinstance(obj, type) and issubclass(obj, enum.Enum))
+        return isinstance(obj, enum.Enum) or (
+            isinstance(obj, type) and issubclass(obj, enum.Enum)
+        )
 
     @staticmethod
     def get_enum_class(enum_member: enum.Enum) -> Type[enum.Enum]:

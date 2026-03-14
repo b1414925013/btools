@@ -5,10 +5,11 @@
 
 提供打包工具，支持 wheel、egg、sdist 等格式
 """
-import subprocess
+
 import os
 import shutil
-from typing import List, Optional, Dict, Tuple
+import subprocess
+from typing import Dict, List, Optional, Tuple
 
 
 class PackagingUtils:
@@ -28,17 +29,13 @@ class PackagingUtils:
             (返回码, 标准输出, 标准错误)
         """
         try:
-            result = subprocess.run(
-                ['python'] + cmd,
-                capture_output=True,
-                text=True
-            )
+            result = subprocess.run(["python"] + cmd, capture_output=True, text=True)
             return result.returncode, result.stdout.strip(), result.stderr.strip()
         except Exception as e:
-            return 1, '', str(e)
+            return 1, "", str(e)
 
     @staticmethod
-    def build_sdist(path: str = '.', output_dir: str = 'dist') -> Optional[str]:
+    def build_sdist(path: str = ".", output_dir: str = "dist") -> Optional[str]:
         """
         构建 sdist 包
 
@@ -49,18 +46,20 @@ class PackagingUtils:
         Returns:
             构建的包路径
         """
-        cmd = ['setup.py', 'sdist', f'--dist-dir={output_dir}']
+        cmd = ["setup.py", "sdist", f"--dist-dir={output_dir}"]
         code, stdout, stderr = PackagingUtils.run_python_command(cmd)
         if code == 0:
             # 查找构建的包
             dist_files = os.listdir(output_dir)
-            sdist_files = [f for f in dist_files if f.endswith('.tar.gz')]
+            sdist_files = [f for f in dist_files if f.endswith(".tar.gz")]
             if sdist_files:
                 return os.path.join(output_dir, sdist_files[0])
         return None
 
     @staticmethod
-    def build_wheel(path: str = '.', output_dir: str = 'dist', universal: bool = False) -> Optional[str]:
+    def build_wheel(
+        path: str = ".", output_dir: str = "dist", universal: bool = False
+    ) -> Optional[str]:
         """
         构建 wheel 包
 
@@ -72,20 +71,20 @@ class PackagingUtils:
         Returns:
             构建的包路径
         """
-        cmd = ['setup.py', 'bdist_wheel', f'--dist-dir={output_dir}']
+        cmd = ["setup.py", "bdist_wheel", f"--dist-dir={output_dir}"]
         if universal:
-            cmd.append('--universal')
+            cmd.append("--universal")
         code, stdout, stderr = PackagingUtils.run_python_command(cmd)
         if code == 0:
             # 查找构建的包
             dist_files = os.listdir(output_dir)
-            wheel_files = [f for f in dist_files if f.endswith('.whl')]
+            wheel_files = [f for f in dist_files if f.endswith(".whl")]
             if wheel_files:
                 return os.path.join(output_dir, wheel_files[0])
         return None
 
     @staticmethod
-    def build_egg(path: str = '.', output_dir: str = 'dist') -> Optional[str]:
+    def build_egg(path: str = ".", output_dir: str = "dist") -> Optional[str]:
         """
         构建 egg 包
 
@@ -96,18 +95,20 @@ class PackagingUtils:
         Returns:
             构建的包路径
         """
-        cmd = ['setup.py', 'bdist_egg', f'--dist-dir={output_dir}']
+        cmd = ["setup.py", "bdist_egg", f"--dist-dir={output_dir}"]
         code, stdout, stderr = PackagingUtils.run_python_command(cmd)
         if code == 0:
             # 查找构建的包
             dist_files = os.listdir(output_dir)
-            egg_files = [f for f in dist_files if f.endswith('.egg')]
+            egg_files = [f for f in dist_files if f.endswith(".egg")]
             if egg_files:
                 return os.path.join(output_dir, egg_files[0])
         return None
 
     @staticmethod
-    def build_all(path: str = '.', output_dir: str = 'dist') -> Dict[str, Optional[str]]:
+    def build_all(
+        path: str = ".", output_dir: str = "dist"
+    ) -> Dict[str, Optional[str]]:
         """
         构建所有格式的包
 
@@ -122,13 +123,13 @@ class PackagingUtils:
         os.makedirs(output_dir, exist_ok=True)
 
         return {
-            'sdist': PackagingUtils.build_sdist(path, output_dir),
-            'wheel': PackagingUtils.build_wheel(path, output_dir),
-            'egg': PackagingUtils.build_egg(path, output_dir)
+            "sdist": PackagingUtils.build_sdist(path, output_dir),
+            "wheel": PackagingUtils.build_wheel(path, output_dir),
+            "egg": PackagingUtils.build_egg(path, output_dir),
         }
 
     @staticmethod
-    def clean_build_artifacts(path: str = '.') -> bool:
+    def clean_build_artifacts(path: str = ".") -> bool:
         """
         清理构建产物
 
@@ -138,13 +139,7 @@ class PackagingUtils:
         Returns:
             是否成功
         """
-        artifacts = [
-            'build',
-            'dist',
-            '*.egg-info',
-            '*.egg',
-            '__pycache__'
-        ]
+        artifacts = ["build", "dist", "*.egg-info", "*.egg", "__pycache__"]
 
         for artifact in artifacts:
             artifact_path = os.path.join(path, artifact)
@@ -157,7 +152,7 @@ class PackagingUtils:
         return True
 
     @staticmethod
-    def check_package_structure(path: str = '.') -> List[str]:
+    def check_package_structure(path: str = ".") -> List[str]:
         """
         检查包结构
 
@@ -169,21 +164,23 @@ class PackagingUtils:
         """
         issues = []
 
-        required_files = ['setup.py', 'README.md', 'requirements.txt']
+        required_files = ["setup.py", "README.md", "requirements.txt"]
         for file in required_files:
             if not os.path.exists(os.path.join(path, file)):
                 issues.append(f"缺少文件: {file}")
 
         # 检查 setup.py 是否有效
-        if os.path.exists(os.path.join(path, 'setup.py')):
-            code, _, stderr = PackagingUtils.run_python_command(['setup.py', '--version'])
+        if os.path.exists(os.path.join(path, "setup.py")):
+            code, _, stderr = PackagingUtils.run_python_command(
+                ["setup.py", "--version"]
+            )
             if code != 0:
                 issues.append(f"setup.py 有问题: {stderr}")
 
         return issues
 
     @staticmethod
-    def get_package_info(path: str = '.') -> Dict[str, Optional[str]]:
+    def get_package_info(path: str = ".") -> Dict[str, Optional[str]]:
         """
         获取包信息
 
@@ -193,26 +190,24 @@ class PackagingUtils:
         Returns:
             包信息
         """
-        info = {
-            'name': None,
-            'version': None,
-            'description': None,
-            'author': None
-        }
+        info = {"name": None, "version": None, "description": None, "author": None}
 
-        setup_file = os.path.join(path, 'setup.py')
+        setup_file = os.path.join(path, "setup.py")
         if os.path.exists(setup_file):
             # 尝试运行 setup.py --version 获取版本
-            code, stdout, _ = PackagingUtils.run_python_command(['setup.py', '--version'])
+            code, stdout, _ = PackagingUtils.run_python_command(
+                ["setup.py", "--version"]
+            )
             if code == 0:
-                info['version'] = stdout.strip()
+                info["version"] = stdout.strip()
 
             # 简单解析 setup.py
-            with open(setup_file, 'r', encoding='utf-8') as f:
+            with open(setup_file, "r", encoding="utf-8") as f:
                 content = f.read()
                 import re
+
                 for key in info.keys():
-                    if key != 'version':
+                    if key != "version":
                         match = re.search(rf'{key}\s*=\s*[\'"]([^\'"]+)[\'"]', content)
                         if match:
                             info[key] = match.group(1)
@@ -234,9 +229,11 @@ class PackagingUtils:
             return False
 
         # 对于 wheel 包，使用 wheel 工具验证
-        if package_path.endswith('.whl'):
+        if package_path.endswith(".whl"):
             try:
-                code, _, _ = PackagingUtils.run_python_command(['-m', 'wheel', 'verify', package_path])
+                code, _, _ = PackagingUtils.run_python_command(
+                    ["-m", "wheel", "verify", package_path]
+                )
                 return code == 0
             except:
                 # 如果没有 wheel 模块，跳过验证

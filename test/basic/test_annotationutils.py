@@ -3,45 +3,48 @@
 """
 AnnotationUtil 测试文件
 """
+
 import unittest
+
 from btools.core.basic import AnnotationUtil
 
 
 # 测试用的注解类
 class TestAnnotation:
     """测试注解类"""
+
     pass
 
 
 # 测试用的类
 class TestClass:
     """测试类"""
-    
+
     # 类属性注解
     name: str
     age: int
-    
+
     def __init__(self, name: str, age: int):
         """构造方法"""
         self.name = name
         self.age = age
-    
+
     def get_name(self) -> str:
         """获取名称"""
         return self.name
-    
+
     def set_name(self, name: str) -> None:
         """设置名称"""
         self.name = name
-    
+
     def get_age(self) -> int:
         """获取年龄"""
         return self.age
-    
+
     def set_age(self, age: int) -> None:
         """设置年龄"""
         self.age = age
-    
+
     def get_info(self, prefix: str = "Info") -> str:
         """获取信息"""
         return f"{prefix}: {self.name}, {self.age}"
@@ -136,7 +139,9 @@ class TestAnnotationUtil(unittest.TestCase):
         has_return_annotation = AnnotationUtil.has_annotation(get_name_method, "return")
         self.assertTrue(has_return_annotation)
         # 检查是否有不存在的注解
-        has_nonexistent_annotation = AnnotationUtil.has_annotation(get_name_method, "nonexistent")
+        has_nonexistent_annotation = AnnotationUtil.has_annotation(
+            get_name_method, "nonexistent"
+        )
         self.assertFalse(has_nonexistent_annotation)
 
     def test_get_annotation(self):
@@ -149,7 +154,9 @@ class TestAnnotationUtil(unittest.TestCase):
         return_annotation = AnnotationUtil.get_annotation(get_name_method, "return")
         self.assertEqual(return_annotation, str)
         # 获取不存在的注解，使用默认值
-        nonexistent_annotation = AnnotationUtil.get_annotation(get_name_method, "nonexistent", "default")
+        nonexistent_annotation = AnnotationUtil.get_annotation(
+            get_name_method, "nonexistent", "default"
+        )
         self.assertEqual(nonexistent_annotation, "default")
 
     def test_get_all_annotations(self):
@@ -174,6 +181,7 @@ class TestAnnotationUtil(unittest.TestCase):
         # 测试普通函数
         def test_function():
             pass
+
         is_annotation = AnnotationUtil.is_annotation(test_function)
         self.assertTrue(is_annotation)
 
@@ -224,7 +232,9 @@ class TestAnnotationUtil(unittest.TestCase):
         """
         # 测试 get_info 方法
         get_info_method = TestClass.get_info
-        signature = AnnotationUtil.get_method_signature_with_annotations(get_info_method)
+        signature = AnnotationUtil.get_method_signature_with_annotations(
+            get_info_method
+        )
         self.assertIsInstance(signature, str)
         # 检查签名是否包含参数注解和返回值注解
         self.assertIn("prefix: str", signature)
@@ -235,6 +245,7 @@ class TestAnnotationUtil(unittest.TestCase):
         """
         测试将源对象的注解合并到目标对象
         """
+
         # 创建测试函数
         def target_function():
             pass
@@ -255,6 +266,7 @@ class TestAnnotationUtil(unittest.TestCase):
         """
         测试复制源对象的注解到目标对象
         """
+
         # 创建测试函数
         def target_function():
             pass
@@ -271,5 +283,5 @@ class TestAnnotationUtil(unittest.TestCase):
         self.assertEqual(target_annotations, source_annotations)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

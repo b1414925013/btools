@@ -5,11 +5,13 @@
 
 提供性能测试工具，测量执行时间、内存使用等功能
 """
-import time
-import psutil
+
 import gc
-from typing import Callable, Optional, Dict, Any, Union
+import time
 from functools import wraps
+from typing import Any, Callable, Dict, Optional, Union
+
+import psutil
 
 
 class PerformanceTestUtils:
@@ -35,10 +37,7 @@ class PerformanceTestUtils:
         end_time = time.time()
         execution_time = end_time - start_time
 
-        return {
-            'execution_time': execution_time,
-            'result': result
-        }
+        return {"execution_time": execution_time, "result": result}
 
     @staticmethod
     def measure_memory_usage(func: Callable, *args, **kwargs) -> Dict[str, Any]:
@@ -55,7 +54,7 @@ class PerformanceTestUtils:
         """
         # 清理垃圾回收
         gc.collect()
-        
+
         # 获取初始内存使用
         process = psutil.Process()
         initial_memory = process.memory_info().rss / 1024 / 1024  # MB
@@ -64,16 +63,16 @@ class PerformanceTestUtils:
 
         # 清理垃圾回收
         gc.collect()
-        
+
         # 获取最终内存使用
         final_memory = process.memory_info().rss / 1024 / 1024  # MB
         memory_used = final_memory - initial_memory
 
         return {
-            'initial_memory': initial_memory,
-            'final_memory': final_memory,
-            'memory_used': memory_used,
-            'result': result
+            "initial_memory": initial_memory,
+            "final_memory": final_memory,
+            "memory_used": memory_used,
+            "result": result,
         }
 
     @staticmethod
@@ -91,7 +90,7 @@ class PerformanceTestUtils:
         """
         # 清理垃圾回收
         gc.collect()
-        
+
         # 获取初始状态
         start_time = time.time()
         process = psutil.Process()
@@ -101,7 +100,7 @@ class PerformanceTestUtils:
 
         # 清理垃圾回收
         gc.collect()
-        
+
         # 获取最终状态
         end_time = time.time()
         final_memory = process.memory_info().rss / 1024 / 1024  # MB
@@ -110,15 +109,17 @@ class PerformanceTestUtils:
         memory_used = final_memory - initial_memory
 
         return {
-            'execution_time': execution_time,
-            'initial_memory': initial_memory,
-            'final_memory': final_memory,
-            'memory_used': memory_used,
-            'result': result
+            "execution_time": execution_time,
+            "initial_memory": initial_memory,
+            "final_memory": final_memory,
+            "memory_used": memory_used,
+            "result": result,
         }
 
     @staticmethod
-    def benchmark(func: Callable, iterations: int = 1000, *args, **kwargs) -> Dict[str, Any]:
+    def benchmark(
+        func: Callable, iterations: int = 1000, *args, **kwargs
+    ) -> Dict[str, Any]:
         """
         基准测试函数
 
@@ -146,13 +147,13 @@ class PerformanceTestUtils:
         max_time = max(times)
 
         return {
-            'iterations': iterations,
-            'avg_time': avg_time,
-            'min_time': min_time,
-            'max_time': max_time,
-            'total_time': sum(times),
-            'times': times,
-            'results': results
+            "iterations": iterations,
+            "avg_time": avg_time,
+            "min_time": min_time,
+            "max_time": max_time,
+            "total_time": sum(times),
+            "times": times,
+            "results": results,
         }
 
     @staticmethod
@@ -166,19 +167,26 @@ class PerformanceTestUtils:
         Returns:
             装饰器函数
         """
+
         def decorator(func: Callable):
             @wraps(func)
             def wrapper(*args, **kwargs):
                 if measure_memory:
-                    result = PerformanceTestUtils.measure_performance(func, *args, **kwargs)
+                    result = PerformanceTestUtils.measure_performance(
+                        func, *args, **kwargs
+                    )
                     print(f"{func.__name__} 执行时间: {result['execution_time']:.6f}s")
                     print(f"{func.__name__} 内存使用: {result['memory_used']:.2f}MB")
-                    return result['result']
+                    return result["result"]
                 else:
-                    result = PerformanceTestUtils.measure_execution_time(func, *args, **kwargs)
+                    result = PerformanceTestUtils.measure_execution_time(
+                        func, *args, **kwargs
+                    )
                     print(f"{func.__name__} 执行时间: {result['execution_time']:.6f}s")
-                    return result['result']
+                    return result["result"]
+
             return wrapper
+
         return decorator
 
     @staticmethod
@@ -196,8 +204,8 @@ class PerformanceTestUtils:
         """
         try:
             import cProfile
-            import pstats
             import io
+            import pstats
 
             pr = cProfile.Profile()
             pr.enable()
@@ -206,15 +214,12 @@ class PerformanceTestUtils:
 
             pr.disable()
             s = io.StringIO()
-            ps = pstats.Stats(pr, stream=s).sort_stats('cumulative')
+            ps = pstats.Stats(pr, stream=s).sort_stats("cumulative")
             ps.print_stats()
 
             profile_output = s.getvalue()
 
-            return {
-                'result': result,
-                'profile_output': profile_output
-            }
+            return {"result": result, "profile_output": profile_output}
         except ImportError:
             # 如果没有 cProfile，回退到基本测量
             return PerformanceTestUtils.measure_performance(func, *args, **kwargs)
@@ -243,6 +248,7 @@ class PerformanceTestUtils:
                 cpu_percentages.append(process.cpu_percent(interval=0.1))
 
         import threading
+
         monitor_thread = threading.Thread(target=monitor_cpu, daemon=True)
         monitor_thread.start()
 
@@ -251,19 +257,24 @@ class PerformanceTestUtils:
 
         # 等待监控线程结束
         import time
+
         time.sleep(0.2)  # 给监控线程一点时间
 
         # 计算平均CPU使用
-        avg_cpu_usage = sum(cpu_percentages) / len(cpu_percentages) if cpu_percentages else 0
+        avg_cpu_usage = (
+            sum(cpu_percentages) / len(cpu_percentages) if cpu_percentages else 0
+        )
 
         return {
-            'avg_cpu_usage': avg_cpu_usage,
-            'cpu_percentages': cpu_percentages,
-            'result': result
+            "avg_cpu_usage": avg_cpu_usage,
+            "cpu_percentages": cpu_percentages,
+            "result": result,
         }
 
     @staticmethod
-    def compare_functions(functions: Dict[str, Callable], *args, **kwargs) -> Dict[str, Any]:
+    def compare_functions(
+        functions: Dict[str, Callable], *args, **kwargs
+    ) -> Dict[str, Any]:
         """
         比较多个函数的性能
 
@@ -282,16 +293,18 @@ class PerformanceTestUtils:
             comparisons[name] = result
 
         # 找出最快的函数
-        fastest = min(comparisons.items(), key=lambda x: x[1]['execution_time'])
+        fastest = min(comparisons.items(), key=lambda x: x[1]["execution_time"])
 
         return {
-            'comparisons': comparisons,
-            'fastest': fastest[0],
-            'fastest_time': fastest[1]['execution_time']
+            "comparisons": comparisons,
+            "fastest": fastest[0],
+            "fastest_time": fastest[1]["execution_time"],
         }
 
     @staticmethod
-    def memory_leak_test(func: Callable, iterations: int = 100, *args, **kwargs) -> Dict[str, Any]:
+    def memory_leak_test(
+        func: Callable, iterations: int = 100, *args, **kwargs
+    ) -> Dict[str, Any]:
         """
         内存泄漏测试
 
@@ -312,7 +325,7 @@ class PerformanceTestUtils:
         for i in range(iterations):
             # 清理垃圾回收
             gc.collect()
-            
+
             # 获取内存使用
             memory = process.memory_info().rss / 1024 / 1024  # MB
             memory_usages.append(memory)
@@ -328,10 +341,10 @@ class PerformanceTestUtils:
         is_leaking = memory_usages[-1] > memory_usages[0] * 1.1  # 增长超过10%认为有泄漏
 
         return {
-            'iterations': iterations,
-            'initial_memory': memory_usages[0],
-            'final_memory': final_memory,
-            'memory_growth': final_memory - memory_usages[0],
-            'memory_usages': memory_usages,
-            'is_leaking': is_leaking
+            "iterations": iterations,
+            "initial_memory": memory_usages[0],
+            "final_memory": final_memory,
+            "memory_growth": final_memory - memory_usages[0],
+            "memory_usages": memory_usages,
+            "is_leaking": is_leaking,
         }

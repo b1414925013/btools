@@ -2,6 +2,7 @@
 """
 增强的日期时间工具模块
 """
+
 import datetime
 import time
 from typing import Any, Optional, Union
@@ -40,8 +41,9 @@ class DateTimeUtils:
         return datetime.date.today()
 
     @staticmethod
-    def format_datetime(dt: Union[datetime.datetime, datetime.date], 
-                       fmt: str = DATETIME_FORMAT) -> str:
+    def format_datetime(
+        dt: Union[datetime.datetime, datetime.date], fmt: str = DATETIME_FORMAT
+    ) -> str:
         """
         格式化日期时间
 
@@ -83,7 +85,9 @@ class DateTimeUtils:
         return datetime.datetime.strptime(date_str, fmt).date()
 
     @staticmethod
-    def add_days(dt: Union[datetime.datetime, datetime.date], days: int) -> Union[datetime.datetime, datetime.date]:
+    def add_days(
+        dt: Union[datetime.datetime, datetime.date], days: int
+    ) -> Union[datetime.datetime, datetime.date]:
         """
         添加天数
 
@@ -143,8 +147,10 @@ class DateTimeUtils:
         return dt + delta
 
     @staticmethod
-    def between(start: Union[datetime.datetime, datetime.date], 
-                end: Union[datetime.datetime, datetime.date]) -> datetime.timedelta:
+    def between(
+        start: Union[datetime.datetime, datetime.date],
+        end: Union[datetime.datetime, datetime.date],
+    ) -> datetime.timedelta:
         """
         计算两个日期时间之间的差值
 
@@ -158,8 +164,10 @@ class DateTimeUtils:
         return end - start
 
     @staticmethod
-    def days_between(start: Union[datetime.datetime, datetime.date], 
-                    end: Union[datetime.datetime, datetime.date]) -> int:
+    def days_between(
+        start: Union[datetime.datetime, datetime.date],
+        end: Union[datetime.datetime, datetime.date],
+    ) -> int:
         """
         计算两个日期之间的天数差
 
@@ -219,8 +227,10 @@ class DateTimeUtils:
         return delta.total_seconds()
 
     @staticmethod
-    def is_before(dt1: Union[datetime.datetime, datetime.date], 
-                 dt2: Union[datetime.datetime, datetime.date]) -> bool:
+    def is_before(
+        dt1: Union[datetime.datetime, datetime.date],
+        dt2: Union[datetime.datetime, datetime.date],
+    ) -> bool:
         """
         判断dt1是否在dt2之前
 
@@ -234,8 +244,10 @@ class DateTimeUtils:
         return dt1 < dt2
 
     @staticmethod
-    def is_after(dt1: Union[datetime.datetime, datetime.date], 
-                dt2: Union[datetime.datetime, datetime.date]) -> bool:
+    def is_after(
+        dt1: Union[datetime.datetime, datetime.date],
+        dt2: Union[datetime.datetime, datetime.date],
+    ) -> bool:
         """
         判断dt1是否在dt2之后
 
@@ -249,8 +261,10 @@ class DateTimeUtils:
         return dt1 > dt2
 
     @staticmethod
-    def is_equal(dt1: Union[datetime.datetime, datetime.date], 
-                dt2: Union[datetime.datetime, datetime.date]) -> bool:
+    def is_equal(
+        dt1: Union[datetime.datetime, datetime.date],
+        dt2: Union[datetime.datetime, datetime.date],
+    ) -> bool:
         """
         判断两个日期时间是否相等
 
@@ -327,7 +341,9 @@ class DateTimeUtils:
         return dt.weekday()
 
     @staticmethod
-    def get_month_start(dt: Union[datetime.datetime, datetime.date]) -> Union[datetime.datetime, datetime.date]:
+    def get_month_start(
+        dt: Union[datetime.datetime, datetime.date],
+    ) -> Union[datetime.datetime, datetime.date]:
         """
         获取当月第一天
 
@@ -343,7 +359,9 @@ class DateTimeUtils:
             return dt.replace(day=1)
 
     @staticmethod
-    def get_month_end(dt: Union[datetime.datetime, datetime.date]) -> Union[datetime.datetime, datetime.date]:
+    def get_month_end(
+        dt: Union[datetime.datetime, datetime.date],
+    ) -> Union[datetime.datetime, datetime.date]:
         """
         获取当月最后一天
 
@@ -369,7 +387,9 @@ class DateTimeUtils:
             return next_month - datetime.timedelta(days=1)
 
     @staticmethod
-    def get_quarter_start(dt: Union[datetime.datetime, datetime.date]) -> Union[datetime.datetime, datetime.date]:
+    def get_quarter_start(
+        dt: Union[datetime.datetime, datetime.date],
+    ) -> Union[datetime.datetime, datetime.date]:
         """
         获取当季第一天
 
@@ -381,12 +401,16 @@ class DateTimeUtils:
         """
         quarter_month = ((dt.month - 1) // 3) * 3 + 1
         if isinstance(dt, datetime.datetime):
-            return dt.replace(month=quarter_month, day=1, hour=0, minute=0, second=0, microsecond=0)
+            return dt.replace(
+                month=quarter_month, day=1, hour=0, minute=0, second=0, microsecond=0
+            )
         else:
             return dt.replace(month=quarter_month, day=1)
 
     @staticmethod
-    def get_quarter_end(dt: Union[datetime.datetime, datetime.date]) -> Union[datetime.datetime, datetime.date]:
+    def get_quarter_end(
+        dt: Union[datetime.datetime, datetime.date],
+    ) -> Union[datetime.datetime, datetime.date]:
         """
         获取当季最后一天
 
@@ -413,7 +437,9 @@ class DateTimeUtils:
             return next_quarter - datetime.timedelta(days=1)
 
     @staticmethod
-    def get_year_start(dt: Union[datetime.datetime, datetime.date]) -> Union[datetime.datetime, datetime.date]:
+    def get_year_start(
+        dt: Union[datetime.datetime, datetime.date],
+    ) -> Union[datetime.datetime, datetime.date]:
         """
         获取当年第一天
 
@@ -429,7 +455,9 @@ class DateTimeUtils:
             return dt.replace(month=1, day=1)
 
     @staticmethod
-    def get_year_end(dt: Union[datetime.datetime, datetime.date]) -> Union[datetime.datetime, datetime.date]:
+    def get_year_end(
+        dt: Union[datetime.datetime, datetime.date],
+    ) -> Union[datetime.datetime, datetime.date]:
         """
         获取当年最后一天
 
@@ -440,7 +468,9 @@ class DateTimeUtils:
             当年最后一天
         """
         if isinstance(dt, datetime.datetime):
-            return dt.replace(month=12, day=31, hour=23, minute=59, second=59, microsecond=999999)
+            return dt.replace(
+                month=12, day=31, hour=23, minute=59, second=59, microsecond=999999
+            )
         else:
             return dt.replace(month=12, day=31)
 
@@ -514,7 +544,7 @@ class DateTimeUtils:
         Returns:
             日期时间对象
         """
-        return datetime.datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+        return datetime.datetime.fromisoformat(date_str.replace("Z", "+00:00"))
 
     @staticmethod
     def to_iso_format(dt: datetime.datetime) -> str:
@@ -531,6 +561,7 @@ class DateTimeUtils:
 
 
 # 便捷函数
+
 
 def now() -> datetime.datetime:
     """
@@ -552,8 +583,10 @@ def today() -> datetime.date:
     return DateTimeUtils.today()
 
 
-def format_datetime(dt: Union[datetime.datetime, datetime.date], 
-                   fmt: str = DateTimeUtils.DATETIME_FORMAT) -> str:
+def format_datetime(
+    dt: Union[datetime.datetime, datetime.date],
+    fmt: str = DateTimeUtils.DATETIME_FORMAT,
+) -> str:
     """
     格式化日期时间
 
@@ -567,7 +600,9 @@ def format_datetime(dt: Union[datetime.datetime, datetime.date],
     return DateTimeUtils.format_datetime(dt, fmt)
 
 
-def parse_datetime(date_str: str, fmt: str = DateTimeUtils.DATETIME_FORMAT) -> datetime.datetime:
+def parse_datetime(
+    date_str: str, fmt: str = DateTimeUtils.DATETIME_FORMAT
+) -> datetime.datetime:
     """
     解析日期时间字符串
 
@@ -595,7 +630,9 @@ def parse_date(date_str: str, fmt: str = DateTimeUtils.DATE_FORMAT) -> datetime.
     return DateTimeUtils.parse_date(date_str, fmt)
 
 
-def add_days(dt: Union[datetime.datetime, datetime.date], days: int) -> Union[datetime.datetime, datetime.date]:
+def add_days(
+    dt: Union[datetime.datetime, datetime.date], days: int
+) -> Union[datetime.datetime, datetime.date]:
     """
     添加天数
 
@@ -651,8 +688,10 @@ def add_seconds(dt: datetime.datetime, seconds: int) -> datetime.datetime:
     return DateTimeUtils.add_seconds(dt, seconds)
 
 
-def between(start: Union[datetime.datetime, datetime.date], 
-            end: Union[datetime.datetime, datetime.date]) -> datetime.timedelta:
+def between(
+    start: Union[datetime.datetime, datetime.date],
+    end: Union[datetime.datetime, datetime.date],
+) -> datetime.timedelta:
     """
     计算两个日期时间之间的差值
 
@@ -666,8 +705,10 @@ def between(start: Union[datetime.datetime, datetime.date],
     return DateTimeUtils.between(start, end)
 
 
-def days_between(start: Union[datetime.datetime, datetime.date], 
-                end: Union[datetime.datetime, datetime.date]) -> int:
+def days_between(
+    start: Union[datetime.datetime, datetime.date],
+    end: Union[datetime.datetime, datetime.date],
+) -> int:
     """
     计算两个日期之间的天数差
 
@@ -723,8 +764,10 @@ def seconds_between(start: datetime.datetime, end: datetime.datetime) -> float:
     return DateTimeUtils.seconds_between(start, end)
 
 
-def is_before(dt1: Union[datetime.datetime, datetime.date], 
-             dt2: Union[datetime.datetime, datetime.date]) -> bool:
+def is_before(
+    dt1: Union[datetime.datetime, datetime.date],
+    dt2: Union[datetime.datetime, datetime.date],
+) -> bool:
     """
     判断dt1是否在dt2之前
 
@@ -738,8 +781,10 @@ def is_before(dt1: Union[datetime.datetime, datetime.date],
     return DateTimeUtils.is_before(dt1, dt2)
 
 
-def is_after(dt1: Union[datetime.datetime, datetime.date], 
-            dt2: Union[datetime.datetime, datetime.date]) -> bool:
+def is_after(
+    dt1: Union[datetime.datetime, datetime.date],
+    dt2: Union[datetime.datetime, datetime.date],
+) -> bool:
     """
     判断dt1是否在dt2之后
 
@@ -753,8 +798,10 @@ def is_after(dt1: Union[datetime.datetime, datetime.date],
     return DateTimeUtils.is_after(dt1, dt2)
 
 
-def is_equal(dt1: Union[datetime.datetime, datetime.date], 
-            dt2: Union[datetime.datetime, datetime.date]) -> bool:
+def is_equal(
+    dt1: Union[datetime.datetime, datetime.date],
+    dt2: Union[datetime.datetime, datetime.date],
+) -> bool:
     """
     判断两个日期时间是否相等
 
@@ -820,7 +867,9 @@ def get_weekday(dt: Union[datetime.datetime, datetime.date]) -> int:
     return DateTimeUtils.get_weekday(dt)
 
 
-def get_month_start(dt: Union[datetime.datetime, datetime.date]) -> Union[datetime.datetime, datetime.date]:
+def get_month_start(
+    dt: Union[datetime.datetime, datetime.date],
+) -> Union[datetime.datetime, datetime.date]:
     """
     获取当月第一天
 
@@ -833,7 +882,9 @@ def get_month_start(dt: Union[datetime.datetime, datetime.date]) -> Union[dateti
     return DateTimeUtils.get_month_start(dt)
 
 
-def get_month_end(dt: Union[datetime.datetime, datetime.date]) -> Union[datetime.datetime, datetime.date]:
+def get_month_end(
+    dt: Union[datetime.datetime, datetime.date],
+) -> Union[datetime.datetime, datetime.date]:
     """
     获取当月最后一天
 
@@ -846,7 +897,9 @@ def get_month_end(dt: Union[datetime.datetime, datetime.date]) -> Union[datetime
     return DateTimeUtils.get_month_end(dt)
 
 
-def get_quarter_start(dt: Union[datetime.datetime, datetime.date]) -> Union[datetime.datetime, datetime.date]:
+def get_quarter_start(
+    dt: Union[datetime.datetime, datetime.date],
+) -> Union[datetime.datetime, datetime.date]:
     """
     获取当季第一天
 
@@ -859,7 +912,9 @@ def get_quarter_start(dt: Union[datetime.datetime, datetime.date]) -> Union[date
     return DateTimeUtils.get_quarter_start(dt)
 
 
-def get_quarter_end(dt: Union[datetime.datetime, datetime.date]) -> Union[datetime.datetime, datetime.date]:
+def get_quarter_end(
+    dt: Union[datetime.datetime, datetime.date],
+) -> Union[datetime.datetime, datetime.date]:
     """
     获取当季最后一天
 
@@ -872,7 +927,9 @@ def get_quarter_end(dt: Union[datetime.datetime, datetime.date]) -> Union[dateti
     return DateTimeUtils.get_quarter_end(dt)
 
 
-def get_year_start(dt: Union[datetime.datetime, datetime.date]) -> Union[datetime.datetime, datetime.date]:
+def get_year_start(
+    dt: Union[datetime.datetime, datetime.date],
+) -> Union[datetime.datetime, datetime.date]:
     """
     获取当年第一天
 
@@ -885,7 +942,9 @@ def get_year_start(dt: Union[datetime.datetime, datetime.date]) -> Union[datetim
     return DateTimeUtils.get_year_start(dt)
 
 
-def get_year_end(dt: Union[datetime.datetime, datetime.date]) -> Union[datetime.datetime, datetime.date]:
+def get_year_end(
+    dt: Union[datetime.datetime, datetime.date],
+) -> Union[datetime.datetime, datetime.date]:
     """
     获取当年最后一天
 

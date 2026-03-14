@@ -1,5 +1,7 @@
 """测试KubernetesUtils类"""
+
 import unittest
+
 from btools.core.container.kubernetesutils import KubernetesUtils
 
 
@@ -14,7 +16,9 @@ class TestKubernetesUtils(unittest.TestCase):
 
     def test_run_kubectl_command(self):
         """测试运行kubectl命令"""
-        code, stdout, stderr = KubernetesUtils.run_kubectl_command(["version", "--client"])
+        code, stdout, stderr = KubernetesUtils.run_kubectl_command(
+            ["version", "--client"]
+        )
         # 不强制断言，因为可能没有安装kubectl
         self.assertIsInstance(code, int)
 

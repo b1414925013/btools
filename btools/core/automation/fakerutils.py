@@ -3,9 +3,10 @@
 测试数据生成工具类模块
 提供类似于Faker的测试数据生成功能
 """
+
+import datetime
 import random
 import string
-import datetime
 from typing import Dict, List, Optional, Union
 
 
@@ -17,47 +18,164 @@ class FakerUtils:
 
     # 常用姓名列表
     FIRST_NAMES = [
-        "张", "李", "王", "刘", "陈", "杨", "赵", "黄", "周", "吴",
-        "徐", "孙", "马", "朱", "胡", "郭", "何", "高", "林", "罗"
+        "张",
+        "李",
+        "王",
+        "刘",
+        "陈",
+        "杨",
+        "赵",
+        "黄",
+        "周",
+        "吴",
+        "徐",
+        "孙",
+        "马",
+        "朱",
+        "胡",
+        "郭",
+        "何",
+        "高",
+        "林",
+        "罗",
     ]
     LAST_NAMES = [
-        "伟", "芳", "娜", "敏", "静", "丽", "强", "磊", "军", "洋",
-        "勇", "艳", "杰", "娟", "涛", "明", "超", "秀英", "霞", "平"
+        "伟",
+        "芳",
+        "娜",
+        "敏",
+        "静",
+        "丽",
+        "强",
+        "磊",
+        "军",
+        "洋",
+        "勇",
+        "艳",
+        "杰",
+        "娟",
+        "涛",
+        "明",
+        "超",
+        "秀英",
+        "霞",
+        "平",
     ]
 
     # 常用城市列表
     CITIES = [
-        "北京", "上海", "广州", "深圳", "杭州", "南京", "成都", "武汉", "西安", "重庆",
-        "苏州", "天津", "郑州", "长沙", "青岛", "宁波", "东莞", "厦门", "福州", "济南"
+        "北京",
+        "上海",
+        "广州",
+        "深圳",
+        "杭州",
+        "南京",
+        "成都",
+        "武汉",
+        "西安",
+        "重庆",
+        "苏州",
+        "天津",
+        "郑州",
+        "长沙",
+        "青岛",
+        "宁波",
+        "东莞",
+        "厦门",
+        "福州",
+        "济南",
     ]
 
     # 常用街道列表
     STREETS = [
-        "中山路", "人民路", "解放路", "建设路", "和平路", "新华街", "东风路", "朝阳路", "公园路", "友谊路"
+        "中山路",
+        "人民路",
+        "解放路",
+        "建设路",
+        "和平路",
+        "新华街",
+        "东风路",
+        "朝阳路",
+        "公园路",
+        "友谊路",
     ]
 
     # 常用公司名称
     COMPANIES = [
-        "阿里巴巴", "腾讯", "百度", "京东", "美团", "字节跳动", "小米", "华为", "网易", "新浪",
-        "搜狐", "携程", "拼多多", "快手", "B站", "滴滴", "顺丰", "菜鸟", "蚂蚁金服", "腾讯云"
+        "阿里巴巴",
+        "腾讯",
+        "百度",
+        "京东",
+        "美团",
+        "字节跳动",
+        "小米",
+        "华为",
+        "网易",
+        "新浪",
+        "搜狐",
+        "携程",
+        "拼多多",
+        "快手",
+        "B站",
+        "滴滴",
+        "顺丰",
+        "菜鸟",
+        "蚂蚁金服",
+        "腾讯云",
     ]
 
     # 常用职位列表
     POSITIONS = [
-        "产品经理", "软件工程师", "UI设计师", "数据分析师", "市场经理", "运营专员", "销售经理",
-        "人力资源专员", "财务经理", "行政助理"
+        "产品经理",
+        "软件工程师",
+        "UI设计师",
+        "数据分析师",
+        "市场经理",
+        "运营专员",
+        "销售经理",
+        "人力资源专员",
+        "财务经理",
+        "行政助理",
     ]
 
     # 常用身份证号前缀（部分）
     ID_CARD_PREFIXES = [
-        "110101", "110102", "110103", "110104", "110105", "310101", "310104", "310105",
-        "440106", "440105", "440301", "440303", "440304", "330102", "330103", "330104"
+        "110101",
+        "110102",
+        "110103",
+        "110104",
+        "110105",
+        "310101",
+        "310104",
+        "310105",
+        "440106",
+        "440105",
+        "440301",
+        "440303",
+        "440304",
+        "330102",
+        "330103",
+        "330104",
     ]
 
     # 常用银行卡号前缀
     BANK_CARD_PREFIXES = [
-        "622202", "622208", "622848", "622845", "622846", "622849", "622200", "622203",
-        "622682", "622686", "622685", "622688", "622689", "622690", "622691", "622692"
+        "622202",
+        "622208",
+        "622848",
+        "622845",
+        "622846",
+        "622849",
+        "622200",
+        "622203",
+        "622682",
+        "622686",
+        "622685",
+        "622688",
+        "622689",
+        "622690",
+        "622691",
+        "622692",
     ]
 
     @staticmethod
@@ -75,7 +193,7 @@ class FakerUtils:
         chars = string.ascii_letters + string.digits
         if include_special:
             chars += string.punctuation
-        return ''.join(random.choice(chars) for _ in range(length))
+        return "".join(random.choice(chars) for _ in range(length))
 
     @staticmethod
     def random_integer(min_val: int = 0, max_val: int = 1000) -> int:
@@ -92,7 +210,9 @@ class FakerUtils:
         return random.randint(min_val, max_val)
 
     @staticmethod
-    def random_float(min_val: float = 0.0, max_val: float = 1000.0, decimal_places: int = 2) -> float:
+    def random_float(
+        min_val: float = 0.0, max_val: float = 1000.0, decimal_places: int = 2
+    ) -> float:
         """
         生成随机浮点数
 
@@ -118,7 +238,10 @@ class FakerUtils:
         return random.choice([True, False])
 
     @staticmethod
-    def random_date(start_date: Optional[datetime.date] = None, end_date: Optional[datetime.date] = None) -> datetime.date:
+    def random_date(
+        start_date: Optional[datetime.date] = None,
+        end_date: Optional[datetime.date] = None,
+    ) -> datetime.date:
         """
         生成随机日期
 
@@ -139,7 +262,10 @@ class FakerUtils:
         return start_date + datetime.timedelta(days=random_days)
 
     @staticmethod
-    def random_datetime(start_datetime: Optional[datetime.datetime] = None, end_datetime: Optional[datetime.datetime] = None) -> datetime.datetime:
+    def random_datetime(
+        start_datetime: Optional[datetime.datetime] = None,
+        end_datetime: Optional[datetime.datetime] = None,
+    ) -> datetime.datetime:
         """
         生成随机 datetime
 
@@ -171,7 +297,9 @@ class FakerUtils:
             随机邮箱地址
         """
         if domain is None:
-            domain = random.choice(["example.com", "test.com", "gmail.com", "hotmail.com", "yahoo.com"])
+            domain = random.choice(
+                ["example.com", "test.com", "gmail.com", "hotmail.com", "yahoo.com"]
+            )
         username = FakerUtils.random_string(8)
         return f"{username}@{domain}"
 
@@ -187,8 +315,10 @@ class FakerUtils:
             随机手机号码
         """
         if prefix is None:
-            prefix = random.choice(["138", "139", "137", "136", "135", "134", "159", "158", "157", "150"])
-        suffix = ''.join(random.choice(string.digits) for _ in range(8))
+            prefix = random.choice(
+                ["138", "139", "137", "136", "135", "134", "159", "158", "157", "150"]
+            )
+        suffix = "".join(random.choice(string.digits) for _ in range(8))
         return f"{prefix}{suffix}"
 
     @staticmethod
@@ -227,7 +357,9 @@ class FakerUtils:
             随机公司名称
         """
         company = random.choice(FakerUtils.COMPANIES)
-        suffix = random.choice(["科技有限公司", "信息技术有限公司", "网络科技有限公司", "电子商务有限公司"])
+        suffix = random.choice(
+            ["科技有限公司", "信息技术有限公司", "网络科技有限公司", "电子商务有限公司"]
+        )
         return f"{company}{suffix}"
 
     @staticmethod
@@ -250,18 +382,20 @@ class FakerUtils:
         """
         # 前6位：地区码
         prefix = random.choice(FakerUtils.ID_CARD_PREFIXES)
-        
+
         # 7-14位：出生日期
-        birth_date = FakerUtils.random_date(datetime.date(1950, 1, 1), datetime.date(2000, 12, 31))
+        birth_date = FakerUtils.random_date(
+            datetime.date(1950, 1, 1), datetime.date(2000, 12, 31)
+        )
         birth_str = birth_date.strftime("%Y%m%d")
-        
+
         # 15-17位：顺序码
         sequence = str(random.randint(100, 999))
-        
+
         # 18位：校验码
         # 这里简化处理，实际身份证号的校验码有复杂的算法
         check_code = random.choice(string.digits + ["X"])
-        
+
         return f"{prefix}{birth_str}{sequence}{check_code}"
 
     @staticmethod
@@ -276,7 +410,7 @@ class FakerUtils:
         # 银行卡号长度通常为16-19位
         length = random.randint(16, 19)
         suffix_length = length - len(prefix)
-        suffix = ''.join(random.choice(string.digits) for _ in range(suffix_length))
+        suffix = "".join(random.choice(string.digits) for _ in range(suffix_length))
         return f"{prefix}{suffix}"
 
     @staticmethod
@@ -287,7 +421,7 @@ class FakerUtils:
         Returns:
             随机IP地址
         """
-        return '.'.join(str(random.randint(0, 255)) for _ in range(4))
+        return ".".join(str(random.randint(0, 255)) for _ in range(4))
 
     @staticmethod
     def random_url() -> str:
@@ -315,7 +449,7 @@ class FakerUtils:
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
             "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Mobile/15E148 Safari/604.1",
-            "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36"
+            "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36",
         ]
         return random.choice(user_agents)
 
@@ -330,7 +464,7 @@ class FakerUtils:
         return {
             "number": FakerUtils.random_bank_card(),
             "expiry": f"{random.randint(1, 12)}/{random.randint(26, 30)}",
-            "cvv": str(random.randint(100, 999))
+            "cvv": str(random.randint(100, 999)),
         }
 
     @staticmethod
@@ -350,7 +484,7 @@ class FakerUtils:
             "position": FakerUtils.random_position(),
             "id_card": FakerUtils.random_id_card(),
             "bank_card": FakerUtils.random_bank_card(),
-            "ip": FakerUtils.random_ip()
+            "ip": FakerUtils.random_ip(),
         }
 
     @staticmethod
@@ -361,14 +495,25 @@ class FakerUtils:
         Returns:
             产品信息字典
         """
-        product_names = ["手机", "电脑", "平板", "相机", "耳机", "手表", "音箱", "键盘", "鼠标", "显示器"]
+        product_names = [
+            "手机",
+            "电脑",
+            "平板",
+            "相机",
+            "耳机",
+            "手表",
+            "音箱",
+            "键盘",
+            "鼠标",
+            "显示器",
+        ]
         return {
             "name": random.choice(product_names),
             "price": FakerUtils.random_float(100, 10000),
             "stock": FakerUtils.random_integer(0, 1000),
             "sku": FakerUtils.random_string(10),
             "category": random.choice(["电子产品", "办公用品", "家居用品", "服装鞋帽"]),
-            "description": f"这是一个{random.choice(product_names)}产品"
+            "description": f"这是一个{random.choice(product_names)}产品",
         }
 
     @staticmethod
@@ -385,7 +530,7 @@ class FakerUtils:
             "total_amount": FakerUtils.random_float(100, 10000),
             "order_time": FakerUtils.random_datetime(),
             "status": random.choice(["待付款", "待发货", "待收货", "已完成", "已取消"]),
-            "payment_method": random.choice(["支付宝", "微信支付", "银行卡", "现金"])
+            "payment_method": random.choice(["支付宝", "微信支付", "银行卡", "现金"]),
         }
 
     @staticmethod
@@ -448,6 +593,7 @@ class FakerUtils:
 
 # 便捷函数
 
+
 def random_string(length: int = 10, include_special: bool = False) -> str:
     """
     生成随机字符串
@@ -476,7 +622,9 @@ def random_integer(min_val: int = 0, max_val: int = 1000) -> int:
     return FakerUtils.random_integer(min_val, max_val)
 
 
-def random_float(min_val: float = 0.0, max_val: float = 1000.0, decimal_places: int = 2) -> float:
+def random_float(
+    min_val: float = 0.0, max_val: float = 1000.0, decimal_places: int = 2
+) -> float:
     """
     生成随机浮点数
 
@@ -501,7 +649,9 @@ def random_boolean() -> bool:
     return FakerUtils.random_boolean()
 
 
-def random_date(start_date: Optional[datetime.date] = None, end_date: Optional[datetime.date] = None) -> datetime.date:
+def random_date(
+    start_date: Optional[datetime.date] = None, end_date: Optional[datetime.date] = None
+) -> datetime.date:
     """
     生成随机日期
 
@@ -515,7 +665,10 @@ def random_date(start_date: Optional[datetime.date] = None, end_date: Optional[d
     return FakerUtils.random_date(start_date, end_date)
 
 
-def random_datetime(start_datetime: Optional[datetime.datetime] = None, end_datetime: Optional[datetime.datetime] = None) -> datetime.datetime:
+def random_datetime(
+    start_datetime: Optional[datetime.datetime] = None,
+    end_datetime: Optional[datetime.datetime] = None,
+) -> datetime.datetime:
     """
     生成随机 datetime
 

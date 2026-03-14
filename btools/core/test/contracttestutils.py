@@ -5,10 +5,11 @@
 
 提供契约测试工具，确保服务间接口一致性等功能
 """
+
+import hashlib
 import json
 import os
-import hashlib
-from typing import Dict, Any, List, Optional, Callable
+from typing import Any, Callable, Dict, List, Optional
 
 
 class ContractTestUtils:
@@ -17,7 +18,9 @@ class ContractTestUtils:
     """
 
     @staticmethod
-    def create_contract(provider: str, consumer: str, interactions: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def create_contract(
+        provider: str, consumer: str, interactions: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """
         创建契约
 
@@ -30,10 +33,10 @@ class ContractTestUtils:
             契约字典
         """
         return {
-            'provider': provider,
-            'consumer': consumer,
-            'interactions': interactions,
-            'version': '1.0.0'
+            "provider": provider,
+            "consumer": consumer,
+            "interactions": interactions,
+            "version": "1.0.0",
         }
 
     @staticmethod
@@ -50,15 +53,17 @@ class ContractTestUtils:
         issues = []
 
         # 检查必需字段
-        required_fields = ['provider', 'consumer', 'interactions', 'version']
+        required_fields = ["provider", "consumer", "interactions", "version"]
         for field in required_fields:
             if field not in contract:
                 issues.append(f"Missing required field: {field}")
 
         # 检查交互格式
-        if 'interactions' in contract:
-            for i, interaction in enumerate(contract['interactions']):
-                interaction_issues = ContractTestUtils._validate_interaction(interaction)
+        if "interactions" in contract:
+            for i, interaction in enumerate(contract["interactions"]):
+                interaction_issues = ContractTestUtils._validate_interaction(
+                    interaction
+                )
                 for issue in interaction_issues:
                     issues.append(f"Interaction {i}: {issue}")
 
@@ -78,23 +83,23 @@ class ContractTestUtils:
         issues = []
 
         # 检查交互必需字段
-        required_fields = ['description', 'request', 'response']
+        required_fields = ["description", "request", "response"]
         for field in required_fields:
             if field not in interaction:
                 issues.append(f"Missing required field: {field}")
 
         # 检查请求格式
-        if 'request' in interaction:
-            request = interaction['request']
-            if 'method' not in request:
+        if "request" in interaction:
+            request = interaction["request"]
+            if "method" not in request:
                 issues.append("Request missing method")
-            if 'path' not in request:
+            if "path" not in request:
                 issues.append("Request missing path")
 
         # 检查响应格式
-        if 'response' in interaction:
-            response = interaction['response']
-            if 'status' not in response:
+        if "response" in interaction:
+            response = interaction["response"]
+            if "status" not in response:
                 issues.append("Response missing status")
 
         return issues
@@ -115,7 +120,7 @@ class ContractTestUtils:
             # 确保目录存在
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(contract, f, indent=2, ensure_ascii=False)
 
             return True
@@ -134,7 +139,7 @@ class ContractTestUtils:
             契约字典
         """
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
             return None
@@ -151,10 +156,12 @@ class ContractTestUtils:
             哈希值
         """
         contract_json = json.dumps(contract, sort_keys=True, ensure_ascii=False)
-        return hashlib.md5(contract_json.encode('utf-8')).hexdigest()
+        return hashlib.md5(contract_json.encode("utf-8")).hexdigest()
 
     @staticmethod
-    def compare_contracts(contract1: Dict[str, Any], contract2: Dict[str, Any]) -> List[str]:
+    def compare_contracts(
+        contract1: Dict[str, Any], contract2: Dict[str, Any]
+    ) -> List[str]:
         """
         比较两个契约
 
@@ -168,16 +175,20 @@ class ContractTestUtils:
         differences = []
 
         # 比较基本字段
-        for field in ['provider', 'consumer', 'version']:
+        for field in ["provider", "consumer", "version"]:
             if contract1.get(field) != contract2.get(field):
-                differences.append(f"Field '{field}' differs: {contract1.get(field)} != {contract2.get(field)}")
+                differences.append(
+                    f"Field '{field}' differs: {contract1.get(field)} != {contract2.get(field)}"
+                )
 
         # 比较交互
-        interactions1 = contract1.get('interactions', [])
-        interactions2 = contract2.get('interactions', [])
+        interactions1 = contract1.get("interactions", [])
+        interactions2 = contract2.get("interactions", [])
 
         if len(interactions1) != len(interactions2):
-            differences.append(f"Number of interactions differs: {len(interactions1)} != {len(interactions2)}")
+            differences.append(
+                f"Number of interactions differs: {len(interactions1)} != {len(interactions2)}"
+            )
 
         # 比较每个交互
         for i, (int1, int2) in enumerate(zip(interactions1, interactions2)):
@@ -187,7 +198,9 @@ class ContractTestUtils:
         return differences
 
     @staticmethod
-    def test_consumer_contract(contract: Dict[str, Any], client: Callable) -> List[Dict[str, Any]]:
+    def test_consumer_contract(
+        contract: Dict[str, Any], client: Callable
+    ) -> List[Dict[str, Any]]:
         """
         测试消费者契约
 
@@ -200,14 +213,16 @@ class ContractTestUtils:
         """
         results = []
 
-        for interaction in contract.get('interactions', []):
+        for interaction in contract.get("interactions", []):
             result = ContractTestUtils._test_interaction(interaction, client)
             results.append(result)
 
         return results
 
     @staticmethod
-    def _test_interaction(interaction: Dict[str, Any], client: Callable) -> Dict[str, Any]:
+    def _test_interaction(
+        interaction: Dict[str, Any], client: Callable
+    ) -> Dict[str, Any]:
         """
         测试单个交互
 
@@ -219,26 +234,28 @@ class ContractTestUtils:
             测试结果
         """
         try:
-            request = interaction['request']
-            expected_response = interaction['response']
+            request = interaction["request"]
+            expected_response = interaction["response"]
 
             # 调用客户端
             actual_response = client(request)
 
             # 验证响应
-            is_valid = ContractTestUtils._validate_response(actual_response, expected_response)
+            is_valid = ContractTestUtils._validate_response(
+                actual_response, expected_response
+            )
 
             return {
-                'description': interaction['description'],
-                'success': is_valid,
-                'expected': expected_response,
-                'actual': actual_response
+                "description": interaction["description"],
+                "success": is_valid,
+                "expected": expected_response,
+                "actual": actual_response,
             }
         except Exception as e:
             return {
-                'description': interaction.get('description', 'Unknown'),
-                'success': False,
-                'error': str(e)
+                "description": interaction.get("description", "Unknown"),
+                "success": False,
+                "error": str(e),
             }
 
     @staticmethod
@@ -254,18 +271,18 @@ class ContractTestUtils:
             是否有效
         """
         # 验证状态码
-        if actual.get('status') != expected.get('status'):
+        if actual.get("status") != expected.get("status"):
             return False
 
         # 验证响应头
-        if 'headers' in expected:
-            for key, value in expected['headers'].items():
-                if actual.get('headers', {}).get(key) != value:
+        if "headers" in expected:
+            for key, value in expected["headers"].items():
+                if actual.get("headers", {}).get(key) != value:
                     return False
 
         # 验证响应体
-        if 'body' in expected:
-            if actual.get('body') != expected['body']:
+        if "body" in expected:
+            if actual.get("body") != expected["body"]:
                 return False
 
         return True
@@ -288,9 +305,11 @@ class ContractTestUtils:
 
             # 生成测试文件
             test_content = ContractTestUtils._generate_test_content(contract)
-            test_file = os.path.join(output_dir, f"test_{contract['provider']}_contract.py")
+            test_file = os.path.join(
+                output_dir, f"test_{contract['provider']}_contract.py"
+            )
 
-            with open(test_file, 'w', encoding='utf-8') as f:
+            with open(test_file, "w", encoding="utf-8") as f:
                 f.write(test_content)
 
             return True
@@ -319,49 +338,57 @@ class ContractTestUtils:
         lines.append("from btools.core.test.contracttestutils import ContractTestUtils")
         lines.append("")
         lines.append("")
-        lines.append('class Test{}Contract(unittest.TestCase):'.format(contract["provider"].title()))
+        lines.append(
+            "class Test{}Contract(unittest.TestCase):".format(
+                contract["provider"].title()
+            )
+        )
         lines.append('    """')
-        lines.append('    {} contract tests'.format(contract["provider"]))
+        lines.append("    {} contract tests".format(contract["provider"]))
         lines.append('    """')
         lines.append("")
-        lines.append('    def setUp(self):')
+        lines.append("    def setUp(self):")
         lines.append('        """')
-        lines.append('        Set up test fixtures')
+        lines.append("        Set up test fixtures")
         lines.append('        """')
-        lines.append('        # TODO: Initialize your provider here')
-        lines.append('        pass')
+        lines.append("        # TODO: Initialize your provider here")
+        lines.append("        pass")
         lines.append("")
-        lines.append('    def test_contract_interactions(self):')
+        lines.append("    def test_contract_interactions(self):")
         lines.append('        """')
-        lines.append('        Test all contract interactions')
+        lines.append("        Test all contract interactions")
         lines.append('        """')
-        lines.append('        contract = {')
-        lines.append('            \'provider\': \'{} \'.format(contract["provider"]),')
-        lines.append('            \'consumer\': \'{} \'.format(contract["consumer"]),')
-        lines.append('            \'interactions\': [')
-        
+        lines.append("        contract = {")
+        lines.append("            'provider': '{} '.format(contract[\"provider\"]),")
+        lines.append("            'consumer': '{} '.format(contract[\"consumer\"]),")
+        lines.append("            'interactions': [")
+
         # 添加交互
-        for interaction in contract['interactions']:
+        for interaction in contract["interactions"]:
             interaction_str = json.dumps(interaction, indent=8, ensure_ascii=False)
-            lines.append('                ' + interaction_str + ',')
-        
+            lines.append("                " + interaction_str + ",")
+
         # 完成测试文件
-        lines.append('            ],')
-        lines.append('            \'version\': \'{} \'.format(contract["version"]))')
-        lines.append('        }')
+        lines.append("            ],")
+        lines.append("            'version': '{} '.format(contract[\"version\"]))")
+        lines.append("        }")
         lines.append("")
-        lines.append('        # Validate contract')
-        lines.append('        issues = ContractTestUtils.validate_contract(contract)')
-        lines.append('        self.assertEqual(len(issues), 0, f"Contract validation failed: {issues}")')
+        lines.append("        # Validate contract")
+        lines.append("        issues = ContractTestUtils.validate_contract(contract)")
+        lines.append(
+            '        self.assertEqual(len(issues), 0, f"Contract validation failed: {issues}")'
+        )
         lines.append("")
-        lines.append('        # TODO: Implement actual provider tests here')
-        lines.append('        # For each interaction, test that your provider returns the expected response')
+        lines.append("        # TODO: Implement actual provider tests here")
+        lines.append(
+            "        # For each interaction, test that your provider returns the expected response"
+        )
         lines.append("")
         lines.append("")
-        lines.append('if __name__ == \'__main__\':')
-        lines.append('    unittest.main()')
-        
-        return '\n'.join(lines)
+        lines.append("if __name__ == '__main__':")
+        lines.append("    unittest.main()")
+
+        return "\n".join(lines)
 
     @staticmethod
     def mock_provider_response(interaction: Dict[str, Any]) -> Dict[str, Any]:
@@ -374,10 +401,12 @@ class ContractTestUtils:
         Returns:
             模拟响应
         """
-        return interaction.get('response', {})
+        return interaction.get("response", {})
 
     @staticmethod
-    def validate_provider_implementation(contract: Dict[str, Any], provider: Callable) -> List[Dict[str, Any]]:
+    def validate_provider_implementation(
+        contract: Dict[str, Any], provider: Callable
+    ) -> List[Dict[str, Any]]:
         """
         验证提供者实现
 
@@ -390,34 +419,42 @@ class ContractTestUtils:
         """
         results = []
 
-        for interaction in contract.get('interactions', []):
+        for interaction in contract.get("interactions", []):
             try:
-                request = interaction['request']
-                expected_response = interaction['response']
+                request = interaction["request"]
+                expected_response = interaction["response"]
 
                 # 调用提供者
                 actual_response = provider(request)
 
                 # 验证响应
-                is_valid = ContractTestUtils._validate_response(actual_response, expected_response)
+                is_valid = ContractTestUtils._validate_response(
+                    actual_response, expected_response
+                )
 
-                results.append({
-                    'description': interaction['description'],
-                    'success': is_valid,
-                    'expected': expected_response,
-                    'actual': actual_response
-                })
+                results.append(
+                    {
+                        "description": interaction["description"],
+                        "success": is_valid,
+                        "expected": expected_response,
+                        "actual": actual_response,
+                    }
+                )
             except Exception as e:
-                results.append({
-                    'description': interaction.get('description', 'Unknown'),
-                    'success': False,
-                    'error': str(e)
-                })
+                results.append(
+                    {
+                        "description": interaction.get("description", "Unknown"),
+                        "success": False,
+                        "error": str(e),
+                    }
+                )
 
         return results
 
     @staticmethod
-    def diff_contracts(contract1: Dict[str, Any], contract2: Dict[str, Any]) -> Dict[str, Any]:
+    def diff_contracts(
+        contract1: Dict[str, Any], contract2: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         生成契约差异
 
@@ -428,36 +465,34 @@ class ContractTestUtils:
         Returns:
             差异字典
         """
-        differences = {
-            'added': [],
-            'removed': [],
-            'modified': []
-        }
+        differences = {"added": [], "removed": [], "modified": []}
 
         # 比较交互
-        interactions1 = {int['description']: int for int in contract1.get('interactions', [])}
-        interactions2 = {int['description']: int for int in contract2.get('interactions', [])}
+        interactions1 = {
+            int["description"]: int for int in contract1.get("interactions", [])
+        }
+        interactions2 = {
+            int["description"]: int for int in contract2.get("interactions", [])
+        }
 
         # 检查添加的交互
         for desc, interaction in interactions2.items():
             if desc not in interactions1:
-                differences['added'].append(interaction)
+                differences["added"].append(interaction)
 
         # 检查删除的交互
         for desc, interaction in interactions1.items():
             if desc not in interactions2:
-                differences['removed'].append(interaction)
+                differences["removed"].append(interaction)
 
         # 检查修改的交互
         for desc, interaction1 in interactions1.items():
             if desc in interactions2:
                 interaction2 = interactions2[desc]
                 if interaction1 != interaction2:
-                    differences['modified'].append({
-                        'description': desc,
-                        'old': interaction1,
-                        'new': interaction2
-                    })
+                    differences["modified"].append(
+                        {"description": desc, "old": interaction1, "new": interaction2}
+                    )
 
         return differences
 
@@ -474,8 +509,8 @@ class ContractTestUtils:
             存储路径
         """
         # 生成文件名
-        provider = contract['provider']
-        consumer = contract['consumer']
+        provider = contract["provider"]
+        consumer = contract["consumer"]
         contract_hash = ContractTestUtils.generate_contract_hash(contract)
         filename = f"{provider}_{consumer}_{contract_hash}.json"
 
@@ -499,7 +534,7 @@ class ContractTestUtils:
         contracts = []
 
         for filename in os.listdir(directory):
-            if filename.endswith('.json'):
+            if filename.endswith(".json"):
                 filepath = os.path.join(directory, filename)
                 contract = ContractTestUtils.load_contract(filepath)
                 if contract:

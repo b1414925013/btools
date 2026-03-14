@@ -1,5 +1,7 @@
 """测试TemplateUtils类"""
+
 import unittest
+
 from btools.core.template.templateutils import TemplateUtils
 
 

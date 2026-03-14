@@ -2,14 +2,32 @@
 """
 加密工具测试
 """
-import unittest
-import tempfile
+
 import os
+import tempfile
+import unittest
+
 from btools.core.data.cryptoutils import (
-    CryptoUtils, md5, sha1, sha256, sha512, hmac_md5, hmac_sha256,
-    base64_encode, base64_decode, generate_rsa_keys, rsa_encrypt, rsa_decrypt,
-    generate_aes_key, aes_encrypt, aes_decrypt, password_hash, verify_password,
-    generate_token, encrypt_file, decrypt_file
+    CryptoUtils,
+    aes_decrypt,
+    aes_encrypt,
+    base64_decode,
+    base64_encode,
+    decrypt_file,
+    encrypt_file,
+    generate_aes_key,
+    generate_rsa_keys,
+    generate_token,
+    hmac_md5,
+    hmac_sha256,
+    md5,
+    password_hash,
+    rsa_decrypt,
+    rsa_encrypt,
+    sha1,
+    sha256,
+    sha512,
+    verify_password,
 )
 
 
@@ -34,7 +52,7 @@ class TestCryptoUtils(unittest.TestCase):
         self.assertEqual(len(result), 32)  # MD5结果长度为32
 
         # 测试字节输入
-        result_bytes = CryptoUtils.md5(self.test_text.encode('utf-8'))
+        result_bytes = CryptoUtils.md5(self.test_text.encode("utf-8"))
         self.assertEqual(result, result_bytes)
 
     def test_sha1(self):
@@ -86,14 +104,16 @@ class TestCryptoUtils(unittest.TestCase):
         # 测试解码
         decoded = CryptoUtils.base64_decode(encoded)
         self.assertIsInstance(decoded, bytes)
-        self.assertEqual(decoded.decode('utf-8'), self.test_text)
+        self.assertEqual(decoded.decode("utf-8"), self.test_text)
 
     def test_rsa_functions(self):
         """
         测试RSA加密解密
         """
         # 生成密钥对
-        private_key, public_key = CryptoUtils.generate_rsa_keys(bits=1024)  # 使用1024位密钥以加快测试速度
+        private_key, public_key = CryptoUtils.generate_rsa_keys(
+            bits=1024
+        )  # 使用1024位密钥以加快测试速度
         self.assertIsInstance(private_key, str)
         self.assertIsInstance(public_key, str)
 
@@ -114,13 +134,15 @@ class TestCryptoUtils(unittest.TestCase):
         self.assertIsInstance(aes_key, str)
 
         # 测试CBC模式加密
-        encrypted = CryptoUtils.aes_encrypt(aes_key, self.test_text, mode='CBC')
+        encrypted = CryptoUtils.aes_encrypt(aes_key, self.test_text, mode="CBC")
         self.assertIsInstance(encrypted, dict)
-        self.assertIn('ciphertext', encrypted)
-        self.assertIn('iv', encrypted)
+        self.assertIn("ciphertext", encrypted)
+        self.assertIn("iv", encrypted)
 
         # 测试CBC模式解密
-        decrypted = CryptoUtils.aes_decrypt(aes_key, encrypted['ciphertext'], encrypted['iv'], mode='CBC')
+        decrypted = CryptoUtils.aes_decrypt(
+            aes_key, encrypted["ciphertext"], encrypted["iv"], mode="CBC"
+        )
         self.assertEqual(decrypted, self.test_text)
 
     def test_password_hash_functions(self):
@@ -130,13 +152,13 @@ class TestCryptoUtils(unittest.TestCase):
         # 测试密码哈希
         hashed = CryptoUtils.password_hash(self.test_text)
         self.assertIsInstance(hashed, str)
-        self.assertIn('$', hashed)
+        self.assertIn("$", hashed)
 
         # 测试密码验证（正确密码）
         self.assertTrue(CryptoUtils.verify_password(self.test_text, hashed))
 
         # 测试密码验证（错误密码）
-        self.assertFalse(CryptoUtils.verify_password('错误密码', hashed))
+        self.assertFalse(CryptoUtils.verify_password("错误密码", hashed))
 
     def test_generate_token(self):
         """
@@ -156,12 +178,12 @@ class TestCryptoUtils(unittest.TestCase):
         测试文件加密解密
         """
         # 创建临时文件，使用UTF-8编码
-        with tempfile.NamedTemporaryFile(mode='wb', suffix='.txt', delete=False) as f:
-            f.write(self.test_text.encode('utf-8'))
+        with tempfile.NamedTemporaryFile(mode="wb", suffix=".txt", delete=False) as f:
+            f.write(self.test_text.encode("utf-8"))
             input_file = f.name
 
-        encrypted_file = input_file + '.encrypted'
-        decrypted_file = input_file + '.decrypted'
+        encrypted_file = input_file + ".encrypted"
+        decrypted_file = input_file + ".decrypted"
 
         try:
             # 生成AES密钥
@@ -176,9 +198,9 @@ class TestCryptoUtils(unittest.TestCase):
             self.assertTrue(os.path.exists(decrypted_file))
 
             # 验证解密后的内容
-            with open(decrypted_file, 'rb') as f:
+            with open(decrypted_file, "rb") as f:
                 content = f.read()
-            self.assertEqual(content, self.test_text.encode('utf-8'))
+            self.assertEqual(content, self.test_text.encode("utf-8"))
         finally:
             # 清理临时文件
             for file in [input_file, encrypted_file, decrypted_file]:
@@ -225,5 +247,5 @@ class TestCryptoUtils(unittest.TestCase):
         self.assertTrue(verify_password(self.test_text, hashed))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

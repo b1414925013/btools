@@ -2,16 +2,44 @@
 """
 日期时间工具测试
 """
-import unittest
+
 import datetime
+import unittest
+
 from btools.core.data.datetimeutils import (
-    DateTimeUtils, now, today, format_datetime, parse_datetime, parse_date,
-    add_days, add_hours, add_minutes, add_seconds, between, days_between,
-    hours_between, minutes_between, seconds_between, is_before, is_after,
-    is_equal, is_today, is_yesterday, is_tomorrow, get_weekday, get_month_start,
-    get_month_end, get_quarter_start, get_quarter_end, get_year_start, get_year_end,
-    timestamp_to_datetime, datetime_to_timestamp, format_relative_time,
-    parse_iso_format, to_iso_format
+    DateTimeUtils,
+    add_days,
+    add_hours,
+    add_minutes,
+    add_seconds,
+    between,
+    datetime_to_timestamp,
+    days_between,
+    format_datetime,
+    format_relative_time,
+    get_month_end,
+    get_month_start,
+    get_quarter_end,
+    get_quarter_start,
+    get_weekday,
+    get_year_end,
+    get_year_start,
+    hours_between,
+    is_after,
+    is_before,
+    is_equal,
+    is_today,
+    is_tomorrow,
+    is_yesterday,
+    minutes_between,
+    now,
+    parse_date,
+    parse_datetime,
+    parse_iso_format,
+    seconds_between,
+    timestamp_to_datetime,
+    to_iso_format,
+    today,
 )
 
 
@@ -46,7 +74,9 @@ class TestDateTimeUtils(unittest.TestCase):
         测试格式化日期时间
         """
         # 测试格式化日期
-        date_str = DateTimeUtils.format_datetime(self.test_date, DateTimeUtils.DATE_FORMAT)
+        date_str = DateTimeUtils.format_datetime(
+            self.test_date, DateTimeUtils.DATE_FORMAT
+        )
         self.assertEqual(date_str, "2024-01-01")
 
         # 测试格式化日期时间
@@ -102,14 +132,14 @@ class TestDateTimeUtils(unittest.TestCase):
         """
         start_date = datetime.date(2024, 1, 1)
         end_date = datetime.date(2024, 1, 3)
-        
+
         # 测试天数差
         days = DateTimeUtils.days_between(start_date, end_date)
         self.assertEqual(days, 2)
 
         start_datetime = datetime.datetime(2024, 1, 1, 12, 0, 0)
         end_datetime = datetime.datetime(2024, 1, 1, 13, 30, 45)
-        
+
         # 测试小时差
         hours = DateTimeUtils.hours_between(start_datetime, end_datetime)
         self.assertAlmostEqual(hours, 1.5125, places=4)
@@ -128,7 +158,7 @@ class TestDateTimeUtils(unittest.TestCase):
         """
         date1 = datetime.date(2024, 1, 1)
         date2 = datetime.date(2024, 1, 2)
-        
+
         # 测试is_before
         self.assertTrue(DateTimeUtils.is_before(date1, date2))
         self.assertFalse(DateTimeUtils.is_before(date2, date1))
@@ -148,15 +178,15 @@ class TestDateTimeUtils(unittest.TestCase):
         today = datetime.date.today()
         yesterday = today - datetime.timedelta(days=1)
         tomorrow = today + datetime.timedelta(days=1)
-        
+
         # 测试is_today
         self.assertTrue(DateTimeUtils.is_today(today))
         self.assertFalse(DateTimeUtils.is_today(yesterday))
-        
+
         # 测试is_yesterday
         self.assertTrue(DateTimeUtils.is_yesterday(yesterday))
         self.assertFalse(DateTimeUtils.is_yesterday(today))
-        
+
         # 测试is_tomorrow
         self.assertTrue(DateTimeUtils.is_tomorrow(tomorrow))
         self.assertFalse(DateTimeUtils.is_tomorrow(today))
@@ -179,27 +209,27 @@ class TestDateTimeUtils(unittest.TestCase):
         """
         test_date = datetime.date(2024, 2, 15)
         test_datetime = datetime.datetime(2024, 2, 15, 12, 0, 0)
-        
+
         # 测试获取当月第一天
         month_start = DateTimeUtils.get_month_start(test_date)
         self.assertEqual(month_start, datetime.date(2024, 2, 1))
-        
+
         # 测试获取当月最后一天
         month_end = DateTimeUtils.get_month_end(test_date)
         self.assertEqual(month_end, datetime.date(2024, 2, 29))  # 2024是闰年
-        
+
         # 测试获取当季第一天
         quarter_start = DateTimeUtils.get_quarter_start(test_date)
         self.assertEqual(quarter_start, datetime.date(2024, 1, 1))
-        
+
         # 测试获取当季最后一天
         quarter_end = DateTimeUtils.get_quarter_end(test_date)
         self.assertEqual(quarter_end, datetime.date(2024, 3, 31))
-        
+
         # 测试获取当年第一天
         year_start = DateTimeUtils.get_year_start(test_date)
         self.assertEqual(year_start, datetime.date(2024, 1, 1))
-        
+
         # 测试获取当年最后一天
         year_end = DateTimeUtils.get_year_end(test_date)
         self.assertEqual(year_end, datetime.date(2024, 12, 31))
@@ -209,11 +239,11 @@ class TestDateTimeUtils(unittest.TestCase):
         测试时间戳转换函数
         """
         test_datetime = datetime.datetime(2024, 1, 1, 0, 0, 0)
-        
+
         # 测试日期时间转时间戳
         timestamp = DateTimeUtils.datetime_to_timestamp(test_datetime)
         self.assertIsInstance(timestamp, float)
-        
+
         # 测试时间戳转日期时间
         converted_datetime = DateTimeUtils.timestamp_to_datetime(timestamp)
         self.assertIsInstance(converted_datetime, datetime.datetime)
@@ -240,12 +270,12 @@ class TestDateTimeUtils(unittest.TestCase):
         测试ISO格式转换函数
         """
         test_datetime = datetime.datetime(2024, 1, 1, 12, 0, 0)
-        
+
         # 测试转换为ISO格式
         iso_str = DateTimeUtils.to_iso_format(test_datetime)
         self.assertIsInstance(iso_str, str)
         self.assertIn("2024-01-01T12:00:00", iso_str)
-        
+
         # 测试解析ISO格式
         parsed_datetime = DateTimeUtils.parse_iso_format(iso_str)
         self.assertIsInstance(parsed_datetime, datetime.datetime)
@@ -297,5 +327,5 @@ class TestDateTimeUtils(unittest.TestCase):
         self.assertIsInstance(converted, datetime.datetime)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

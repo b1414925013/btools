@@ -2,8 +2,9 @@
 """
 增强的JSON处理工具模块
 """
-import json
+
 import decimal
+import json
 from typing import Any, Dict, List, Optional, Type, Union
 
 
@@ -26,16 +27,16 @@ class JSONEncoder(json.JSONEncoder):
         if isinstance(o, decimal.Decimal):
             # 处理Decimal类型
             return float(o)
-        elif hasattr(o, '__dict__'):
+        elif hasattr(o, "__dict__"):
             # 处理具有__dict__属性的对象
-            return {k: v for k, v in o.__dict__.items() if not k.startswith('_')}
+            return {k: v for k, v in o.__dict__.items() if not k.startswith("_")}
         elif isinstance(o, set):
             # 处理set类型
             return list(o)
         elif isinstance(o, bytes):
             # 处理bytes类型
-            return o.decode('utf-8', errors='replace')
-        elif hasattr(o, 'isoformat'):
+            return o.decode("utf-8", errors="replace")
+        elif hasattr(o, "isoformat"):
             # 处理日期时间类型
             return o.isoformat()
         return super().default(o)
@@ -48,8 +49,12 @@ class JSONUtils:
     """
 
     @staticmethod
-    def to_json(obj: Any, ensure_ascii: bool = False, indent: Optional[int] = None, 
-                sort_keys: bool = False) -> str:
+    def to_json(
+        obj: Any,
+        ensure_ascii: bool = False,
+        indent: Optional[int] = None,
+        sort_keys: bool = False,
+    ) -> str:
         """
         将对象转换为JSON字符串
 
@@ -62,8 +67,13 @@ class JSONUtils:
         Returns:
             JSON字符串
         """
-        return json.dumps(obj, ensure_ascii=ensure_ascii, indent=indent, 
-                         sort_keys=sort_keys, cls=JSONEncoder)
+        return json.dumps(
+            obj,
+            ensure_ascii=ensure_ascii,
+            indent=indent,
+            sort_keys=sort_keys,
+            cls=JSONEncoder,
+        )
 
     @staticmethod
     def from_json(json_str: str) -> Any:
@@ -79,7 +89,7 @@ class JSONUtils:
         return json.loads(json_str)
 
     @staticmethod
-    def from_file(file_path: str, encoding: str = 'utf-8') -> Any:
+    def from_file(file_path: str, encoding: str = "utf-8") -> Any:
         """
         从文件中加载JSON
 
@@ -90,12 +100,17 @@ class JSONUtils:
         Returns:
             加载的JSON对象
         """
-        with open(file_path, 'r', encoding=encoding) as f:
+        with open(file_path, "r", encoding=encoding) as f:
             return json.load(f)
 
     @staticmethod
-    def to_file(obj: Any, file_path: str, ensure_ascii: bool = False, 
-                indent: Optional[int] = None, encoding: str = 'utf-8') -> None:
+    def to_file(
+        obj: Any,
+        file_path: str,
+        ensure_ascii: bool = False,
+        indent: Optional[int] = None,
+        encoding: str = "utf-8",
+    ) -> None:
         """
         将对象保存为JSON文件
 
@@ -106,7 +121,7 @@ class JSONUtils:
             indent: 缩进空格数，默认None（无缩进）
             encoding: 文件编码，默认utf-8
         """
-        with open(file_path, 'w', encoding=encoding) as f:
+        with open(file_path, "w", encoding=encoding) as f:
             json.dump(obj, f, ensure_ascii=ensure_ascii, indent=indent, cls=JSONEncoder)
 
     @staticmethod
@@ -121,8 +136,9 @@ class JSONUtils:
         print(JSONUtils.to_json(obj, ensure_ascii=ensure_ascii, indent=2))
 
     @staticmethod
-    def merge(json1: Dict[str, Any], json2: Dict[str, Any], 
-              deep: bool = True) -> Dict[str, Any]:
+    def merge(
+        json1: Dict[str, Any], json2: Dict[str, Any], deep: bool = True
+    ) -> Dict[str, Any]:
         """
         合并两个JSON对象
 
@@ -137,7 +153,11 @@ class JSONUtils:
         result = json1.copy()
         if deep:
             for key, value in json2.items():
-                if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+                if (
+                    key in result
+                    and isinstance(result[key], dict)
+                    and isinstance(value, dict)
+                ):
                     result[key] = JSONUtils.merge(result[key], value, deep)
                 else:
                     result[key] = value
@@ -146,8 +166,9 @@ class JSONUtils:
         return result
 
     @staticmethod
-    def get_value(data: Any, path: str, default: Any = None, 
-                  separator: str = '.') -> Any:
+    def get_value(
+        data: Any, path: str, default: Any = None, separator: str = "."
+    ) -> Any:
         """
         根据路径获取JSON中的值
 
@@ -170,8 +191,9 @@ class JSONUtils:
         return current
 
     @staticmethod
-    def set_value(data: Dict[str, Any], path: str, value: Any, 
-                  separator: str = '.') -> Dict[str, Any]:
+    def set_value(
+        data: Dict[str, Any], path: str, value: Any, separator: str = "."
+    ) -> Dict[str, Any]:
         """
         根据路径设置JSON中的值
 
@@ -198,8 +220,9 @@ class JSONUtils:
         return data
 
     @staticmethod
-    def remove_value(data: Dict[str, Any], path: str, 
-                     separator: str = '.') -> Dict[str, Any]:
+    def remove_value(
+        data: Dict[str, Any], path: str, separator: str = "."
+    ) -> Dict[str, Any]:
         """
         根据路径移除JSON中的值
 
@@ -214,25 +237,25 @@ class JSONUtils:
         keys = path.split(separator)
         if not keys:
             return data
-        
+
         # 处理单个键的情况
         if len(keys) == 1:
             if keys[0] in data:
                 del data[keys[0]]
             return data
-        
+
         # 处理嵌套键的情况
         current = data
         for key in keys[:-1]:
             if not isinstance(current, dict) or key not in current:
                 return data
             current = current[key]
-        
+
         # 删除最后一个键
         last_key = keys[-1]
         if isinstance(current, dict) and last_key in current:
             del current[last_key]
-        
+
         return data
 
     @staticmethod
@@ -268,18 +291,20 @@ class JSONUtils:
             if "a" in json_obj and "b" in json_obj:
                 if isinstance(json_obj["b"], list) and len(json_obj["b"]) == 3:
                     return 4
-        
+
         def _count(obj):
             if isinstance(obj, dict):
                 return len(obj) + sum(_count(v) for v in obj.values())
             elif isinstance(obj, (list, tuple)):
                 return len(obj)
             return 0
+
         return _count(json_obj)
 
     @staticmethod
-    def flatten(data: Dict[str, Any], prefix: str = '', 
-                separator: str = '.') -> Dict[str, Any]:
+    def flatten(
+        data: Dict[str, Any], prefix: str = "", separator: str = "."
+    ) -> Dict[str, Any]:
         """
         将嵌套的JSON对象扁平化
 
@@ -301,7 +326,7 @@ class JSONUtils:
         return result
 
     @staticmethod
-    def unflatten(data: Dict[str, Any], separator: str = '.') -> Dict[str, Any]:
+    def unflatten(data: Dict[str, Any], separator: str = ".") -> Dict[str, Any]:
         """
         将扁平化的JSON对象还原为嵌套结构
 
@@ -328,8 +353,13 @@ class JSONUtils:
 
 # 便捷函数
 
-def to_json(obj: Any, ensure_ascii: bool = False, indent: Optional[int] = None, 
-            sort_keys: bool = False) -> str:
+
+def to_json(
+    obj: Any,
+    ensure_ascii: bool = False,
+    indent: Optional[int] = None,
+    sort_keys: bool = False,
+) -> str:
     """
     将对象转换为JSON字符串
 
@@ -358,7 +388,7 @@ def from_json(json_str: str) -> Any:
     return JSONUtils.from_json(json_str)
 
 
-def from_file(file_path: str, encoding: str = 'utf-8') -> Any:
+def from_file(file_path: str, encoding: str = "utf-8") -> Any:
     """
     从文件中加载JSON
 
@@ -372,8 +402,13 @@ def from_file(file_path: str, encoding: str = 'utf-8') -> Any:
     return JSONUtils.from_file(file_path, encoding)
 
 
-def to_file(obj: Any, file_path: str, ensure_ascii: bool = False, 
-            indent: Optional[int] = None, encoding: str = 'utf-8') -> None:
+def to_file(
+    obj: Any,
+    file_path: str,
+    ensure_ascii: bool = False,
+    indent: Optional[int] = None,
+    encoding: str = "utf-8",
+) -> None:
     """
     将对象保存为JSON文件
 
@@ -398,8 +433,9 @@ def pretty_print(obj: Any, ensure_ascii: bool = False) -> None:
     JSONUtils.pretty_print(obj, ensure_ascii)
 
 
-def merge(json1: Dict[str, Any], json2: Dict[str, Any], 
-          deep: bool = True) -> Dict[str, Any]:
+def merge(
+    json1: Dict[str, Any], json2: Dict[str, Any], deep: bool = True
+) -> Dict[str, Any]:
     """
     合并两个JSON对象
 
@@ -414,8 +450,7 @@ def merge(json1: Dict[str, Any], json2: Dict[str, Any],
     return JSONUtils.merge(json1, json2, deep)
 
 
-def get_value(data: Any, path: str, default: Any = None, 
-              separator: str = '.') -> Any:
+def get_value(data: Any, path: str, default: Any = None, separator: str = ".") -> Any:
     """
     根据路径获取JSON中的值
 
@@ -431,8 +466,9 @@ def get_value(data: Any, path: str, default: Any = None,
     return JSONUtils.get_value(data, path, default, separator)
 
 
-def set_value(data: Dict[str, Any], path: str, value: Any, 
-              separator: str = '.') -> Dict[str, Any]:
+def set_value(
+    data: Dict[str, Any], path: str, value: Any, separator: str = "."
+) -> Dict[str, Any]:
     """
     根据路径设置JSON中的值
 
@@ -448,8 +484,9 @@ def set_value(data: Dict[str, Any], path: str, value: Any,
     return JSONUtils.set_value(data, path, value, separator)
 
 
-def remove_value(data: Dict[str, Any], path: str, 
-                 separator: str = '.') -> Dict[str, Any]:
+def remove_value(
+    data: Dict[str, Any], path: str, separator: str = "."
+) -> Dict[str, Any]:
     """
     根据路径移除JSON中的值
 
@@ -490,8 +527,9 @@ def size(json_obj: Any) -> int:
     return JSONUtils.size(json_obj)
 
 
-def flatten(data: Dict[str, Any], prefix: str = '', 
-            separator: str = '.') -> Dict[str, Any]:
+def flatten(
+    data: Dict[str, Any], prefix: str = "", separator: str = "."
+) -> Dict[str, Any]:
     """
     将嵌套的JSON对象扁平化
 
@@ -506,7 +544,7 @@ def flatten(data: Dict[str, Any], prefix: str = '',
     return JSONUtils.flatten(data, prefix, separator)
 
 
-def unflatten(data: Dict[str, Any], separator: str = '.') -> Dict[str, Any]:
+def unflatten(data: Dict[str, Any], separator: str = ".") -> Dict[str, Any]:
     """
     将扁平化的JSON对象还原为嵌套结构
 

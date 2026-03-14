@@ -3,14 +3,17 @@
 """
 EnumUtil 测试文件
 """
+
 import enum
 import unittest
+
 from btools.core.basic import EnumUtil
 
 
 # 测试用枚举类
 class TestEnum(enum.Enum):
     """测试枚举类"""
+
     FIRST = 1
     SECOND = 2
     THIRD = 3
@@ -174,5 +177,5 @@ class TestEnumUtil(unittest.TestCase):
         self.assertEqual(ordinal, 2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

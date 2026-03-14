@@ -2,13 +2,23 @@
 """
 FastAPI工具测试
 """
+
 import unittest
-from btools.core.api.fastapiutils import (
-    FastAPIUtils, create_app, create_router, add_cors, add_middleware,
-    add_exception_handler, setup_error_handlers, create_response, create_error_response
-)
-from fastapi import FastAPI, APIRouter, HTTPException, Request
+
+from fastapi import APIRouter, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
+
+from btools.core.api.fastapiutils import (
+    FastAPIUtils,
+    add_cors,
+    add_exception_handler,
+    add_middleware,
+    create_app,
+    create_error_response,
+    create_response,
+    create_router,
+    setup_error_handlers,
+)
 
 
 class TestFastAPIUtils(unittest.TestCase):
@@ -34,7 +44,7 @@ class TestFastAPIUtils(unittest.TestCase):
             docs_url="/test-docs",
             redoc_url="/test-redoc",
             openapi_url="/test-openapi.json",
-            debug=True
+            debug=True,
         )
         self.assertIsInstance(app, FastAPI)
         self.assertEqual(app.title, "Test App")
@@ -55,9 +65,7 @@ class TestFastAPIUtils(unittest.TestCase):
 
         # 测试自定义参数
         router = FastAPIUtils.create_router(
-            prefix="/api",
-            tags=["test"],
-            dependencies=[]
+            prefix="/api", tags=["test"], dependencies=[]
         )
         self.assertIsInstance(router, APIRouter)
         self.assertEqual(router.prefix, "/api")
@@ -91,10 +99,7 @@ class TestFastAPIUtils(unittest.TestCase):
         # 测试自定义参数
         test_data = {"key": "value"}
         response = FastAPIUtils.create_response(
-            data=test_data,
-            message="Test Message",
-            code=201,
-            headers={"X-Test": "test"}
+            data=test_data, message="Test Message", code=201, headers={"X-Test": "test"}
         )
         self.assertIsInstance(response, JSONResponse)
         self.assertEqual(response.status_code, 201)
@@ -111,9 +116,7 @@ class TestFastAPIUtils(unittest.TestCase):
         # 测试自定义参数
         test_details = {"error": "Test Error"}
         response = FastAPIUtils.create_error_response(
-            message="Test Error Message",
-            code=404,
-            details=test_details
+            message="Test Error Message", code=404, details=test_details
         )
         self.assertIsInstance(response, JSONResponse)
         self.assertEqual(response.status_code, 404)
@@ -147,5 +150,5 @@ class TestFastAPIUtils(unittest.TestCase):
         self.assertIsInstance(error_response, JSONResponse)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

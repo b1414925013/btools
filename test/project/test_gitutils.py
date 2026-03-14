@@ -1,6 +1,8 @@
 """测试GitUtils类"""
-import unittest
+
 import os
+import unittest
+
 from btools.core.project.gitutils import GitUtils
 
 

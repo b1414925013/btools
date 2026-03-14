@@ -5,11 +5,12 @@
 
 提供跨平台进程管理，启动、监控、终止进程等功能
 """
+
 import os
-import subprocess
 import signal
+import subprocess
 import time
-from typing import Dict, Any, Optional, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class ProcessUtils:
@@ -18,7 +19,12 @@ class ProcessUtils:
     """
 
     @staticmethod
-    def run_command(command: str, cwd: Optional[str] = None, shell: bool = False, timeout: Optional[int] = None) -> Dict[str, Any]:
+    def run_command(
+        command: str,
+        cwd: Optional[str] = None,
+        shell: bool = False,
+        timeout: Optional[int] = None,
+    ) -> Dict[str, Any]:
         """
         运行命令
 
@@ -33,39 +39,41 @@ class ProcessUtils:
         """
         try:
             result = subprocess.run(
-                command, 
-                cwd=cwd, 
-                shell=shell, 
-                capture_output=True, 
-                text=True, 
-                timeout=timeout
+                command,
+                cwd=cwd,
+                shell=shell,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
             )
             return {
-                'success': result.returncode == 0,
-                'returncode': result.returncode,
-                'stdout': result.stdout,
-                'stderr': result.stderr,
-                'error': None
+                "success": result.returncode == 0,
+                "returncode": result.returncode,
+                "stdout": result.stdout,
+                "stderr": result.stderr,
+                "error": None,
             }
         except subprocess.TimeoutExpired as e:
             return {
-                'success': False,
-                'returncode': None,
-                'stdout': e.stdout.decode() if e.stdout else '',
-                'stderr': e.stderr.decode() if e.stderr else '',
-                'error': f'Timeout expired: {timeout} seconds'
+                "success": False,
+                "returncode": None,
+                "stdout": e.stdout.decode() if e.stdout else "",
+                "stderr": e.stderr.decode() if e.stderr else "",
+                "error": f"Timeout expired: {timeout} seconds",
             }
         except Exception as e:
             return {
-                'success': False,
-                'returncode': None,
-                'stdout': '',
-                'stderr': '',
-                'error': str(e)
+                "success": False,
+                "returncode": None,
+                "stdout": "",
+                "stderr": "",
+                "error": str(e),
             }
 
     @staticmethod
-    def start_process(command: str, cwd: Optional[str] = None, shell: bool = False) -> Optional[subprocess.Popen]:
+    def start_process(
+        command: str, cwd: Optional[str] = None, shell: bool = False
+    ) -> Optional[subprocess.Popen]:
         """
         启动进程
 
@@ -79,12 +87,12 @@ class ProcessUtils:
         """
         try:
             process = subprocess.Popen(
-                command, 
-                cwd=cwd, 
-                shell=shell, 
-                stdout=subprocess.PIPE, 
+                command,
+                cwd=cwd,
+                shell=shell,
+                stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True
+                text=True,
             )
             return process
         except Exception as e:
@@ -103,7 +111,7 @@ class ProcessUtils:
         """
         try:
             if process.poll() is None:  # 进程仍在运行
-                if os.name == 'nt':  # Windows
+                if os.name == "nt":  # Windows
                     process.terminate()
                     process.wait(timeout=5)
                 else:  # Unix-like
@@ -130,7 +138,7 @@ class ProcessUtils:
         """
         try:
             if process.poll() is None:  # 进程仍在运行
-                if os.name == 'nt':  # Windows
+                if os.name == "nt":  # Windows
                     process.kill()
                 else:  # Unix-like
                     process.send_signal(signal.SIGKILL)
@@ -154,20 +162,22 @@ class ProcessUtils:
             returncode = process.poll()
             is_running = returncode is None
             return {
-                'is_running': is_running,
-                'returncode': returncode,
-                'pid': process.pid
+                "is_running": is_running,
+                "returncode": returncode,
+                "pid": process.pid,
             }
         except Exception as e:
             return {
-                'is_running': False,
-                'returncode': None,
-                'pid': None,
-                'error': str(e)
+                "is_running": False,
+                "returncode": None,
+                "pid": None,
+                "error": str(e),
             }
 
     @staticmethod
-    def get_process_output(process: subprocess.Popen, timeout: Optional[int] = None) -> Dict[str, Any]:
+    def get_process_output(
+        process: subprocess.Popen, timeout: Optional[int] = None
+    ) -> Dict[str, Any]:
         """
         获取进程输出
 
@@ -181,27 +191,24 @@ class ProcessUtils:
         try:
             stdout, stderr = process.communicate(timeout=timeout)
             return {
-                'stdout': stdout,
-                'stderr': stderr,
-                'returncode': process.returncode
+                "stdout": stdout,
+                "stderr": stderr,
+                "returncode": process.returncode,
             }
         except subprocess.TimeoutExpired as e:
             return {
-                'stdout': e.stdout,
-                'stderr': e.stderr,
-                'returncode': None,
-                'error': f'Timeout expired: {timeout} seconds'
+                "stdout": e.stdout,
+                "stderr": e.stderr,
+                "returncode": None,
+                "error": f"Timeout expired: {timeout} seconds",
             }
         except Exception as e:
-            return {
-                'stdout': '',
-                'stderr': '',
-                'returncode': None,
-                'error': str(e)
-            }
+            return {"stdout": "", "stderr": "", "returncode": None, "error": str(e)}
 
     @staticmethod
-    def wait_for_process(process: subprocess.Popen, timeout: Optional[int] = None) -> int:
+    def wait_for_process(
+        process: subprocess.Popen, timeout: Optional[int] = None
+    ) -> int:
         """
         等待进程结束
 
@@ -229,38 +236,38 @@ class ProcessUtils:
         """
         processes = []
         try:
-            if os.name == 'nt':  # Windows
+            if os.name == "nt":  # Windows
                 result = subprocess.run(
-                    ['tasklist', '/fo', 'csv', '/nh'],
-                    capture_output=True,
-                    text=True
+                    ["tasklist", "/fo", "csv", "/nh"], capture_output=True, text=True
                 )
-                for line in result.stdout.split('\n'):
+                for line in result.stdout.split("\n"):
                     if line.strip():
-                        parts = line.strip().split(',')
+                        parts = line.strip().split(",")
                         if len(parts) >= 2:
-                            processes.append({
-                                'name': parts[0].strip('"'),
-                                'pid': int(parts[1].strip('"')),
-                                'mem usage': parts[4].strip('"') if len(parts) > 4 else ''
-                            })
+                            processes.append(
+                                {
+                                    "name": parts[0].strip('"'),
+                                    "pid": int(parts[1].strip('"')),
+                                    "mem usage": (
+                                        parts[4].strip('"') if len(parts) > 4 else ""
+                                    ),
+                                }
+                            )
             else:  # Unix-like
-                result = subprocess.run(
-                    ['ps', 'aux'],
-                    capture_output=True,
-                    text=True
-                )
-                for line in result.stdout.split('\n')[1:]:  # 跳过表头
+                result = subprocess.run(["ps", "aux"], capture_output=True, text=True)
+                for line in result.stdout.split("\n")[1:]:  # 跳过表头
                     if line.strip():
                         parts = line.strip().split()
                         if len(parts) >= 10:
-                            processes.append({
-                                'user': parts[0],
-                                'pid': int(parts[1]),
-                                'cpu': parts[2],
-                                'mem': parts[3],
-                                'command': ' '.join(parts[10:])
-                            })
+                            processes.append(
+                                {
+                                    "user": parts[0],
+                                    "pid": int(parts[1]),
+                                    "cpu": parts[2],
+                                    "mem": parts[3],
+                                    "command": " ".join(parts[10:]),
+                                }
+                            )
         except Exception as e:
             pass
         return processes
@@ -277,7 +284,12 @@ class ProcessUtils:
             进程列表
         """
         processes = ProcessUtils.get_process_list()
-        return [p for p in processes if name.lower() in str(p.get('name', '')).lower() or name.lower() in str(p.get('command', '')).lower()]
+        return [
+            p
+            for p in processes
+            if name.lower() in str(p.get("name", "")).lower()
+            or name.lower() in str(p.get("command", "")).lower()
+        ]
 
     @staticmethod
     def find_process_by_pid(pid: int) -> Optional[Dict[str, Any]]:
@@ -292,7 +304,7 @@ class ProcessUtils:
         """
         processes = ProcessUtils.get_process_list()
         for p in processes:
-            if p.get('pid') == pid:
+            if p.get("pid") == pid:
                 return p
         return None
 
@@ -308,8 +320,10 @@ class ProcessUtils:
             是否成功
         """
         try:
-            if os.name == 'nt':  # Windows
-                subprocess.run(['taskkill', '/F', '/PID', str(pid)], capture_output=True)
+            if os.name == "nt":  # Windows
+                subprocess.run(
+                    ["taskkill", "/F", "/PID", str(pid)], capture_output=True
+                )
             else:  # Unix-like
                 os.kill(pid, signal.SIGTERM)
                 # 等待进程终止
@@ -339,7 +353,7 @@ class ProcessUtils:
         processes = ProcessUtils.find_process_by_name(name)
         count = 0
         for process in processes:
-            pid = process.get('pid')
+            pid = process.get("pid")
             if pid:
                 if ProcessUtils.kill_process_by_pid(pid):
                     count += 1
@@ -363,9 +377,10 @@ class ProcessUtils:
         Returns:
             父进程 ID
         """
-        if os.name == 'nt':  # Windows
+        if os.name == "nt":  # Windows
             try:
                 import psutil
+
                 return psutil.Process().ppid()
             except:
                 return 0
@@ -384,27 +399,25 @@ class ProcessUtils:
             内存使用量（字节）
         """
         try:
-            if os.name == 'nt':  # Windows
+            if os.name == "nt":  # Windows
                 result = subprocess.run(
-                    ['tasklist', '/fi', f'PID eq {pid}', '/fo', 'csv', '/nh'],
+                    ["tasklist", "/fi", f"PID eq {pid}", "/fo", "csv", "/nh"],
                     capture_output=True,
-                    text=True
+                    text=True,
                 )
-                for line in result.stdout.split('\n'):
+                for line in result.stdout.split("\n"):
                     if line.strip():
-                        parts = line.strip().split(',')
+                        parts = line.strip().split(",")
                         if len(parts) > 4:
-                            mem_str = parts[4].strip('"').replace(',', '')
+                            mem_str = parts[4].strip('"').replace(",", "")
                             # 转换为字节
-                            if mem_str.endswith('K'):
+                            if mem_str.endswith("K"):
                                 return int(mem_str[:-1]) * 1024
-                            elif mem_str.endswith('M'):
+                            elif mem_str.endswith("M"):
                                 return int(mem_str[:-1]) * 1024 * 1024
             else:  # Unix-like
                 result = subprocess.run(
-                    ['ps', 'o', 'rss=', '-p', str(pid)],
-                    capture_output=True,
-                    text=True
+                    ["ps", "o", "rss=", "-p", str(pid)], capture_output=True, text=True
                 )
                 mem_str = result.stdout.strip()
                 if mem_str:
@@ -425,20 +438,19 @@ class ProcessUtils:
             CPU 使用率
         """
         try:
-            if os.name == 'nt':  # Windows
+            if os.name == "nt":  # Windows
                 # Windows 没有直接的命令获取 CPU 使用率
                 # 这里使用 psutil 作为备选
                 try:
                     import psutil
+
                     process = psutil.Process(pid)
                     return process.cpu_percent(interval=1)
                 except:
                     pass
             else:  # Unix-like
                 result = subprocess.run(
-                    ['ps', 'o', '%cpu=', '-p', str(pid)],
-                    capture_output=True,
-                    text=True
+                    ["ps", "o", "%cpu=", "-p", str(pid)], capture_output=True, text=True
                 )
                 cpu_str = result.stdout.strip()
                 if cpu_str:
@@ -456,7 +468,7 @@ class ProcessUtils:
             是否成功
         """
         try:
-            if os.name != 'nt':  # Unix-like
+            if os.name != "nt":  # Unix-like
                 os.setpgid(0, 0)
             return True
         except Exception:
@@ -474,7 +486,7 @@ class ProcessUtils:
             是否成功
         """
         try:
-            if os.name != 'nt':  # Unix-like
+            if os.name != "nt":  # Unix-like
                 os.killpg(pgid, signal.SIGTERM)
                 return True
         except Exception:
@@ -482,7 +494,9 @@ class ProcessUtils:
         return False
 
     @staticmethod
-    def run_in_background(command: str, cwd: Optional[str] = None, shell: bool = False) -> Optional[int]:
+    def run_in_background(
+        command: str, cwd: Optional[str] = None, shell: bool = False
+    ) -> Optional[int]:
         """
         在后台运行命令
 
@@ -495,30 +509,32 @@ class ProcessUtils:
             进程 ID
         """
         try:
-            if os.name == 'nt':  # Windows
+            if os.name == "nt":  # Windows
                 # Windows 后台运行
                 process = subprocess.Popen(
-                    command, 
-                    cwd=cwd, 
+                    command,
+                    cwd=cwd,
                     shell=shell,
-                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP
+                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP,
                 )
             else:  # Unix-like
                 # Unix 后台运行
                 process = subprocess.Popen(
-                    command, 
-                    cwd=cwd, 
+                    command,
+                    cwd=cwd,
                     shell=shell,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
-                    preexec_fn=os.setpgid
+                    preexec_fn=os.setpgid,
                 )
             return process.pid
         except Exception:
             return None
 
     @staticmethod
-    def monitor_process(pid: int, interval: int = 1, duration: int = 60) -> List[Dict[str, Any]]:
+    def monitor_process(
+        pid: int, interval: int = 1, duration: int = 60
+    ) -> List[Dict[str, Any]]:
         """
         监控进程
 
@@ -541,20 +557,24 @@ class ProcessUtils:
             mem_usage = ProcessUtils.get_process_memory_usage(pid)
             cpu_usage = ProcessUtils.get_process_cpu_usage(pid)
 
-            monitoring_data.append({
-                'timestamp': time.time(),
-                'pid': pid,
-                'memory_usage': mem_usage,
-                'cpu_usage': cpu_usage,
-                'process_info': process_info
-            })
+            monitoring_data.append(
+                {
+                    "timestamp": time.time(),
+                    "pid": pid,
+                    "memory_usage": mem_usage,
+                    "cpu_usage": cpu_usage,
+                    "process_info": process_info,
+                }
+            )
 
             time.sleep(interval)
 
         return monitoring_data
 
     @staticmethod
-    def execute_with_retry(command: str, max_retries: int = 3, retry_delay: int = 1, **kwargs) -> Dict[str, Any]:
+    def execute_with_retry(
+        command: str, max_retries: int = 3, retry_delay: int = 1, **kwargs
+    ) -> Dict[str, Any]:
         """
         带重试的命令执行
 
@@ -569,7 +589,7 @@ class ProcessUtils:
         """
         for attempt in range(max_retries):
             result = ProcessUtils.run_command(command, **kwargs)
-            if result['success']:
+            if result["success"]:
                 return result
             if attempt < max_retries - 1:
                 time.sleep(retry_delay)
@@ -587,22 +607,23 @@ class ProcessUtils:
             环境变量字典
         """
         try:
-            if os.name == 'nt':  # Windows
+            if os.name == "nt":  # Windows
                 # Windows 没有直接的命令获取进程环境变量
                 # 这里使用 psutil 作为备选
                 try:
                     import psutil
+
                     process = psutil.Process(pid)
                     return process.environ()
                 except:
                     pass
             else:  # Unix-like
-                with open(f'/proc/{pid}/environ', 'r') as f:
+                with open(f"/proc/{pid}/environ", "r") as f:
                     env_str = f.read()
                 env_vars = {}
-                for var in env_str.split('\0'):
-                    if '=' in var:
-                        key, value = var.split('=', 1)
+                for var in env_str.split("\0"):
+                    if "=" in var:
+                        key, value = var.split("=", 1)
                         env_vars[key] = value
                 return env_vars
         except Exception:
@@ -622,8 +643,9 @@ class ProcessUtils:
             是否成功
         """
         try:
-            if os.name == 'nt':  # Windows
+            if os.name == "nt":  # Windows
                 import psutil
+
                 process = psutil.Process(pid)
                 process.nice(priority)
             else:  # Unix-like
@@ -644,8 +666,9 @@ class ProcessUtils:
             优先级
         """
         try:
-            if os.name == 'nt':  # Windows
+            if os.name == "nt":  # Windows
                 import psutil
+
                 process = psutil.Process(pid)
                 return process.nice()
             else:  # Unix-like
@@ -665,13 +688,11 @@ class ProcessUtils:
             是否在运行
         """
         try:
-            if os.name == 'nt':  # Windows
+            if os.name == "nt":  # Windows
                 result = subprocess.run(
-                    ['tasklist', '/fi', f'PID eq {pid}'],
-                    capture_output=True,
-                    text=True
+                    ["tasklist", "/fi", f"PID eq {pid}"], capture_output=True, text=True
                 )
-                return f'PID {pid}' in result.stdout
+                return f"PID {pid}" in result.stdout
             else:  # Unix-like
                 os.kill(pid, 0)  # 发送空信号检查进程是否存在
                 return True
@@ -732,7 +753,9 @@ class ProcessUtils:
         return ProcessUtils.run_command(command, timeout=timeout, **kwargs)
 
     @staticmethod
-    def run_interactive(command: str, cwd: Optional[str] = None) -> Optional[subprocess.Popen]:
+    def run_interactive(
+        command: str, cwd: Optional[str] = None
+    ) -> Optional[subprocess.Popen]:
         """
         运行交互式命令
 
@@ -745,13 +768,13 @@ class ProcessUtils:
         """
         try:
             process = subprocess.Popen(
-                command, 
-                cwd=cwd, 
+                command,
+                cwd=cwd,
                 shell=True,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True
+                text=True,
             )
             return process
         except Exception:
@@ -807,10 +830,10 @@ class ProcessUtils:
 
         return {
             **process_info,
-            'memory_usage': mem_usage,
-            'cpu_usage': cpu_usage,
-            'environment': environment,
-            'is_running': ProcessUtils.is_process_running(pid)
+            "memory_usage": mem_usage,
+            "cpu_usage": cpu_usage,
+            "environment": environment,
+            "is_running": ProcessUtils.is_process_running(pid),
         }
 
     @staticmethod
@@ -824,7 +847,7 @@ class ProcessUtils:
         # 注意：此功能需要谨慎使用
         count = 0
         try:
-            if os.name == 'nt':  # Windows
+            if os.name == "nt":  # Windows
                 # Windows 不支持进程组，需要其他方式
                 pass
             else:  # Unix-like
@@ -849,9 +872,10 @@ class ProcessUtils:
         """
         children = []
         try:
-            if os.name == 'nt':  # Windows
+            if os.name == "nt":  # Windows
                 try:
                     import psutil
+
                     process = psutil.Process(pid)
                     for child in process.children(recursive=True):
                         children.append(child.pid)
@@ -859,6 +883,7 @@ class ProcessUtils:
                     pass
             else:  # Unix-like
                 import psutil
+
                 process = psutil.Process(pid)
                 for child in process.children(recursive=True):
                     children.append(child.pid)

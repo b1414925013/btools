@@ -5,10 +5,11 @@
 
 提供高级模拟工具，支持复杂对象和行为模拟等功能
 """
+
 import unittest.mock
 from typing import Any, Callable, Dict, List, Optional, Type, TypeVar, Union
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class MockUtils:
@@ -35,7 +36,9 @@ class MockUtils:
         return mock
 
     @staticmethod
-    def create_magic_mock(spec: Optional[Type] = None, **kwargs) -> unittest.mock.MagicMock:
+    def create_magic_mock(
+        spec: Optional[Type] = None, **kwargs
+    ) -> unittest.mock.MagicMock:
         """
         创建魔术模拟对象
 
@@ -81,7 +84,9 @@ class MockUtils:
         return unittest.mock.patch(target, **kwargs)
 
     @staticmethod
-    def patch_object(target: Any, attribute: str, **kwargs) -> unittest.mock._patch_object:
+    def patch_object(
+        target: Any, attribute: str, **kwargs
+    ) -> unittest.mock._patch_object:
         """
         补丁对象的属性
 
@@ -125,7 +130,9 @@ class MockUtils:
         return mock_obj
 
     @staticmethod
-    def mock_side_effect(mock_obj: unittest.mock.Mock, side_effect: Union[Callable, List, Exception]) -> unittest.mock.Mock:
+    def mock_side_effect(
+        mock_obj: unittest.mock.Mock, side_effect: Union[Callable, List, Exception]
+    ) -> unittest.mock.Mock:
         """
         设置模拟对象的副作用
 
@@ -140,7 +147,9 @@ class MockUtils:
         return mock_obj
 
     @staticmethod
-    def mock_raises(mock_obj: unittest.mock.Mock, exception: Exception) -> unittest.mock.Mock:
+    def mock_raises(
+        mock_obj: unittest.mock.Mock, exception: Exception
+    ) -> unittest.mock.Mock:
         """
         设置模拟对象抛出异常
 
@@ -155,7 +164,9 @@ class MockUtils:
         return mock_obj
 
     @staticmethod
-    def mock_returns_iterable(mock_obj: unittest.mock.Mock, iterable: List[Any]) -> unittest.mock.Mock:
+    def mock_returns_iterable(
+        mock_obj: unittest.mock.Mock, iterable: List[Any]
+    ) -> unittest.mock.Mock:
         """
         设置模拟对象返回可迭代对象
 
@@ -282,12 +293,12 @@ class MockUtils:
         mock = MockUtils.create_mock(spec=spec)
 
         for attr_name, attr_value in behavior.items():
-            if isinstance(attr_value, dict) and 'return_value' in attr_value:
+            if isinstance(attr_value, dict) and "return_value" in attr_value:
                 # 处理方法模拟
                 method_mock = MockUtils.create_mock()
-                method_mock.return_value = attr_value['return_value']
-                if 'side_effect' in attr_value:
-                    method_mock.side_effect = attr_value['side_effect']
+                method_mock.return_value = attr_value["return_value"]
+                if "side_effect" in attr_value:
+                    method_mock.side_effect = attr_value["side_effect"]
                 setattr(mock, attr_name, method_mock)
             else:
                 # 处理属性模拟
@@ -296,7 +307,11 @@ class MockUtils:
         return mock
 
     @staticmethod
-    def mock_context_manager(mock_obj: unittest.mock.Mock, enter_return: Any = None, exit_return: bool = False) -> unittest.mock.Mock:
+    def mock_context_manager(
+        mock_obj: unittest.mock.Mock,
+        enter_return: Any = None,
+        exit_return: bool = False,
+    ) -> unittest.mock.Mock:
         """
         模拟上下文管理器
 
@@ -313,7 +328,9 @@ class MockUtils:
         return mock_obj
 
     @staticmethod
-    def mock_iterator(mock_obj: unittest.mock.Mock, items: List[Any]) -> unittest.mock.Mock:
+    def mock_iterator(
+        mock_obj: unittest.mock.Mock, items: List[Any]
+    ) -> unittest.mock.Mock:
         """
         模拟迭代器
 
@@ -342,7 +359,9 @@ class MockUtils:
         return unittest.mock.create_autospec(spec, **kwargs)
 
     @staticmethod
-    def patch_dict(target: Dict, values: Dict, clear: bool = False) -> unittest.mock._patch_dict:
+    def patch_dict(
+        target: Dict, values: Dict, clear: bool = False
+    ) -> unittest.mock._patch_dict:
         """
         补丁字典
 
@@ -357,7 +376,7 @@ class MockUtils:
         return unittest.mock.patch.dict(target, values, clear=clear)
 
     @staticmethod
-    def mock_open(read_data: str = '') -> unittest.mock.MagicMock:
+    def mock_open(read_data: str = "") -> unittest.mock.MagicMock:
         """
         模拟 open 函数
 
