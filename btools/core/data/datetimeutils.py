@@ -511,6 +511,69 @@ class DateTimeUtils:
         return dt.timestamp()
 
     @staticmethod
+    def parse_datetime_auto(date_str: str) -> Optional[datetime.datetime]:
+        """
+        自动解析多种格式的日期时间字符串
+
+        Args:
+            date_str: 日期时间字符串
+
+        Returns:
+            解析后的日期时间对象，如果解析失败返回None
+        """
+        if not date_str:
+            return None
+
+        # 支持的日期时间格式列表
+        formats = [
+            "%Y-%m-%dT%H:%M",  # ISO格式：2026-03-15T22:12
+            "%Y-%m-%dT%H:%M:%S",  # ISO格式：2026-03-15T22:12:34
+            "%Y-%m-%dT%H:%M:%S.%f",  # ISO格式：2026-03-15T22:12:34.123
+            "%Y-%m-%d %H:%M:%S",  # 标准格式：2026-03-15 22:12:34
+            "%Y-%m-%d %H:%M:%S.%f",  # 标准格式：2026-03-15 22:12:34.123
+            "%Y-%m-%d %H:%M",  # 简化格式：2026-03-15 22:12
+            "%Y-%m-%d",  # 日期格式：2026-03-15
+            "%Y/%m/%d %H:%M:%S",  # 斜杠分隔：2026/03/15 22:12:34
+            "%Y/%m/%d",  # 斜杠分隔：2026/03/15
+        ]
+
+        # 尝试每种格式
+        for fmt in formats:
+            try:
+                return datetime.datetime.strptime(date_str, fmt)
+            except ValueError:
+                continue
+
+        # 如果所有格式都失败，返回None
+        return None
+
+    @staticmethod
+    def datetime_to_milliseconds(dt: datetime.datetime) -> int:
+        """
+        日期时间转毫秒时间戳
+
+        Args:
+            dt: 日期时间对象
+
+        Returns:
+            毫秒时间戳
+        """
+        return int(dt.timestamp() * 1000)
+
+    @staticmethod
+    def timestamp_to_milliseconds(timestamp: Union[int, float]) -> int:
+        """
+        时间戳转毫秒时间戳
+
+        Args:
+            timestamp: 秒时间戳
+
+        Returns:
+            毫秒时间戳
+        """
+        return int(timestamp * 1000)
+
+    @staticmethod
     def format_relative_time(dt: Union[datetime.datetime, datetime.date]) -> str:
         """
         格式化相对时间
@@ -1001,6 +1064,45 @@ def datetime_to_timestamp(dt: datetime.datetime) -> float:
         时间戳
     """
     return DateTimeUtils.datetime_to_timestamp(dt)
+
+
+def parse_datetime_auto(date_str: str) -> Optional[datetime.datetime]:
+    """
+    自动解析多种格式的日期时间字符串
+
+    Args:
+        date_str: 日期时间字符串
+
+    Returns:
+        解析后的日期时间对象，如果解析失败返回None
+    """
+    return DateTimeUtils.parse_datetime_auto(date_str)
+
+
+def datetime_to_milliseconds(dt: datetime.datetime) -> int:
+    """
+    日期时间转毫秒时间戳
+
+    Args:
+        dt: 日期时间对象
+
+    Returns:
+        毫秒时间戳
+    """
+    return DateTimeUtils.datetime_to_milliseconds(dt)
+
+
+def timestamp_to_milliseconds(timestamp: Union[int, float]) -> int:
+    """
+    时间戳转毫秒时间戳
+
+    Args:
+        timestamp: 秒时间戳
+
+    Returns:
+        毫秒时间戳
+    """
+    return DateTimeUtils.timestamp_to_milliseconds(timestamp)
 
 
 def format_relative_time(dt: Union[datetime.datetime, datetime.date]) -> str:

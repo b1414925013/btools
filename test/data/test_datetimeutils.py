@@ -13,6 +13,7 @@ from btools.core.data.datetimeutils import (
     add_minutes,
     add_seconds,
     between,
+    datetime_to_milliseconds,
     datetime_to_timestamp,
     days_between,
     format_datetime,
@@ -36,9 +37,11 @@ from btools.core.data.datetimeutils import (
     now_utc,
     parse_date,
     parse_datetime,
+    parse_datetime_auto,
     parse_iso_format,
     seconds_between,
     timestamp_to_datetime,
+    timestamp_to_milliseconds,
     to_iso_format,
     today,
 )
@@ -292,6 +295,81 @@ class TestDateTimeUtils(unittest.TestCase):
         self.assertEqual(parsed_datetime.year, 2024)
         self.assertEqual(parsed_datetime.month, 1)
 
+    def test_parse_datetime_auto(self):
+        """
+        测试自动解析多种格式的日期时间字符串
+        """
+        # 测试ISO格式：2026-03-15T22:12
+        dt = DateTimeUtils.parse_datetime_auto("2026-03-15T22:12")
+        self.assertIsNotNone(dt)
+        self.assertEqual(dt.year, 2026)
+        self.assertEqual(dt.month, 3)
+        self.assertEqual(dt.day, 15)
+        self.assertEqual(dt.hour, 22)
+        self.assertEqual(dt.minute, 12)
+
+        # 测试标准格式：2026-03-15 22:12:34
+        dt = DateTimeUtils.parse_datetime_auto("2026-03-15 22:12:34")
+        self.assertIsNotNone(dt)
+        self.assertEqual(dt.year, 2026)
+        self.assertEqual(dt.month, 3)
+        self.assertEqual(dt.day, 15)
+        self.assertEqual(dt.hour, 22)
+        self.assertEqual(dt.minute, 12)
+        self.assertEqual(dt.second, 34)
+
+        # 测试简化格式：2026-03-15 22:12
+        dt = DateTimeUtils.parse_datetime_auto("2026-03-15 22:12")
+        self.assertIsNotNone(dt)
+        self.assertEqual(dt.year, 2026)
+        self.assertEqual(dt.month, 3)
+        self.assertEqual(dt.day, 15)
+        self.assertEqual(dt.hour, 22)
+        self.assertEqual(dt.minute, 12)
+
+        # 测试日期格式：2026-03-15
+        dt = DateTimeUtils.parse_datetime_auto("2026-03-15")
+        self.assertIsNotNone(dt)
+        self.assertEqual(dt.year, 2026)
+        self.assertEqual(dt.month, 3)
+        self.assertEqual(dt.day, 15)
+
+        # 测试无效格式
+        dt = DateTimeUtils.parse_datetime_auto("invalid-date")
+        self.assertIsNone(dt)
+
+        # 测试空字符串
+        dt = DateTimeUtils.parse_datetime_auto("")
+        self.assertIsNone(dt)
+
+    def test_datetime_to_milliseconds(self):
+        """
+        测试日期时间转毫秒时间戳
+        """
+        test_datetime = datetime.datetime(2024, 1, 1, 12, 0, 0)
+        milliseconds = DateTimeUtils.datetime_to_milliseconds(test_datetime)
+        self.assertIsInstance(milliseconds, int)
+        self.assertGreater(milliseconds, 0)
+
+        # 验证转换正确性
+        timestamp = DateTimeUtils.datetime_to_timestamp(test_datetime)
+        expected_ms = int(timestamp * 1000)
+        self.assertEqual(milliseconds, expected_ms)
+
+    def test_timestamp_to_milliseconds(self):
+        """
+        测试时间戳转毫秒时间戳
+        """
+        # 测试整数时间戳
+        timestamp = 1704067200  # 2024-01-01 12:00:00
+        milliseconds = DateTimeUtils.timestamp_to_milliseconds(timestamp)
+        self.assertEqual(milliseconds, 1704067200000)
+
+        # 测试浮点数时间戳
+        timestamp = 1704067200.5
+        milliseconds = DateTimeUtils.timestamp_to_milliseconds(timestamp)
+        self.assertEqual(milliseconds, 1704067200500)
+
     def test_convenience_functions(self):
         """
         测试便捷函数
@@ -315,6 +393,18 @@ class TestDateTimeUtils(unittest.TestCase):
         # 测试parse_datetime便捷函数
         parsed = parse_datetime("2024-01-01 12:00:00")
         self.assertIsInstance(parsed, datetime.datetime)
+
+        # 测试parse_datetime_auto便捷函数
+        parsed_auto = parse_datetime_auto("2026-03-15 22:12:34")
+        self.assertIsNotNone(parsed_auto)
+
+        # 测试datetime_to_milliseconds便捷函数
+        ms = datetime_to_milliseconds(self.test_datetime)
+        self.assertIsInstance(ms, int)
+
+        # 测试timestamp_to_milliseconds便捷函数
+        ms = timestamp_to_milliseconds(1704067200)
+        self.assertEqual(ms, 1704067200000)
 
         # 测试add_days便捷函数
         new_date = add_days(self.test_date, 1)
