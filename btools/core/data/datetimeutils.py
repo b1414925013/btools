@@ -31,6 +31,16 @@ class DateTimeUtils:
         return datetime.datetime.now()
 
     @staticmethod
+    def now_utc() -> datetime.datetime:
+        """
+        获取当前UTC时间
+
+        Returns:
+            当前UTC时间
+        """
+        return datetime.datetime.utcnow()
+
+    @staticmethod
     def today() -> datetime.date:
         """
         获取今天的日期
@@ -571,6 +581,16 @@ def now() -> datetime.datetime:
         当前时间
     """
     return DateTimeUtils.now()
+
+
+def now_utc() -> datetime.datetime:
+    """
+    获取当前UTC时间
+
+    Returns:
+        当前UTC时间
+    """
+    return DateTimeUtils.now_utc()
 
 
 def today() -> datetime.date:

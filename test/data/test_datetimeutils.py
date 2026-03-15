@@ -33,6 +33,7 @@ from btools.core.data.datetimeutils import (
     is_yesterday,
     minutes_between,
     now,
+    now_utc,
     parse_date,
     parse_datetime,
     parse_iso_format,
@@ -61,6 +62,15 @@ class TestDateTimeUtils(unittest.TestCase):
         """
         current = DateTimeUtils.now()
         self.assertIsInstance(current, datetime.datetime)
+
+    def test_now_utc(self):
+        """
+        测试获取当前UTC时间
+        """
+        current_utc = DateTimeUtils.now_utc()
+        self.assertIsInstance(current_utc, datetime.datetime)
+        # 验证返回的是UTC时间
+        self.assertEqual(current_utc.tzinfo, None)  # datetime.utcnow()返回的是naive datetime
 
     def test_today(self):
         """
@@ -289,6 +299,10 @@ class TestDateTimeUtils(unittest.TestCase):
         # 测试now便捷函数
         current = now()
         self.assertIsInstance(current, datetime.datetime)
+
+        # 测试now_utc便捷函数
+        current_utc = now_utc()
+        self.assertIsInstance(current_utc, datetime.datetime)
 
         # 测试today便捷函数
         current_date = today()
