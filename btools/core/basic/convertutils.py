@@ -221,3 +221,82 @@ class Converter:
             return "".join(part.capitalize() for part in parts)
         else:
             return parts[0] + "".join(part.capitalize() for part in parts[1:])
+
+    @staticmethod
+    def parse_to_words(input_string: str) -> List[str]:
+        """
+        解析输入为单词列表
+
+        Args:
+            input_string (str): 输入字符串
+
+        Returns:
+            List[str]: 单词列表
+        """
+        import re
+
+        if not input_string:
+            return []
+
+        # 处理驼峰命名和帕斯卡命名
+        s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", input_string)
+        s2 = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1)
+
+        # 处理其他分隔符
+        s3 = re.sub(r"[\s-]+", "_", s2)
+
+        # 分割并转换为小写
+        words = s3.split("_")
+        return [word.lower() for word in words if word]
+
+    @staticmethod
+    def to_pascal_case(words: List[str]) -> str:
+        """
+        转换为帕斯卡命名
+
+        Args:
+            words (List[str]): 单词列表
+
+        Returns:
+            str: 帕斯卡命名的字符串
+        """
+        return "".join(word.capitalize() for word in words)
+
+    @staticmethod
+    def to_snake_case_upper(words: List[str]) -> str:
+        """
+        转换为大写蛇形命名
+
+        Args:
+            words (List[str]): 单词列表
+
+        Returns:
+            str: 大写蛇形命名的字符串
+        """
+        return "_".join(word.upper() for word in words)
+
+    @staticmethod
+    def to_package_name(words: List[str]) -> str:
+        """
+        转换为包命名
+
+        Args:
+            words (List[str]): 单词列表
+
+        Returns:
+            str: 包命名的字符串
+        """
+        return ".".join(word.lower() for word in words)
+
+    @staticmethod
+    def to_kebab_case(words: List[str]) -> str:
+        """
+        转换为短横线命名
+
+        Args:
+            words (List[str]): 单词列表
+
+        Returns:
+            str: 短横线命名的字符串
+        """
+        return "-".join(word.lower() for word in words)
