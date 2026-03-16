@@ -1,4 +1,5 @@
 import os
+import re
 import socket
 from typing import Any, Dict, Optional, Tuple
 
@@ -27,6 +28,37 @@ class SSHClient:
         self.transport = None
         self.root_shell = None  # 保存root shell会话
         self.root_shell_active = False  # root shell是否激活
+
+    def _clean_output(self, output: Any) -> str:
+        """
+        清洗输出内容，去除ANSI转义码、多余回车和控制字符
+
+        Args:
+            output: 输出内容，可以是bytes或str
+
+        Returns:
+            str: 清洗后的字符串
+        """
+        # 确保输出是字符串
+        if isinstance(output, bytes):
+            output = output.decode('utf-8', errors='ignore')
+        elif not isinstance(output, str):
+            output = str(output)
+
+        # 去除ANSI颜色转义码
+        output = re.sub(r'\x1b\[[0-9;]*m', '', output)
+
+        # 去除多余的回车
+        output = output.replace('\r\n', '\n')
+        output = output.replace('\r', '\n')
+
+        # 去除控制字符（除了\n）
+        output = re.sub(r'[\x00-\x09\x0b-\x1f\x7f]', '', output)
+
+        # 去除末尾的空白字符
+        output = output.strip()
+
+        return output
 
     def connect(
         self,
@@ -458,7 +490,7 @@ class SSHClient:
             if not password_prompt_found:
                 return {
                     "success": False,
-                    "stdout": output_buffer.decode("utf-8", errors="ignore"),
+                    "stdout": self._clean_output(output_buffer),
                     "stderr": "Timeout waiting for password prompt",
                     "current_user": None,
                 }
@@ -488,13 +520,14 @@ class SSHClient:
                     ):
                         return {
                             "success": False,
-                            "stdout": output_str,
+                            "stdout": self._clean_output(output_str),
                             "stderr": "Authentication failed: incorrect password",
                             "current_user": None,
                         }
 
                     # 检查是否成功切换到 root（通过提示符判断）
-                    if output_str.strip().endswith("#") or "root@" in output_str:
+                    output_str_clean = self._clean_output(output_str)
+                    if output_str_clean.strip().endswith("#") or "root@" in output_str_clean:
                         # 验证当前用户
                         channel.send("whoami\n")
                         time.sleep(0.5)
@@ -504,12 +537,12 @@ class SSHClient:
                         while channel.recv_ready():
                             whoami_output += channel.recv(1024)
 
-                        whoami_str = whoami_output.decode("utf-8", errors="ignore")
+                        whoami_str = self._clean_output(whoami_output)
 
                         # 创建新的 root shell 会话
                         return {
                             "success": True,
-                            "stdout": output_str + whoami_str,
+                            "stdout": self._clean_output(output_str + whoami_str),
                             "stderr": "",
                             "current_user": "root",
                         }
@@ -520,17 +553,18 @@ class SSHClient:
             output_str = output_buffer.decode("utf-8", errors="ignore")
 
             # 尝试判断是否已经切换成功
-            if output_str.strip().endswith("#"):
+            output_str_clean = self._clean_output(output_str)
+            if output_str_clean.strip().endswith("#"):
                 return {
                     "success": True,
-                    "stdout": output_str,
+                    "stdout": self._clean_output(output_str),
                     "stderr": "",
                     "current_user": "root",
                 }
             else:
                 return {
                     "success": False,
-                    "stdout": output_str,
+                    "stdout": self._clean_output(output_str),
                     "stderr": "Timeout waiting for su command to complete",
                     "current_user": None,
                 }
@@ -629,7 +663,7 @@ class SSHClient:
                 self.root_shell_active = False
                 return {
                     "success": False,
-                    "stdout": output_buffer.decode("utf-8", errors="ignore"),
+                    "stdout": self._clean_output(output_buffer),
                     "stderr": "Timeout waiting for password prompt",
                     "current_user": None,
                 }
@@ -662,13 +696,14 @@ class SSHClient:
                         self.root_shell_active = False
                         return {
                             "success": False,
-                            "stdout": output_str,
+                            "stdout": self._clean_output(output_str),
                             "stderr": "Authentication failed: incorrect password",
                             "current_user": None,
                         }
 
                     # 检查是否成功切换到 root（通过提示符判断）
-                    if output_str.strip().endswith("#") or "root@" in output_str:
+                    output_str_clean = self._clean_output(output_str)
+                    if output_str_clean.strip().endswith("#") or "root@" in output_str_clean:
                         # 验证当前用户
                         self.root_shell.send("whoami\n")
                         time.sleep(0.5)
@@ -678,14 +713,14 @@ class SSHClient:
                         while self.root_shell.recv_ready():
                             whoami_output += self.root_shell.recv(1024)
 
-                        whoami_str = whoami_output.decode("utf-8", errors="ignore")
+                        whoami_str = self._clean_output(whoami_output)
 
                         # 标记root shell为激活状态
                         self.root_shell_active = True
 
                         return {
                             "success": True,
-                            "stdout": output_str + whoami_str,
+                            "stdout": self._clean_output(output_str + whoami_str),
                             "stderr": "",
                             "current_user": "root",
                         }
@@ -696,11 +731,12 @@ class SSHClient:
             output_str = output_buffer.decode("utf-8", errors="ignore")
 
             # 尝试判断是否已经切换成功
-            if output_str.strip().endswith("#"):
+            output_str_clean = self._clean_output(output_str)
+            if output_str_clean.strip().endswith("#"):
                 self.root_shell_active = True
                 return {
                     "success": True,
-                    "stdout": output_str,
+                    "stdout": self._clean_output(output_str),
                     "stderr": "",
                     "current_user": "root",
                 }
@@ -710,7 +746,7 @@ class SSHClient:
                 self.root_shell_active = False
                 return {
                     "success": False,
-                    "stdout": output_str,
+                    "stdout": self._clean_output(output_str),
                     "stderr": "Timeout waiting for su command to complete",
                     "current_user": None,
                 }
@@ -815,20 +851,21 @@ class SSHClient:
 
                     # 检查是否出现命令提示符（表示命令执行完成）
                     output_str = output_buffer.decode("utf-8", errors="ignore")
+                    output_str_clean = self._clean_output(output_str)
 
                     # 检查是否出现期望的提示符或常见提示符
                     if expected_prompt:
                         # 如果指定了期望的提示符，检查是否出现
-                        if expected_prompt in output_str:
+                        if expected_prompt in output_str_clean:
                             prompt_found = True
                             break
                     else:
                         # 自动检测常见提示符
                         if (
-                            output_str.strip().endswith("#")
-                            or output_str.strip().endswith("$")
-                            or "->" in output_str.strip()
-                            or output_str.strip().endswith(">")
+                            output_str_clean.strip().endswith("#")
+                            or output_str_clean.strip().endswith("$")
+                            or "->" in output_str_clean.strip()
+                            or output_str_clean.strip().endswith(">")
                         ):
                             prompt_found = True
                             break
@@ -837,7 +874,7 @@ class SSHClient:
                     time.sleep(0.05)
 
             # 解析输出
-            output_str = output_buffer.decode("utf-8", errors="ignore")
+            output_str = self._clean_output(output_buffer)
 
             # 移除命令本身和提示符，只保留命令输出
             lines = output_str.split("\n")
