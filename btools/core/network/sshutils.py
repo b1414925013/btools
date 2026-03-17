@@ -45,17 +45,31 @@ class SSHClient:
         elif not isinstance(output, str):
             output = str(output)
 
-        # 去除ANSI颜色转义码
-        output = re.sub(r'\x1b\[[0-9;]*m', '', output)
-
-        # 去除多余的回车
+        # 定义各种终端控制序列的正则表达式，按优先级排序
+        # 1. OSC (Operating System Command) 序列 - 最复杂，需要特殊处理
+        #    格式: ESC ] ... BEL 或 ESC ] ... ST
+        output = re.sub(r'\x1b\][^\x07\x1b]*\x07|\x1b\][^\x07\x1b]*\x1b\\', '', output)
+        
+        # 2. 字符集切换序列
+        #    格式: ESC ( 或 ESC ) 后跟字符
+        output = re.sub(r'\x1b[()][a-zA-Z]', '', output)
+        
+        # 3. 私有序列
+        #    格式: ESC < 或 ESC >
+        output = re.sub(r'\x1b[<>]', '', output)
+        
+        # 4. CSI (Control Sequence Introducer) 序列
+        #    格式: ESC [ 参数 ; 参数 m 或 ESC [ ? 参数 l/h
+        output = re.sub(r'\x1b\[\??[0-9;]*[a-zA-Z]', '', output)
+        
+        # 5. 处理换行符 - 先处理，避免被控制字符处理移除
         output = output.replace('\r\n', '\n')
         output = output.replace('\r', '\n')
-
-        # 去除控制字符（除了\n）
-        output = re.sub(r'[\x00-\x09\x0b-\x1f\x7f]', '', output)
-
-        # 去除末尾的空白字符
+        
+        # 6. 其他控制字符（除了\n）
+        output = re.sub(r'[\x00-\x09\x0b-\x0c\x0e-\x1f\x7f]', '', output)
+        
+        # 7. 去除末尾的空白字符
         output = output.strip()
 
         return output
