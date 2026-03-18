@@ -30,6 +30,10 @@ print("Return Code:", result['returncode'])
 result = ssh.execute("apt update", sudo=True, sudo_password="your_password")
 print("STDOUT:", result['stdout'])
 
+# 执行命令并清洗输出（去除ANSI转义码等）
+result = ssh.execute("ls --color=always", clean_output=True)
+print("清洗后的输出:", result['stdout'])
+
 # 上传文件
 ssh.upload("local_file.txt", "/remote/path/local_file.txt")
 
@@ -250,6 +254,162 @@ ssh.file_operation('rmdir', '/remote/path/empty_dir')
 ssh.file_operation('rm', '/remote/path/non_empty_dir', recursive=True)
 ```
 
+## 输出清洗和命令过滤
+
+SSHClient 提供了灵活的输出控制选项，可以根据需要清洗输出内容或移除命令本身和提示符。
+
+### clean_output 参数
+
+**作用：** 清洗输出内容，去除ANSI转义码、控制字符等终端控制序列
+
+**适用场景：**
+- 命令输出包含颜色代码（如 `ls --color=always`）
+- 输出包含终端控制序列（如光标移动、清除屏幕等）
+- 需要纯净的文本输出用于进一步处理
+- 输出需要显示在非终端环境中（如Web界面）
+
+**默认值：**
+- `execute` 方法：`False`（保持向后兼容）
+- `execute_as_root` 方法：`False`（保持向后兼容）
+- `su_to_root` 方法：`True`（交互式shell通常需要清洗）
+- `start_root_shell` 方法：`True`（交互式shell通常需要清洗）
+- `execute_in_root_shell` 方法：`True`（交互式shell通常需要清洗）
+
+**使用示例：**
+
+```python
+# 基本命令执行，不清洗输出（默认）
+result = ssh.execute("ls --color=always")
+print("原始输出:", result['stdout'])  # 包含ANSI颜色代码
+
+# 清洗输出
+result = ssh.execute("ls --color=always", clean_output=True)
+print("清洗后输出:", result['stdout'])  # 不包含ANSI颜色代码
+
+# root命令执行，不清洗输出（默认）
+result = ssh.execute_as_root('ls --color=always /root', root_password='root_password')
+print("原始输出:", result['stdout'])
+
+# root命令执行，清洗输出
+result = ssh.execute_as_root('ls --color=always /root', root_password='root_password', clean_output=True)
+print("清洗后输出:", result['stdout'])
+
+# 在root shell中执行命令，默认清洗输出
+result = ssh.execute_in_root_shell('ls --color=always')
+print("清洗后输出:", result['stdout'])
+
+# 在root shell中执行命令，不清洗输出
+result = ssh.execute_in_root_shell('ls --color=always', clean_output=False)
+print("原始输出:", result['stdout'])
+```
+
+**清洗的内容：**
+- ANSI颜色转义码（如 `\x1b[31m` 红色）
+- CSI序列（光标移动、清除屏幕等）
+- OSC序列（设置窗口标题等）
+- 字符集切换序列
+- 私有序列
+- 控制字符（除了换行符）
+- 多余的回车符
+
+### remove_command 参数
+
+**作用：** 移除命令本身和提示符，只保留命令的实际输出
+
+**适用场景：**
+- 只需要命令的输出结果，不需要命令回显
+- 需要解析输出内容，命令和提示符会干扰解析
+- 输出需要用于自动化处理或日志记录
+- 希望输出更简洁清晰
+
+**默认值：** `False`（保持原有行为）
+
+**使用示例：**
+
+```python
+# 启动 root shell 会话
+result = ssh.start_root_shell('root_password')
+if result['success']:
+    # 执行命令，不移除命令和提示符（默认）
+    result1 = ssh.execute_in_root_shell('whoami')
+    print("完整输出:", result1['stdout'])
+    # 输出示例：
+    # whoami
+    # root
+    # [root@server ~]#
+    
+    # 执行命令，移除命令和提示符
+    result2 = ssh.execute_in_root_shell('whoami', remove_command=True)
+    print("仅命令输出:", result2['stdout'])
+    # 输出：root
+    
+    # 执行多条命令，移除命令和提示符
+    result3 = ssh.execute_in_root_shell('ls -la', remove_command=True)
+    print("文件列表:", result3['stdout'])
+    # 只包含文件列表，不包含命令和提示符
+    
+    # 执行命令，同时清洗输出和移除命令
+    result4 = ssh.execute_in_root_shell('ls --color=always', clean_output=True, remove_command=True)
+    print("纯净输出:", result4['stdout'])
+    # 既没有ANSI代码，也没有命令和提示符
+    
+    ssh.close_root_shell()
+```
+
+**移除的内容：**
+- 命令本身（如 `whoami`、`ls -la`）
+- 命令提示符（如 `[root@server ~]#`、`$`、`>`）
+- 空行
+- 以 `#`、`$`、`->` 或 `>` 结尾的行
+
+### 参数组合使用
+
+`clean_output` 和 `remove_command` 可以组合使用，根据需要灵活控制输出：
+
+```python
+# 组合1：不清洗，不移除（最原始的输出）
+result = ssh.execute_in_root_shell('ls --color=always', clean_output=False, remove_command=False)
+# 包含：ANSI代码 + 命令 + 提示符 + 实际输出
+
+# 组合2：清洗，不移除（去除控制序列，保留命令和提示符）
+result = ssh.execute_in_root_shell('ls --color=always', clean_output=True, remove_command=False)
+# 包含：命令 + 提示符 + 实际输出（无ANSI代码）
+
+# 组合3：不清洗，移除（保留ANSI代码，去除命令和提示符）
+result = ssh.execute_in_root_shell('ls --color=always', clean_output=False, remove_command=True)
+# 包含：ANSI代码 + 实际输出
+
+# 组合4：清洗，移除（最纯净的输出）
+result = ssh.execute_in_root_shell('ls --color=always', clean_output=True, remove_command=True)
+# 包含：仅实际输出（无ANSI代码，无命令，无提示符）
+```
+
+### 使用建议
+
+1. **选择 clean_output=True 的情况：**
+   - 输出需要显示在非终端环境（如Web界面、日志文件）
+   - 输出需要进一步处理或解析
+   - 输出包含大量终端控制序列
+   - 希望输出更易读
+
+2. **选择 clean_output=False 的情况：**
+   - 需要保留原始输出格式
+   - 输出需要在终端中显示（保留颜色和格式）
+   - 调试或查看完整输出内容
+   - 保持向后兼容性
+
+3. **选择 remove_command=True 的情况：**
+   - 只需要命令的实际输出结果
+   - 输出需要用于自动化处理
+   - 命令和提示符会干扰输出解析
+   - 希望输出更简洁
+
+4. **选择 remove_command=False 的情况：**
+   - 需要查看完整的交互过程
+   - 调试或排查问题
+   - 需要确认命令是否正确执行
+   - 保持向后兼容性
+
 ## 切换到 root 用户执行命令
 
 SSHClient 提供两种方式执行 root 权限命令，各有不同的适用场景：
@@ -286,6 +446,10 @@ result = ssh.execute_as_root('cat /etc/shadow', root_password='root_password')
 print("/etc/shadow 内容:", result['stdout'])
 print("错误信息:", result['stderr'])
 print("返回码:", result['returncode'])
+
+# 执行 root 权限命令并清洗输出
+result = ssh.execute_as_root('ls --color=always /root', root_password='root_password', clean_output=True)
+print("清洗后的输出:", result['stdout'])
 
 # 执行多条 root 命令
 result1 = ssh.execute_as_root('systemctl status sshd', root_password='root_password')
